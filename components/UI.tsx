@@ -34,11 +34,11 @@ export const RatingStars: React.FC<{ rating: number; count?: number; size?: numb
   );
 };
 
-export const ServiceCard: React.FC<{ ad: ServiceAd }> = ({ ad }) => {
+export const ServiceCard: React.FC<{ ad: ServiceAd; compact?: boolean }> = ({ ad, compact = false }) => {
   const navigate = useNavigate();
   return (
     <Link to={`/service/${ad.id}`} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 flex flex-col h-full">
-      <div className="relative aspect-video overflow-hidden bg-gray-100">
+      <div className={`relative ${compact ? 'h-44 md:h-56' : 'aspect-video'} overflow-hidden bg-gray-100`}>
         <img 
           src={ad.images[0]} 
           alt={ad.title} 
