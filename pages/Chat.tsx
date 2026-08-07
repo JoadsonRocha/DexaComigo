@@ -142,7 +142,7 @@ const Chat: React.FC = () => {
                                     max-w-[80%] rounded-lg px-4 py-2 shadow-sm
                                     ${isMe ? 'bg-brand-600 text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'}
                                 `}>
-                                    <p className="text-sm">{msg.text}</p>
+                                    <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
                                     <span className={`text-[10px] block text-right mt-1 ${isMe ? 'text-brand-200' : 'text-gray-400'}`}>
                                         {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                     </span>
