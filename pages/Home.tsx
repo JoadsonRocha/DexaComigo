@@ -71,8 +71,7 @@ const Home: React.FC = () => {
                                                 src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
                                                 className="w-full h-full object-cover" 
                                                 alt="Profissional de beleza em atendimento"
-                                                loading="lazy"
-                                                aria-hidden="true"
+                                                fetchpriority="high"
                     />
                 </div>
         
