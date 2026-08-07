@@ -97,6 +97,19 @@ const CreateAd: React.FC = () => {
     )
   }
 
+  // Redirect if user is CLIENT
+  if (user.role === 'CLIENT') {
+    return (
+        <div className="flex-1 flex items-center justify-center bg-gray-50 px-4">
+            <div className="text-center max-w-md">
+                <h2 className="text-2xl font-bold mb-4 text-gray-800">Acesso Restrito</h2>
+                <p className="mb-6 text-gray-600">Sua conta atual é de Cliente. Para criar anúncios e oferecer serviços, você precisa de uma conta de Profissional.</p>
+                <button onClick={() => navigate('/')} className="bg-brand-600 text-white px-6 py-2 rounded-md">Voltar ao Início</button>
+            </div>
+        </div>
+    )
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));

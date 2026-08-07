@@ -136,7 +136,7 @@ const ServiceDetail: React.FC = () => {
         setShowScheduleModal(false);
         navigate(`/chat/${chatId}`);
       } catch (e: any) {
-        alert("Erro ao solicitar agendamento. Verifique as políticas de RLS no Supabase.");
+        alert("Não foi possível solicitar o agendamento. Tente novamente mais tarde.");
       } finally {
         setIsScheduling(false);
       }
@@ -301,29 +301,48 @@ const ServiceDetail: React.FC = () => {
                     </div>
 
                     <div className="space-y-4 mb-6">
-                        <button 
-                            onClick={() => {
-                                if (!user) { navigate('/login'); return; }
-                                setShowScheduleModal(true);
-                            }}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center transition-all transform active:scale-95"
-                        >
-                            <CalendarCheck className="mr-2" size={20} /> Solicitar Agendamento
-                        </button>
+                        {user?.id === ad.providerId ? (
+                            <>
+                                <button 
+                                    onClick={() => navigate(`/edit-ad/${ad.id}`)}
+                                    className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center transition-all"
+                                >
+                                    Editar Meu Anúncio
+                                </button>
+                                <button 
+                                    onClick={() => navigate('/chat')}
+                                    className="w-full bg-brand-50 text-brand-700 hover:bg-brand-100 font-bold py-3.5 px-4 rounded-xl border border-brand-200 flex items-center justify-center transition-all"
+                                >
+                                    Ver Minhas Mensagens
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button 
+                                    onClick={() => {
+                                        if (!user) { navigate('/login'); return; }
+                                        setShowScheduleModal(true);
+                                    }}
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center transition-all transform active:scale-95"
+                                >
+                                    <CalendarCheck className="mr-2" size={20} /> Solicitar Agendamento
+                                </button>
 
-                        <button 
-                            onClick={handleInternalChat}
-                            className="w-full bg-brand-50 text-brand-700 hover:bg-brand-100 font-bold py-3.5 px-4 rounded-xl border border-brand-200 flex items-center justify-center transition-all"
-                        >
-                            <MessageSquare className="mr-2" size={20} /> Chat no App
-                        </button>
-                        
-                        <button 
-                            onClick={handleContact}
-                            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center transition-all"
-                        >
-                            <MessageCircle className="mr-2" size={20} /> WhatsApp Direto
-                        </button>
+                                <button 
+                                    onClick={handleInternalChat}
+                                    className="w-full bg-brand-50 text-brand-700 hover:bg-brand-100 font-bold py-3.5 px-4 rounded-xl border border-brand-200 flex items-center justify-center transition-all"
+                                >
+                                    <MessageSquare className="mr-2" size={20} /> Chat no App
+                                </button>
+                                
+                                <button 
+                                    onClick={handleContact}
+                                    className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center transition-all"
+                                >
+                                    <MessageCircle className="mr-2" size={20} /> WhatsApp Direto
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     <div className="border-t border-gray-100 pt-6">

@@ -32,7 +32,23 @@ const Login: React.FC = () => {
       }
     } catch (error: any) {
       console.error(error);
-      setErrorMsg(error.message || 'Erro ao realizar a operação. Verifique as credenciais.');
+      
+      let friendlyError = 'Erro ao realizar a operação. Verifique as credenciais.';
+      const rawError = error.message?.toLowerCase() || '';
+
+      if (rawError.includes('invalid login credentials')) {
+          friendlyError = 'E-mail ou senha incorretos.';
+      } else if (rawError.includes('user already registered')) {
+          friendlyError = 'Este e-mail já está em uso por outra conta.';
+      } else if (rawError.includes('password should be at least 6 characters')) {
+          friendlyError = 'A senha deve ter pelo menos 6 caracteres.';
+      } else if (rawError.includes('rate limit')) {
+          friendlyError = 'Muitas tentativas. Por favor, aguarde alguns minutos e tente novamente.';
+      } else if (rawError.includes('invalid email')) {
+          friendlyError = 'Formato de e-mail inválido.';
+      }
+      
+      setErrorMsg(friendlyError);
     } finally {
       setLoading(false);
     }
