@@ -82,7 +82,7 @@ export const Navbar: React.FC = () => {
                     )}
                 </Link>
                 <Link to="/dashboard" className="flex items-center space-x-2 text-sm text-gray-700 hover:text-brand-600">
-                   <img className="h-8 w-8 rounded-full object-cover border border-gray-200" src={user.avatar || "https://via.placeholder.com/100"} alt="" />
+                   <img loading="lazy" decoding="async" className="h-8 w-8 rounded-full object-cover border border-gray-200" src={user.avatar || "https://via.placeholder.com/100"} alt="" />
                    <span className="font-medium">{user.name}</span>
                 </Link>
               </div>
@@ -126,7 +126,7 @@ export const Navbar: React.FC = () => {
             {user ? (
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
-                  <img className="h-10 w-10 rounded-full" src={user.avatar} alt="" />
+                  <img loading="lazy" decoding="async" className="h-10 w-10 rounded-full" src={user.avatar} alt="" />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">{user.name}</div>

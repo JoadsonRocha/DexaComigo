@@ -84,6 +84,8 @@ const PublicProfile: React.FC = () => {
                 <img 
                     src={profile.avatar || "https://via.placeholder.com/150"} 
                     alt={profile.name}
+                    loading="lazy"
+                    decoding="async"
                     className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg object-cover bg-white"
                 />
                 

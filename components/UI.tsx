@@ -42,6 +42,8 @@ export const ServiceCard: React.FC<{ ad: ServiceAd; compact?: boolean }> = ({ ad
         <img 
           src={ad.images[0]} 
           alt={ad.title} 
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {ad.isPremium && (
@@ -97,9 +99,9 @@ export const ServiceCard: React.FC<{ ad: ServiceAd; compact?: boolean }> = ({ ad
                 >
                     <div className="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-xs font-bold group-hover/profile:bg-brand-600 group-hover/profile:text-white transition-colors overflow-hidden">
                         {ad.providerAvatar ? (
-                            <img src={ad.providerAvatar} alt={ad.providerName} className="w-full h-full object-cover" />
+                          <img src={ad.providerAvatar} alt={ad.providerName} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         ) : (
-                            ad.providerName.charAt(0)
+                          ad.providerName.charAt(0)
                         )}
                     </div>
                     <span className="text-xs text-gray-600 group-hover/profile:text-brand-600 truncate max-w-[100px] flex items-center transition-colors">

@@ -52,7 +52,7 @@ const Dashboard: React.FC = () => {
             {/* Sidebar Profile */}
             <aside className="bg-white rounded-lg shadow p-5 flex flex-col overflow-hidden">
                 <div className="flex flex-col items-center">
-                    <img src={user.avatar || 'https://via.placeholder.com/100'} alt="Profile" className="w-16 h-16 rounded-full mb-3 object-cover" />
+                  <img loading="lazy" decoding="async" src={user.avatar || 'https://via.placeholder.com/100'} alt="Profile" className="w-16 h-16 rounded-full mb-3 object-cover" />
                     <h2 className="text-lg font-bold text-center">{user.name}</h2>
                     <p className="text-gray-500 text-xs mb-3 text-center truncate max-w-full">{user.email}</p>
                     <div className="mb-3 bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full font-medium">
