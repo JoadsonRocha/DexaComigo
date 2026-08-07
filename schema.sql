@@ -155,3 +155,22 @@ CREATE POLICY "Clientes podem criar agendamentos" ON appointments
 DROP POLICY IF EXISTS "Participantes podem atualizar agendamentos" ON appointments;
 CREATE POLICY "Participantes podem atualizar agendamentos" ON appointments 
   FOR UPDATE USING (auth.uid() = client_id OR auth.uid() = provider_id);
+
+-- ==========================================
+-- 4. REALTIME (mensagens em tempo real no chat)
+-- ==========================================
+-- Habilita a publicação de mensagens e sessões de chat para o Realtime do Supabase.
+-- Se você já tinha estas tabelas criadas, basta rodar os dois comandos abaixo:
+DO $$
+BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE chat_sessions;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;

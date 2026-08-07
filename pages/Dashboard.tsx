@@ -51,6 +51,16 @@ const Dashboard: React.FC = () => {
 
   const handleUpdateAppointmentStatus = async (id: string, status: AppointmentStatus) => {
       await store.updateAppointmentStatus(id, status);
+      if (status === 'cancelled' && user) {
+          const appointment = appointments.find(a => a.id === id);
+          if (appointment) {
+              try {
+                  await store.notifyAppointmentCancelled(appointment, user.name);
+              } catch (e) {
+                  console.error("Erro ao notificar cancelamento:", e);
+              }
+          }
+      }
       setAppointments(prev => prev.map(app => app.id === id ? { ...app, status } : app));
   };
 

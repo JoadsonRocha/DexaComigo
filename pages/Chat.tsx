@@ -1,10 +1,10 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Send, User as UserIcon, ArrowLeft } from 'lucide-react';
+import { Send, User as UserIcon, ArrowLeft, CheckCheck, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { store } from '../services/store';
-import { ChatSession } from '../types';
+import { store, supabase } from '../services/store';
+import { ChatSession, Message } from '../types';
 
 const Chat: React.FC = () => {
   const { user, loading } = useAuth();
@@ -15,6 +15,7 @@ const Chat: React.FC = () => {
   const [chats, setChats] = useState<ChatSession[]>([]);
   const [activeChat, setActiveChat] = useState<ChatSession | null>(null);
   const [newMessage, setNewMessage] = useState('');
+  const [sending, setSending] = useState(false);
 
   // Initial load
   useEffect(() => {
@@ -25,21 +26,17 @@ const Chat: React.FC = () => {
     }
 
     const loadChats = async () => {
-        // Fix: Await the async store call
         const userChats = await store.getChats(user.id);
         setChats(userChats);
 
         if (routeChatId) {
-            // Fix: Await the async store call and use correct method name
             const found = await store.getChatById(routeChatId, user.id);
             if (found) {
                 if (found.unreadCount && found.unreadCount > 0) {
                     await store.markMessagesAsRead(found.id, user.id);
-                    // Refresh chat state to reflect read messages
                     const refreshed = await store.getChatById(routeChatId, user.id);
                     if (refreshed) {
                         setActiveChat(refreshed);
-                        // Also update in list
                         setChats(prev => prev.map(c => c.id === refreshed.id ? refreshed : c));
                     }
                 } else {
@@ -47,12 +44,59 @@ const Chat: React.FC = () => {
                 }
             }
         } else if (userChats.length > 0 && window.innerWidth >= 768) {
-            // Auto select first chat on desktop if none selected
             navigate(`/chat/${userChats[0].id}`);
         }
     };
     loadChats();
   }, [user, routeChatId, navigate]);
+
+  // Realtime: recebe novas mensagens em tempo real
+  useEffect(() => {
+    if (!user || !activeChat?.id) return;
+
+    const channel = supabase
+      .channel(`chat-${activeChat.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `session_id=eq.${activeChat.id}`
+      }, async (payload: any) => {
+        const msg = payload.new;
+        if (msg.sender_id === user.id) return;
+
+        await store.markMessagesAsRead(activeChat.id, user.id);
+        const updated = await store.getChatById(activeChat.id, user.id);
+        if (updated) {
+          setActiveChat(updated);
+          setChats(prev => prev.map(c => c.id === updated.id ? updated : c)
+            .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()));
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user, activeChat?.id]);
+
+  // Realtime: atualiza lista de chats quando chega mensagem em outra conversa
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`chats-${user.id}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'messages'
+      }, async () => {
+        if (activeChat) return;
+        const userChats = await store.getChats(user.id);
+        setChats(userChats);
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user, activeChat]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -63,26 +107,56 @@ const Chat: React.FC = () => {
     e.preventDefault();
     if (!newMessage.trim() || !activeChat || !user) return;
 
-    // Fix: Await the async store call
-    await store.sendMessage(activeChat.id, user.id, newMessage);
-    
-    // Refresh local state
-    // Fix: Await the async store call and use correct method name
-    const updatedChat = await store.getChatById(activeChat.id, user.id);
-    if (updatedChat) {
-        setActiveChat({ ...updatedChat });
-        // Update list as well
-        setChats(prev => prev.map(c => c.id === updatedChat.id ? updatedChat : c).sort((a,b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()));
+    setSending(true);
+    try {
+      await store.sendMessage(activeChat.id, user.id, newMessage);
+      const updatedChat = await store.getChatById(activeChat.id, user.id);
+      if (updatedChat) {
+          setActiveChat({ ...updatedChat });
+          setChats(prev => prev.map(c => c.id === updatedChat.id ? updatedChat : c).sort((a,b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()));
+      }
+      setNewMessage('');
+    } catch (err) {
+      console.error("Erro ao enviar mensagem:", err);
+    } finally {
+      setSending(false);
     }
-    
-    setNewMessage('');
   };
 
   const handleChatSelect = (chatId: string) => {
       navigate(`/chat/${chatId}`);
   };
 
+  // Formata a hora e o dia da mensagem
+  const formatTime = (ts: string) =>
+      new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const formatDayLabel = (ts: string) => {
+      const d = new Date(ts);
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
+      if (d.toDateString() === today.toDateString()) return 'Hoje';
+      if (d.toDateString() === yesterday.toDateString()) return 'Ontem';
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
   if (!user) return null;
+
+  // Separa as mensagens por dia para exibir marcadores de data
+  const groupedMessages = (msgs: Message[]) => {
+      const groups: { label: string; messages: Message[] }[] = [];
+      for (const msg of msgs) {
+          const label = formatDayLabel(msg.timestamp);
+          const last = groups[groups.length - 1];
+          if (last && last.label === label) {
+              last.messages.push(msg);
+          } else {
+              groups.push({ label, messages: [msg] });
+          }
+      }
+      return groups;
+  };
 
   return (
     <div className="flex flex-1 h-full overflow-hidden bg-gray-100">
@@ -137,13 +211,20 @@ const Chat: React.FC = () => {
                     <button onClick={() => navigate('/chat')} className="mr-3 md:hidden text-gray-500">
                         <ArrowLeft />
                     </button>
-                    <div>
-                        <h3 className="font-bold text-gray-800 text-sm md:text-base flex flex-col md:flex-row md:items-center">
-                            <span><span className="text-brand-600 font-semibold text-xs uppercase tracking-wider">Profissional:</span> {activeChat.providerName || 'Não Informado'}</span>
-                            <span className="hidden md:inline mx-2 text-gray-300">|</span>
-                            <span><span className="text-gray-500 font-semibold text-xs uppercase tracking-wider">Cliente:</span> {activeChat.clientName || 'Não Informado'}</span>
-                        </h3>
-                        <p className="text-xs text-gray-600 font-medium bg-gray-100 inline-block px-2 py-1 rounded mt-1">Serviço: {activeChat.adTitle}</p>
+                    <div className="flex items-center">
+                        {activeChat.providerName ? (
+                            <div className="w-10 h-10 bg-brand-600 text-white rounded-full flex items-center justify-center font-bold mr-3">
+                                {(activeChat.otherUserName || activeChat.providerName || 'P').charAt(0).toUpperCase()}
+                            </div>
+                        ) : null}
+                        <div>
+                            <h3 className="font-bold text-gray-800 text-sm md:text-base flex flex-col md:flex-row md:items-center">
+                                <span><span className="text-brand-600 font-semibold text-xs uppercase tracking-wider">Profissional:</span> {activeChat.providerName || 'Não Informado'}</span>
+                                <span className="hidden md:inline mx-2 text-gray-300">|</span>
+                                <span><span className="text-gray-500 font-semibold text-xs uppercase tracking-wider">Cliente:</span> {activeChat.clientName || 'Não Informado'}</span>
+                            </h3>
+                            <p className="text-xs text-gray-600 font-medium bg-gray-100 inline-block px-2 py-1 rounded mt-1">Serviço: {activeChat.adTitle}</p>
+                        </div>
                     </div>
                 </div>
 
@@ -156,22 +237,44 @@ const Chat: React.FC = () => {
                         </div>
                     )}
                     
-                    {activeChat.messages.map((msg) => {
-                        const isMe = msg.senderId === user.id;
-                        return (
-                            <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`
-                                    max-w-[80%] rounded-lg px-4 py-2 shadow-sm
-                                    ${isMe ? 'bg-brand-600 text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'}
-                                `}>
-                                    <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
-                                    <span className={`text-[10px] block text-right mt-1 ${isMe ? 'text-brand-200' : 'text-gray-400'}`}>
-                                        {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                                    </span>
-                                </div>
+                    {groupedMessages(activeChat.messages).map(group => (
+                        <div key={group.label}>
+                            <div className="flex justify-center mb-4">
+                                <span className="text-xs bg-gray-200 text-gray-600 px-3 py-1 rounded-full font-medium">
+                                    {group.label}
+                                </span>
                             </div>
-                        )
-                    })}
+                            <div className="space-y-3">
+                                {group.messages.map((msg, idx) => {
+                                    const isMe = msg.senderId === user.id;
+                                    const showAvatar = !isMe;
+                                    return (
+                                        <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} items-end`}>
+                                            {showAvatar && (
+                                                <div className="w-7 h-7 bg-gray-300 text-gray-700 rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">
+                                                    {(activeChat.otherUserName || 'U').charAt(0).toUpperCase()}
+                                                </div>
+                                            )}
+                                            <div className={`
+                                                max-w-[75%] rounded-2xl px-4 py-2 shadow-sm
+                                                ${isMe ? 'bg-brand-600 text-white rounded-br-md' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md'}
+                                            `}>
+                                                <p className="text-sm whitespace-pre-wrap break-words">{msg.text}</p>
+                                                <span className={`text-[10px] flex items-center justify-end mt-1 gap-1 ${isMe ? 'text-brand-200' : 'text-gray-400'}`}>
+                                                    {formatTime(msg.timestamp)}
+                                                    {isMe && (
+                                                        msg.read
+                                                            ? <CheckCheck size={13} className="text-brand-200" />
+                                                            : <Check size={13} className="text-brand-200/70" />
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    ))}
                     <div ref={messagesEndRef} />
                 </div>
 
@@ -187,7 +290,7 @@ const Chat: React.FC = () => {
                         />
                         <button 
                             type="submit" 
-                            disabled={!newMessage.trim()}
+                            disabled={!newMessage.trim() || sending}
                             className="bg-brand-600 text-white p-2 rounded-full hover:bg-brand-700 disabled:opacity-50 transition-colors shadow-sm"
                         >
                             <Send size={20} />

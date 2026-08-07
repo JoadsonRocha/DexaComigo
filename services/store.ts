@@ -576,6 +576,45 @@ class Store {
 
     if (error) { console.error("Store Error [updateAppointmentStatus]:", error); throw error; }
   }
+
+  async findChatForAppointment(adId: string, clientId: string, providerId: string): Promise<string | null> {
+    const { data: sessions, error } = await supabase
+      .from('chat_sessions')
+      .select(`
+        id,
+        chat_participants(user_id)
+      `)
+      .eq('ad_id', adId);
+
+    if (error) { console.error("Store Error [findChatForAppointment]:", error); return null; }
+
+    const session = (sessions || []).find(s => {
+      const participants = (s.chat_participants || []).map((p: any) => p.user_id);
+      return participants.includes(clientId) && participants.includes(providerId);
+    });
+
+    return session?.id || null;
+  }
+
+  async notifyAppointmentCancelled(
+    appointment: Appointment,
+    providerName: string,
+    clientName?: string,
+    providerId?: string
+  ): Promise<void> {
+    const chatId = await this.findChatForAppointment(appointment.adId, appointment.clientId, appointment.providerId);
+    if (!chatId) {
+      console.warn("Chat not found for appointment", appointment.id);
+      return;
+    }
+
+    const formattedDate = new Date(appointment.date).toLocaleDateString('pt-BR');
+    const senderId = providerId || appointment.providerId;
+    const name = clientName || appointment.clientName || 'Cliente';
+    const text = `Olá, ${name}! Infelizmente, precisei cancelar o agendamento do dia ${formattedDate} às ${appointment.time}. Peço desculpas pelo transtorno. Podemos remarcar para outro horário se você quiser!`;
+
+    await this.sendMessage(chatId, senderId, text);
+  }
 }
 
 export const store = new Store();
