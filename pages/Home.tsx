@@ -1,8 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, 
+  MapPin, 
+  Navigation, 
   ArrowRight, 
   Sparkles, 
   Scissors,
@@ -10,8 +11,6 @@ import {
   Droplet,
   Flower2,
   Eye,
-  MessageSquare,
-  CalendarCheck,
   CheckCircle2,
   Users
 } from 'lucide-react';
@@ -36,6 +35,31 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [location, setLocation] = useState('');
+  const [isLocating, setIsLocating] = useState(false);
+
+  const handleGetLocation = () => {
+      if (!navigator.geolocation) {
+          alert('Geolocalização não suportada no seu navegador.');
+          return;
+      }
+      setIsLocating(true);
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+          try {
+              const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=pt`);
+              const data = await res.json();
+              const loc = `${data.city || data.locality}, ${data.principalSubdivisionCode?.split('-')[1] || data.principalSubdivision}`;
+              setLocation(loc);
+          } catch(e) {
+              alert('Erro ao buscar localização.');
+          } finally {
+              setIsLocating(false);
+          }
+      }, () => {
+          alert('Permissão de localização negada.');
+          setIsLocating(false);
+      });
+  };
 
   useEffect(() => {
     const loadAds = async () => {
@@ -59,10 +83,13 @@ const Home: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+    if (searchTerm.trim() || location.trim()) {
+        const params = new URLSearchParams();
+        if (searchTerm.trim()) params.append('q', searchTerm.trim());
+        if (location.trim()) params.append('l', location.trim());
+        navigate(`/search?${params.toString()}`);
     } else {
-      navigate(`/search`);
+        navigate(`/search`);
     }
   };
 
@@ -97,11 +124,30 @@ const Home: React.FC = () => {
                     <Search className="absolute left-5 top-4 text-gray-400 w-6 h-6" />
                     <input 
                         type="text" 
-                        placeholder="Ex: Cabelo, Maquiagem, Manicure..." 
-                        className="w-full pl-12 md:pl-14 pr-4 py-3 md:py-4 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base md:text-lg"
+                        placeholder="Cabelo, Maquiagem..." 
+                        className="w-full pl-12 pr-4 py-3 md:py-4 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base md:text-lg"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                </div>
+                <div className="flex-1 relative border-t md:border-t-0 md:border-l border-gray-100 flex items-center">
+                    <MapPin className="absolute left-5 top-4 md:top-4 text-gray-400 w-6 h-6" />
+                    <input 
+                        type="text" 
+                        placeholder="Sua cidade ou bairro" 
+                        className="w-full pl-12 pr-12 py-3 md:py-4 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base md:text-lg bg-transparent"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                    />
+                    <button 
+                        type="button" 
+                        onClick={handleGetLocation}
+                        disabled={isLocating}
+                        title="Usar minha localização"
+                        className="absolute right-3 top-3 md:top-3.5 p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-brand-600 transition-colors disabled:opacity-50"
+                    >
+                        <Navigation size={18} className={isLocating ? "animate-pulse" : ""} />
+                    </button>
                 </div>
                 <button 
                     type="submit"
@@ -126,7 +172,7 @@ const Home: React.FC = () => {
                 {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
                     <Link 
                         key={cat.id} 
-                        to={`/search?c=${cat.id}`}
+                        to={`/categoria/${cat.id}`}
                         className="group flex flex-col items-center min-w-[84px] md:min-w-[100px] snap-start"
                     >
                         <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center mb-3 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300 shadow-sm border border-brand-100 group-hover:shadow-md group-hover:scale-105">
