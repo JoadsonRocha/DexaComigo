@@ -226,14 +226,14 @@ const Home: React.FC = () => {
 
 
       {/* Demo Call to Action */}
-      <section className="py-16 md:py-24">
+      <section className="py-8 md:py-12 mb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-brand-600 rounded-3xl md:rounded-[4rem] p-8 md:p-24 text-center text-white relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(124,58,237,0.5)]">
-                <div className="absolute top-0 right-0 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-white/10 rounded-full -mr-32 -mt-32 blur-[80px]"></div>
-                <div className="absolute bottom-0 left-0 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-black/10 rounded-full -ml-32 -mb-32 blur-[80px]"></div>
+            <div className="bg-brand-600 rounded-3xl md:rounded-[3rem] p-6 md:p-12 text-center text-white relative overflow-hidden shadow-[0_30px_60px_-15px_rgba(124,58,237,0.4)]">
+                <div className="absolute top-0 right-0 w-[200px] md:w-[300px] h-[200px] md:h-[300px] bg-white/10 rounded-full -mr-16 -mt-16 blur-[60px]"></div>
+                <div className="absolute bottom-0 left-0 w-[200px] md:w-[300px] h-[200px] md:h-[300px] bg-black/10 rounded-full -ml-16 -mb-16 blur-[60px]"></div>
                 
-                <h2 className="text-3xl md:text-6xl font-bold mb-6 md:mb-8 relative z-10 tracking-tight leading-tight">Quer fazer parte da<br/>nossa rede?</h2>
-                <p className="text-brand-100 text-lg md:text-2xl mb-10 md:mb-12 max-w-3xl mx-auto relative z-10 font-light leading-relaxed">
+                <h2 className="text-2xl md:text-5xl font-bold mb-4 md:mb-6 relative z-10 tracking-tight leading-tight">Quer fazer parte da<br/>nossa rede?</h2>
+                <p className="text-brand-100 text-base md:text-xl mb-8 md:mb-10 max-w-3xl mx-auto relative z-10 font-light leading-relaxed">
                     Estamos em fase beta (Demo). Você pode anunciar seus serviços agora mesmo e testar todas as funcionalidades gratuitamente.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 relative z-10">
