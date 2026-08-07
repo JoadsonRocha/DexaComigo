@@ -19,13 +19,6 @@ const Dashboard: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [chats, setChats] = useState<ChatSession[]>([]);
 
-  // Review State
-  const [reviewingApp, setReviewingApp] = useState<Appointment | null>(null);
-  const [reviewRating, setReviewRating] = useState(5);
-  const [reviewComment, setReviewComment] = useState('');
-  const [submittingReview, setSubmittingReview] = useState(false);
-  const [reviewError, setReviewError] = useState('');
-
   const loadAppointments = async (userId: string, role: UserRole) => {
       const data = await store.getMyAppointments(userId, role);
       setAppointments(data);
