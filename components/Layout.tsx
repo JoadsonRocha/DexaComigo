@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, LogOut, PlusCircle, MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { store } from '../services/store';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+        store.getGlobalUnreadCount(user.id).then(setUnreadCount);
+    }
+  }, [user, location.pathname]); // Refresh when navigating
+
 
   const handleLogout = () => {
     logout();
@@ -49,6 +58,12 @@ export const Navbar: React.FC = () => {
               <div className="relative ml-3 flex items-center space-x-4">
                 <Link to="/chat" className={`${isActive('/chat')} text-gray-500 hover:text-brand-600 relative`} title="Mensagens">
                     <MessageSquare className="w-6 h-6" />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                    )}
                 </Link>
                 <Link to="/dashboard" className="flex items-center space-x-2 text-sm text-gray-700 hover:text-brand-600">
                    <img className="h-8 w-8 rounded-full object-cover border border-gray-200" src={user.avatar || "https://via.placeholder.com/100"} alt="" />
@@ -82,7 +97,14 @@ export const Navbar: React.FC = () => {
             {(!user || user.role !== 'CLIENT') && (
               <Link to="/create-ad" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-brand-600 hover:bg-brand-50 hover:border-brand-300">Anunciar Serviço</Link>
             )}
-             {user && <Link to="/chat" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-300">Mensagens</Link>}
+             {user && (
+                 <Link to="/chat" className="flex items-center justify-between pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-300">
+                     Mensagens
+                     {unreadCount > 0 && (
+                         <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">{unreadCount}</span>
+                     )}
+                 </Link>
+             )}
           </div>
           <div className="pt-4 pb-4 border-t border-gray-200">
             {user ? (

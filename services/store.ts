@@ -344,6 +344,26 @@ class Store {
     if (error) console.error("Store Error [markMessagesAsRead]:", error);
   }
 
+  async getGlobalUnreadCount(userId: string): Promise<number> {
+    const { data: participantData } = await supabase
+        .from('chat_participants')
+        .select('session_id')
+        .eq('user_id', userId);
+        
+    if (!participantData || participantData.length === 0) return 0;
+    const sessionIds = participantData.map(p => p.session_id);
+
+    const { count, error } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .in('session_id', sessionIds)
+        .neq('sender_id', userId)
+        .eq('read', false);
+
+    if (error) { console.error("Store Error [getGlobalUnreadCount]:", error); return 0; }
+    return count || 0;
+  }
+
   async startChat(clientId: string, providerId: string, adId: string, adTitle: string): Promise<string> {
     const { data: clientSessions } = await supabase
         .from('chat_participants')

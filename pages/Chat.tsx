@@ -30,9 +30,20 @@ const Chat: React.FC = () => {
 
         if (routeChatId) {
             // Fix: Await the async store call and use correct method name
-            const found = await store.getChatById(routeChatId);
+            const found = await store.getChatById(routeChatId, user.id);
             if (found) {
-                setActiveChat(found);
+                if (found.unreadCount && found.unreadCount > 0) {
+                    await store.markMessagesAsRead(found.id, user.id);
+                    // Refresh chat state to reflect read messages
+                    const refreshed = await store.getChatById(routeChatId, user.id);
+                    if (refreshed) {
+                        setActiveChat(refreshed);
+                        // Also update in list
+                        setChats(prev => prev.map(c => c.id === refreshed.id ? refreshed : c));
+                    }
+                } else {
+                    setActiveChat(found);
+                }
             }
         } else if (userChats.length > 0 && window.innerWidth >= 768) {
             // Auto select first chat on desktop if none selected
@@ -56,7 +67,7 @@ const Chat: React.FC = () => {
     
     // Refresh local state
     // Fix: Await the async store call and use correct method name
-    const updatedChat = await store.getChatById(activeChat.id);
+    const updatedChat = await store.getChatById(activeChat.id, user.id);
     if (updatedChat) {
         setActiveChat({ ...updatedChat });
         // Update list as well
@@ -95,13 +106,18 @@ const Chat: React.FC = () => {
                             className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${activeChat?.id === chat.id ? 'bg-brand-50 border-l-4 border-brand-600' : ''}`}
                         >
                             <div className="flex justify-between items-start mb-1">
-                                <span className="font-semibold text-gray-900 line-clamp-1">{chat.adTitle}</span>
+                                <span className="font-semibold text-gray-900 line-clamp-1 flex items-center">
+                                    {chat.adTitle}
+                                    {chat.unreadCount ? (
+                                        <span className="ml-2 w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" title={`${chat.unreadCount} nova(s) mensagem(ns)`}></span>
+                                    ) : null}
+                                </span>
                                 <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
                                     {new Date(chat.updatedAt).toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}
                                 </span>
                             </div>
-                            <p className="text-sm text-gray-600 line-clamp-1 h-5">
-                                {chat.lastMessage || <span className="italic text-gray-400">Nova conversa</span>}
+                            <p className={`text-sm line-clamp-1 ${chat.unreadCount ? 'text-gray-900 font-bold' : 'text-gray-500'}`}>
+                                {chat.lastMessage || 'Nenhuma mensagem.'}
                             </p>
                         </li>
                     ))}
