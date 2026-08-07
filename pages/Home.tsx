@@ -40,17 +40,13 @@ const Home: React.FC = () => {
   useEffect(() => {
     const loadAds = async () => {
         try {
-            const ads = await store.getAds();
-            // Featured: Only premium ads, then sort by highest rated
-            const featured = ads
-              .filter(a => a.isPremium)
-              .sort((a, b) => {
-                // Primary sort: Rating (descending)
+            // Featured: Only premium ads, max 4
+            const ads = await store.getAds({ isPremium: true, limit: 4 });
+            // Sort locally by rating/reviews
+            const featured = ads.sort((a, b) => {
                 if (b.rating !== a.rating) return b.rating - a.rating;
-                // Secondary sort: Number of reviews (descending)
                 return b.reviewCount - a.reviewCount;
-              })
-              .slice(0, 4);
+            });
             setFeaturedAds(featured);
         } catch (e) {
             console.error("Erro ao carregar anúncios:", e);
