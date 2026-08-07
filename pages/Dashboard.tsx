@@ -104,6 +104,28 @@ const Dashboard: React.FC = () => {
                 ) : (
                     // PROVIDER DASHBOARD
                     <div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <Link to="/create-ad" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
+                                <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-brand-100 transition-colors">
+                                    <Plus size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900">Novo Anúncio</h3>
+                                    <p className="text-gray-500 text-xs mt-1">Oferecer um novo serviço</p>
+                                </div>
+                            </Link>
+
+                            <Link to="/chat" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
+                                    <MessageSquare size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900">Minhas Mensagens</h3>
+                                    <p className="text-gray-500 text-xs mt-1">Responder clientes e agendamentos</p>
+                                </div>
+                            </Link>
+                        </div>
+
                         <h2 className="text-xl font-bold text-gray-800 mb-6">Meus Anúncios ({myAds.length})</h2>
                         {myAds.length === 0 ? (
                             <div className="bg-white rounded-lg shadow p-10 text-center">
@@ -116,7 +138,7 @@ const Dashboard: React.FC = () => {
                                     <div key={ad.id} className="relative group">
                                         <ServiceCard ad={ad} />
                                         <div className="absolute top-2 left-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded shadow hover:bg-white font-medium">Editar</button>
+                                            <Link to={`/edit-ad/${ad.id}`} className="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded shadow hover:bg-white font-medium">Editar</Link>
                                             <button 
                                                 onClick={(e) => { e.preventDefault(); handleDelete(ad.id); }}
                                                 className="bg-red-500/90 text-white text-xs px-2 py-1 rounded shadow hover:bg-red-600 flex items-center"
