@@ -29,6 +29,7 @@ export const Navbar: React.FC = () => {
   };
 
   const isActive = (path: string) => location.pathname === path ? 'text-brand-600 font-semibold' : 'text-gray-600 hover:text-brand-600';
+  const isChatActive = location.pathname.startsWith('/dashboard/chat');
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -72,7 +73,7 @@ export const Navbar: React.FC = () => {
 
             {user ? (
               <div className="relative ml-3 flex items-center space-x-4">
-                <Link to="/dashboard/chat" className={`${isActive('/dashboard/chat')} text-gray-500 hover:text-brand-600 relative`} title="Mensagens">
+                <Link to="/dashboard/chat" className={`${isChatActive ? 'text-brand-600' : 'text-gray-500 hover:text-brand-600'} relative`} title="Mensagens">
                     <MessageSquare className="w-6 h-6" />
                     {unreadCount > 0 && (
                         <span className="absolute -top-1 -right-1 flex h-3 w-3">
