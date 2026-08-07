@@ -221,6 +221,26 @@ class Store {
     };
   }
 
+  async getUserProfile(userId: string): Promise<User | null> {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, name, avatar, bio, location, role')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return {
+      id: data.id,
+      name: data.name,
+      role: data.role as UserRole,
+      avatar: data.avatar,
+      location: data.location,
+      bio: data.bio,
+      email: '', // omitted for privacy in public profile
+      phone: ''  // omitted for privacy unless needed (we can fetch later if required)
+    };
+  }
+
   async updateProfile(userId: string, updates: Partial<User>): Promise<User> {
     const { data, error } = await supabase
       .from('profiles')
