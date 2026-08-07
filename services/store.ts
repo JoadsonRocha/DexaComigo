@@ -229,83 +229,111 @@ class Store {
   }
 
   async getChats(userId: string): Promise<ChatSession[]> {
+    const { data: participantData } = await supabase
+        .from('chat_participants')
+        .select('session_id')
+        .eq('user_id', userId);
+        
+    if (!participantData || participantData.length === 0) return [];
+    const sessionIds = participantData.map(p => p.session_id);
+    
     const { data, error } = await supabase
       .from('chat_sessions')
-      .select('*, chat_messages(*)')
-      .or(`participant_client_id.eq.${userId},participant_provider_id.eq.${userId}`)
+      .select(`
+        *,
+        service_ads(title),
+        chat_participants(user_id),
+        messages(*)
+      `)
+      .in('id', sessionIds)
       .order('updated_at', { ascending: false });
     
     if (error) { console.error("Store Error [getChats]:", error); throw error; }
-    return (data || []).map(c => ({
+    
+    return (data || []).map((c: any) => ({
       id: c.id,
       adId: c.ad_id,
-      adTitle: c.ad_title,
-      participants: [c.participant_client_id, c.participant_provider_id],
+      adTitle: c.service_ads?.title || 'Anúncio',
+      participants: (c.chat_participants || []).map((p: any) => p.user_id),
       lastMessage: c.last_message,
       updatedAt: c.updated_at,
-      messages: (c.chat_messages || []).map((m: any) => ({
+      messages: (c.messages || []).map((m: any) => ({
         id: m.id,
         senderId: m.sender_id,
-        text: m.content,
+        text: m.text,
         timestamp: m.created_at
-      }))
+      })).sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
     }));
   }
 
   async getChatById(id: string): Promise<ChatSession | null> {
     const { data, error } = await supabase
       .from('chat_sessions')
-      .select('*, chat_messages(*)')
+      .select(`
+        *,
+        service_ads(title),
+        chat_participants(user_id),
+        messages(*)
+      `)
       .eq('id', id)
-      .single();
+      .maybeSingle();
     
     if (error || !data) return null;
     return {
       id: data.id,
       adId: data.ad_id,
-      adTitle: data.ad_title,
-      participants: [data.participant_client_id, data.participant_provider_id],
+      adTitle: data.service_ads?.title || 'Anúncio',
+      participants: (data.chat_participants || []).map((p: any) => p.user_id),
       lastMessage: data.last_message,
       updatedAt: data.updated_at,
-      messages: (data.chat_messages || []).map((m: any) => ({
+      messages: (data.messages || []).map((m: any) => ({
         id: m.id,
         senderId: m.sender_id,
-        text: m.content,
+        text: m.text,
         timestamp: m.created_at
-      }))
+      })).sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
     };
   }
 
   async startChat(clientId: string, providerId: string, adId: string, adTitle: string): Promise<string> {
-    const { data: existing } = await supabase
-      .from('chat_sessions')
-      .select('id')
-      .eq('ad_id', adId)
-      .eq('participant_client_id', clientId)
-      .maybeSingle();
-    
-    if (existing) return existing.id;
+    const { data: clientSessions } = await supabase
+        .from('chat_participants')
+        .select('session_id')
+        .eq('user_id', clientId);
+        
+    if (clientSessions && clientSessions.length > 0) {
+        const sessionIds = clientSessions.map(cs => cs.session_id);
+        const { data: existingSession } = await supabase
+            .from('chat_sessions')
+            .select('id')
+            .eq('ad_id', adId)
+            .in('id', sessionIds)
+            .maybeSingle();
+            
+        if (existingSession) return existingSession.id;
+    }
 
-    const { data, error } = await supabase
+    const { data: newSession, error: sessionError } = await supabase
       .from('chat_sessions')
-      .insert([{
-        ad_id: adId,
-        ad_title: adTitle,
-        participant_client_id: clientId,
-        participant_provider_id: providerId
-      }])
+      .insert([{ ad_id: adId }])
       .select()
       .single();
+      
+    if (sessionError) { console.error("Store Error [startChat]:", sessionError); throw sessionError; }
+
+    await supabase.from('chat_participants').insert([
+        { session_id: newSession.id, user_id: clientId },
+        { session_id: newSession.id, user_id: providerId }
+    ]);
     
-    if (error) { console.error("Store Error [startChat]:", error); throw error; }
-    return data.id;
+    return newSession.id;
   }
 
   async sendMessage(chatId: string, senderId: string, text: string): Promise<void> {
-    const { error: msgError } = await supabase.from('chat_messages').insert([{
+    const { error: msgError } = await supabase.from('messages').insert([{
       session_id: chatId,
       sender_id: senderId,
-      content: text
+      text: text
     }]);
 
     if (msgError) { console.error("Store Error [sendMessage]:", msgError); throw msgError; }

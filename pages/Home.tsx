@@ -40,8 +40,15 @@ const Home: React.FC = () => {
     const loadAds = async () => {
         try {
             const ads = await store.getAds();
-            // Featured: Premium or high rated
-            const featured = ads.filter(ad => ad.isPremium || ad.rating >= 4.0).slice(0, 4);
+            // Featured: Highest rated with most feedback
+            const featured = ads
+              .sort((a, b) => {
+                // Primary sort: Rating (descending)
+                if (b.rating !== a.rating) return b.rating - a.rating;
+                // Secondary sort: Number of reviews (descending)
+                return b.reviewCount - a.reviewCount;
+              })
+              .slice(0, 4);
             setFeaturedAds(featured);
         } catch (e) {
             console.error("Erro ao carregar anúncios:", e);
