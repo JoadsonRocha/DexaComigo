@@ -107,7 +107,7 @@ const Chat: React.FC = () => {
                         >
                             <div className="flex justify-between items-start mb-1">
                                 <span className="font-semibold text-gray-900 line-clamp-1 flex items-center">
-                                    {chat.adTitle}
+                                    {chat.otherUserName || 'Usuário'}
                                     {chat.unreadCount ? (
                                         <span className="ml-2 w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" title={`${chat.unreadCount} nova(s) mensagem(ns)`}></span>
                                     ) : null}
@@ -116,6 +116,7 @@ const Chat: React.FC = () => {
                                     {new Date(chat.updatedAt).toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}
                                 </span>
                             </div>
+                            <p className="text-xs text-brand-600 mb-1 font-medium">{chat.adTitle}</p>
                             <p className={`text-sm line-clamp-1 ${chat.unreadCount ? 'text-gray-900 font-bold' : 'text-gray-500'}`}>
                                 {chat.lastMessage || 'Nenhuma mensagem.'}
                             </p>
@@ -136,8 +137,12 @@ const Chat: React.FC = () => {
                         <ArrowLeft />
                     </button>
                     <div>
-                        <h3 className="font-bold text-gray-800">{activeChat.otherUserName || 'Usuário'}</h3>
-                        <p className="text-xs text-gray-500">{activeChat.adTitle}</p>
+                        <h3 className="font-bold text-gray-800 text-sm md:text-base flex flex-col md:flex-row md:items-center">
+                            <span><span className="text-brand-600 font-semibold text-xs uppercase tracking-wider">Profissional:</span> {activeChat.providerName || 'Não Informado'}</span>
+                            <span className="hidden md:inline mx-2 text-gray-300">|</span>
+                            <span><span className="text-gray-500 font-semibold text-xs uppercase tracking-wider">Cliente:</span> {activeChat.clientName || 'Não Informado'}</span>
+                        </h3>
+                        <p className="text-xs text-gray-600 font-medium bg-gray-100 inline-block px-2 py-1 rounded mt-1">Serviço: {activeChat.adTitle}</p>
                     </div>
                 </div>
 

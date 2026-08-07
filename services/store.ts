@@ -326,7 +326,7 @@ class Store {
       .from('chat_sessions')
       .select(`
         *,
-        service_ads(title),
+        service_ads(title, provider_id),
         chat_participants(user_id, profiles(name)),
         messages(*)
       `)
@@ -350,12 +350,18 @@ class Store {
       const otherParticipant = (c.chat_participants || []).find((p: any) => p.user_id !== userId);
       const otherUserName = otherParticipant?.profiles?.name;
 
+      const providerId = c.service_ads?.provider_id;
+      const providerName = (c.chat_participants || []).find((p: any) => p.user_id === providerId)?.profiles?.name;
+      const clientName = (c.chat_participants || []).find((p: any) => p.user_id !== providerId)?.profiles?.name;
+
       return {
         id: c.id,
         adId: c.ad_id,
         adTitle: c.service_ads?.title || 'Anúncio',
         participants: (c.chat_participants || []).map((p: any) => p.user_id),
         otherUserName: otherUserName,
+        providerName,
+        clientName,
         lastMessage: c.last_message,
         updatedAt: c.updated_at,
         unreadCount,
@@ -369,7 +375,7 @@ class Store {
       .from('chat_sessions')
       .select(`
         *,
-        service_ads(title),
+        service_ads(title, provider_id),
         chat_participants(user_id, profiles(name)),
         messages(*)
       `)
@@ -395,12 +401,18 @@ class Store {
     const otherParticipant = (data.chat_participants || []).find((p: any) => p.user_id !== userId);
     const otherUserName = otherParticipant?.profiles?.name;
 
+    const providerId = data.service_ads?.provider_id;
+    const providerName = (data.chat_participants || []).find((p: any) => p.user_id === providerId)?.profiles?.name;
+    const clientName = (data.chat_participants || []).find((p: any) => p.user_id !== providerId)?.profiles?.name;
+
     return {
       id: data.id,
       adId: data.ad_id,
       adTitle: data.service_ads?.title || 'Anúncio',
       participants: (data.chat_participants || []).map((p: any) => p.user_id),
       otherUserName: otherUserName,
+      providerName,
+      clientName,
       lastMessage: data.last_message,
       updatedAt: data.updated_at,
       unreadCount,
