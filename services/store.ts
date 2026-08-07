@@ -327,7 +327,7 @@ class Store {
       .select(`
         *,
         service_ads(title, provider_id),
-        chat_participants(user_id, profiles(name)),
+        chat_participants(user_id, profiles(name, avatar)),
         messages(*)
       `)
       .in('id', sessionIds)
@@ -349,6 +349,7 @@ class Store {
       // Find the other participant's name
       const otherParticipant = (c.chat_participants || []).find((p: any) => p.user_id !== userId);
       const otherUserName = otherParticipant?.profiles?.name;
+      const otherUserAvatar = otherParticipant?.profiles?.avatar;
 
       const providerId = c.service_ads?.provider_id;
       const providerName = (c.chat_participants || []).find((p: any) => p.user_id === providerId)?.profiles?.name;
@@ -360,6 +361,7 @@ class Store {
         adTitle: c.service_ads?.title || 'Anúncio',
         participants: (c.chat_participants || []).map((p: any) => p.user_id),
         otherUserName: otherUserName,
+        otherUserAvatar: otherUserAvatar,
         providerName,
         clientName,
         lastMessage: c.last_message,
@@ -376,7 +378,7 @@ class Store {
       .select(`
         *,
         service_ads(title, provider_id),
-        chat_participants(user_id, profiles(name)),
+        chat_participants(user_id, profiles(name, avatar)),
         messages(*)
       `)
       .eq('id', id)
