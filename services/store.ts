@@ -99,6 +99,26 @@ class Store {
     return this.mapAd(data);
   }
 
+  async updateAd(id: string, ad: Partial<ServiceAd>): Promise<void> {
+    const updateData: any = { updated_at: new Date().toISOString() };
+    if (ad.title !== undefined) updateData.title = ad.title;
+    if (ad.description !== undefined) updateData.description = ad.description;
+    if (ad.category !== undefined) updateData.category = ad.category;
+    if (ad.price !== undefined) updateData.price = ad.price;
+    if (ad.priceUnit !== undefined) updateData.price_unit = ad.priceUnit;
+    if (ad.location !== undefined) updateData.location = ad.location;
+    if (ad.whatsapp !== undefined) updateData.whatsapp = ad.whatsapp;
+    if (ad.images !== undefined) updateData.images = ad.images;
+    if (ad.availability !== undefined) updateData.availability = ad.availability;
+
+    const { error } = await supabase
+      .from('service_ads')
+      .update(updateData)
+      .eq('id', id);
+      
+    if (error) { console.error("Store Error [updateAd]:", error); throw error; }
+  }
+
   async addReview(adId: string, review: Omit<Review, 'id' | 'date'>): Promise<void> {
     const { error: reviewError } = await supabase
       .from('reviews')

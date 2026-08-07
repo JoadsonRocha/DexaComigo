@@ -25,6 +25,7 @@ const MainLayout: React.FC = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/service/:id" element={<ServiceDetail />} />
           <Route path="/create-ad" element={<CreateAd />} />
+          <Route path="/edit-ad/:id" element={<CreateAd />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/chat" element={<Chat />} />
