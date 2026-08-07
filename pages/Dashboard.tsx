@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { store } from '../services/store';
 import { ServiceCard } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
-import { Settings, Plus, Trash2, Search, MessageSquare } from 'lucide-react';
+import { Settings, Plus, Trash2, Search, MessageSquare, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ServiceAd, UserRole } from '../types';
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+      await logout();
+      navigate('/');
+  };
   const [myAds, setMyAds] = useState<ServiceAd[]>([]);
 
   useEffect(() => {
@@ -37,8 +42,8 @@ const Dashboard: React.FC = () => {
   const isClient = user.role === UserRole.CLIENT;
 
   return (
-    <div className="flex-1 bg-gray-50 py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 bg-gray-50 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col">
         
         <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Meu Painel</h1>
@@ -59,9 +64,14 @@ const Dashboard: React.FC = () => {
                     <div className="mb-4 bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-medium">
                         {isClient ? 'Cliente' : 'Profissional'}
                     </div>
-                    <Link to="/profile/edit" className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center justify-center hover:bg-gray-50 transition-colors">
-                        <Settings size={16} className="mr-2" /> Editar Perfil
-                    </Link>
+                    <div className="w-full flex space-x-2">
+                        <Link to="/profile/edit" className="flex-1 border border-gray-300 text-gray-700 px-3 py-2 rounded-md flex items-center justify-center hover:bg-gray-50 transition-colors text-sm">
+                            <Settings size={16} className="mr-2" /> Editar
+                        </Link>
+                        <button onClick={handleLogout} className="flex-1 bg-red-50 text-red-600 border border-red-100 px-3 py-2 rounded-md flex items-center justify-center hover:bg-red-100 transition-colors text-sm">
+                            <LogOut size={16} className="mr-2" /> Sair
+                        </button>
+                    </div>
                 </div>
                 
                 {!isClient && (
