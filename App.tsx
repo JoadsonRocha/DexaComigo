@@ -10,6 +10,8 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Chat from './pages/Chat';
 import EditProfile from './pages/EditProfile';
+import CategoryPage from './pages/CategoryPage';
+import PublicProfile from './pages/PublicProfile';
 import { AuthProvider } from './context/AuthContext';
 
 const MainLayout: React.FC = () => {
@@ -23,7 +25,9 @@ const MainLayout: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/categoria/:id" element={<CategoryPage />} />
           <Route path="/service/:id" element={<ServiceDetail />} />
+          <Route path="/profissional/:id" element={<PublicProfile />} />
           <Route path="/create-ad" element={<CreateAd />} />
           <Route path="/edit-ad/:id" element={<CreateAd />} />
           <Route path="/dashboard" element={<Dashboard />} />
