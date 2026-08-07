@@ -24,13 +24,21 @@ const ServiceDetail: React.FC = () => {
   const [isScheduling, setIsScheduling] = useState(false);
   const [scheduleError, setScheduleError] = useState('');
 
-  const parseAvailability = (availability?: string): { start: string; end: string } | null => {
+  const parseAvailability = (availability?: string): { days: string[]; start: string; end: string } | null => {
     if (!availability) return null;
-    const timePart = availability.split(',').pop()?.trim();
+    const parts = availability.split(',');
+    const timePart = parts.pop()?.trim();
     if (!timePart || !timePart.includes('-')) return null;
     const [start, end] = timePart.split('-').map(t => t.trim());
+    const days = parts.map(d => d.trim().toLowerCase()).filter(Boolean);
     if (!start || !end) return null;
-    return { start, end };
+    return { days, start, end };
+  };
+
+  const WEEKDAY_LABELS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  const getWeekdayLabel = (dateStr: string): string => {
+    const d = new Date(dateStr + 'T00:00:00');
+    return WEEKDAY_LABELS[d.getDay()];
   };
 
   const availability = parseAvailability(ad?.availability);
@@ -139,6 +147,17 @@ const ServiceDetail: React.FC = () => {
       if (!user) {
           navigate('/login');
           return;
+      }
+
+      if (availability && scheduleData.date) {
+          const weekday = getWeekdayLabel(scheduleData.date);
+          if (availability.days.length > 0 && !availability.days.includes(weekday)) {
+              const daysFormatted = availability.days
+                  .map(d => d.charAt(0).toUpperCase() + d.slice(1))
+                  .join(', ');
+              setScheduleError(`Este profissional não atende nesse dia. Dias disponíveis: ${daysFormatted}.`);
+              return;
+          }
       }
 
       if (availability && scheduleData.time) {
@@ -445,9 +464,17 @@ const ServiceDetail: React.FC = () => {
                             required
                             className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
                             value={scheduleData.date}
-                            onChange={(e) => setScheduleData(prev => ({...prev, date: e.target.value}))}
+                            onChange={(e) => {
+                                setScheduleData(prev => ({...prev, date: e.target.value}));
+                                setScheduleError('');
+                            }}
                             min={new Date().toISOString().split('T')[0]}
                         />
+                        {availability && availability.days.length > 0 && (
+                            <p className="text-xs text-gray-500 mt-1.5">
+                                Dias de atendimento: <strong>{availability.days.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(', ')}</strong>
+                            </p>
+                        )}
                     </div>
 
                     <div>
