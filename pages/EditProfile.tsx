@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
 
 const EditProfile: React.FC = () => {
-  const { user, login } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -58,7 +58,7 @@ const EditProfile: React.FC = () => {
     try {
       await store.updateProfile(user.id, formData);
       // Recarregar os dados do usuário no contexto
-      await login(user.email); 
+      await refreshUser(); 
       navigate('/dashboard');
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);

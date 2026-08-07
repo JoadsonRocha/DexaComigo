@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Sparkles, Wand2, Upload, X, Clock, Calendar } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Sparkles, Wand2, Upload, X, Clock, Calendar, Loader2 } from 'lucide-react';
 import { store } from '../services/store';
 import { generateServiceDescription, suggestCategory } from '../services/geminiService';
 import { CATEGORIES } from '../constants';
@@ -41,6 +41,48 @@ const CreateAd: React.FC = () => {
   const [images, setImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState('');
+  const [loadingAd, setLoadingAd] = useState(false);
+
+  const { id } = useParams<{ id: string }>();
+  const isEditing = !!id;
+
+  // Initial load for editing
+  React.useEffect(() => {
+    if (isEditing && user) {
+        setLoadingAd(true);
+        store.getAds().then(ads => {
+            const ad = ads.find(a => a.id === id);
+            if (ad && ad.providerId === user.id) {
+                setFormData({
+                    title: ad.title,
+                    category: ad.category,
+                    price: ad.price.toString(),
+                    priceUnit: ad.priceUnit,
+                    location: ad.location,
+                    whatsapp: ad.whatsapp,
+                    description: ad.description,
+                    keywords: ''
+                });
+                setImages(ad.images || []);
+                
+                // Parse availability if possible, else leave defaults
+                // Format was: "Seg, Ter, 08:00 - 18:00"
+                if (ad.availability) {
+                    const parts = ad.availability.split(',');
+                    const timePart = parts[parts.length - 1].trim(); // "08:00 - 18:00"
+                    if (timePart.includes('-')) {
+                        const times = timePart.split('-');
+                        setHoursStart(times[0].trim());
+                        setHoursEnd(times[1].trim());
+                    }
+                }
+            } else {
+                navigate('/dashboard'); // Not authorized or doesn't exist
+            }
+            setLoadingAd(false);
+        });
+    }
+  }, [id, isEditing, user, navigate]);
 
   // Redirect if not logged in
   if (!user) {
@@ -117,31 +159,48 @@ const CreateAd: React.FC = () => {
     
     const availabilityStr = `${daysStr}, ${hoursStart} - ${hoursEnd}`;
 
-    // Fix: Removed 'providerName' because it is omitted in the addAd parameter type definition
-    const newAd = await store.addAd({
-        providerId: user.id,
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        price: Number(formData.price) || 0,
-        priceUnit: formData.priceUnit as 'job' | 'hour' | 'estimate',
-        location: formData.location,
-        whatsapp: formData.whatsapp,
-        images: images.length > 0 ? images : ['https://picsum.photos/400/300?random=' + Math.floor(Math.random() * 100)],
-        isPremium: false,
-        availability: availabilityStr
-    });
-
-    navigate(`/service/${newAd.id}`);
+    if (isEditing && id) {
+        await store.updateAd(id, {
+            title: formData.title,
+            description: formData.description,
+            category: formData.category,
+            price: Number(formData.price) || 0,
+            priceUnit: formData.priceUnit as 'job' | 'hour' | 'estimate',
+            location: formData.location,
+            whatsapp: formData.whatsapp,
+            images: images.length > 0 ? images : undefined,
+            availability: availabilityStr
+        });
+        navigate(`/service/${id}`);
+    } else {
+        const newAd = await store.addAd({
+            providerId: user.id,
+            title: formData.title,
+            description: formData.description,
+            category: formData.category,
+            price: Number(formData.price) || 0,
+            priceUnit: formData.priceUnit as 'job' | 'hour' | 'estimate',
+            location: formData.location,
+            whatsapp: formData.whatsapp,
+            images: images.length > 0 ? images : ['https://picsum.photos/400/300?random=' + Math.floor(Math.random() * 100)],
+            isPremium: false,
+            availability: availabilityStr
+        });
+        navigate(`/service/${newAd.id}`);
+    }
   };
+
+  if (loadingAd) {
+      return <div className="flex-1 flex items-center justify-center bg-gray-50"><Loader2 className="animate-spin text-brand-600" size={40} /></div>;
+  }
 
   return (
     <div className="flex-1 bg-gray-50 py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-brand-700 py-6 px-8">
-                <h1 className="text-2xl font-bold text-white">Anunciar Serviço de Beleza</h1>
-                <p className="text-brand-100">Preencha os dados para que clientes te encontrem para atendimento em domicílio.</p>
+                <h1 className="text-2xl font-bold text-white">{isEditing ? 'Editar Anúncio' : 'Anunciar Serviço de Beleza'}</h1>
+                <p className="text-brand-100">{isEditing ? 'Atualize as informações do seu serviço.' : 'Preencha os dados para que clientes te encontrem para atendimento em domicílio.'}</p>
             </div>
             
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
@@ -379,7 +438,7 @@ const CreateAd: React.FC = () => {
                         type="submit" 
                         className="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-md font-bold shadow-sm"
                     >
-                        Publicar Anúncio
+                        {isEditing ? 'Salvar Alterações' : 'Publicar Anúncio'}
                     </button>
                 </div>
 

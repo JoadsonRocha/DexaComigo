@@ -7,6 +7,7 @@ interface AuthContextType {
   login: (email: string, password?: string) => Promise<void>;
   register: (email: string, password: string, name: string, role?: UserRole) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
 }
@@ -76,12 +77,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    const currentUser = await store.getCurrentUser();
+    setUser(currentUser);
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
       login, 
       register,
       logout, 
+      refreshUser,
       isAuthenticated: !!user,
       loading 
     }}>
