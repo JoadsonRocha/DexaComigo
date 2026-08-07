@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import heroLocal from '../Captura de Tela (3).png';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, 
@@ -69,7 +68,7 @@ const Home: React.FC = () => {
                     <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-brand-900 mix-blend-multiply opacity-85"></div>
                     <img 
-                                                src={heroLocal} 
+                                                src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
                                                 className="w-full h-full object-cover" 
                                                 alt="Profissional de beleza em atendimento"
                                                 loading="lazy"

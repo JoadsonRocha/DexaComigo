@@ -89,7 +89,7 @@ const Dashboard: React.FC = () => {
             </aside>
 
             {/* Main Content Area */}
-            <div className="lg:col-span-3 h-full overflow-y-auto min-h-0">
+            <div className={`lg:col-span-3 h-full min-h-0 ${location.pathname === '/dashboard' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
                 <Outlet />
             </div>
         </div>
