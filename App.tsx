@@ -1,6 +1,6 @@
 
-import React, { Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar, Footer } from './components/Layout';
 const Home = lazy(() => import('./pages/Home'));
 const SearchPage = lazy(() => import('./pages/Search'));
@@ -15,11 +15,38 @@ const Chat = lazy(() => import('./pages/Chat'));
 const EditProfile = lazy(() => import('./pages/EditProfile'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
 const PublicProfile = lazy(() => import('./pages/PublicProfile'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy'));
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+
+const PAGE_TITLES: { match: RegExp; title: string }[] = [
+  { match: /^\/$/, title: 'Início' },
+  { match: /^\/search/, title: 'Buscar Serviços' },
+  { match: /^\/categoria\//, title: 'Categorias' },
+  { match: /^\/service\//, title: 'Detalhes do Serviço' },
+  { match: /^\/profissional\//, title: 'Profissional' },
+  { match: /^\/create-ad/, title: 'Anunciar Serviço' },
+  { match: /^\/edit-ad/, title: 'Editar Anúncio' },
+  { match: /^\/dashboard\/chat/, title: 'Mensagens' },
+  { match: /^\/dashboard\/appointments/, title: 'Meus Agendamentos' },
+  { match: /^\/dashboard\/ads/, title: 'Meus Anúncios' },
+  { match: /^\/dashboard/, title: 'Meu Painel' },
+  { match: /^\/profile\/edit/, title: 'Editar Perfil' },
+  { match: /^\/login/, title: 'Entrar' },
+  { match: /^\/terms/, title: 'Termos de Uso' },
+  { match: /^\/privacy/, title: 'Política de Privacidade' },
+];
 
 const MainLayout: React.FC = () => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
+
+  useEffect(() => {
+    const found = PAGE_TITLES.find(p => p.match.test(location.pathname));
+    document.title = found ? `${found.title} | DexaComigo` : 'DexaComigo';
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className={`flex flex-col bg-gray-50 ${isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
@@ -44,6 +71,8 @@ const MainLayout: React.FC = () => {
           <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/chat" element={<Navigate to="/dashboard/chat" replace />} />
           <Route path="/chat/:id" element={<Navigate to="/dashboard/chat/:id" replace />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
@@ -56,11 +85,13 @@ const MainLayout: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <Router>
-        <MainLayout />
-      </Router>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <Router>
+          <MainLayout />
+        </Router>
+      </AuthProvider>
+    </ToastProvider>
   );
 };
 

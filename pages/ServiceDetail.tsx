@@ -348,7 +348,18 @@ const ServiceDetail: React.FC = () => {
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Galeria de Fotos</h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             {ad.images.map((img, idx) => (
-                                <img key={idx} src={img} alt={`Foto ${idx+1}`} className="rounded-lg w-full h-40 object-cover border border-gray-100 shadow-sm hover:scale-105 transition-transform" />
+                                <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => setLightboxIndex(idx)}
+                                    aria-label={`Abrir foto ${idx + 1} em tela cheia`}
+                                    className="relative group rounded-lg overflow-hidden border border-gray-100 shadow-sm cursor-zoom-in"
+                                >
+                                    <img src={img} alt={`Foto ${idx + 1}`} className="w-full h-40 object-cover group-hover:scale-105 transition-transform" />
+                                    <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-colors">
+                                        <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={28} />
+                                    </span>
+                                </button>
                             ))}
                         </div>
                     </div>
@@ -666,6 +677,57 @@ const ServiceDetail: React.FC = () => {
         </div>
       )}
 
+      {/* Lightbox (visualizador de fotos em tela cheia) */}
+      {lightboxIndex !== null && ad && ad.images.length > 0 && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setLightboxIndex(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Visualizador de fotos"
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxIndex(null)}
+            aria-label="Fechar visualizador"
+            className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/40 rounded-full p-2 transition-colors z-10"
+          >
+            <X size={28} />
+          </button>
+
+          {ad.images.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => prev === null ? prev : (prev - 1 + ad.images.length) % ad.images.length); }}
+                aria-label="Foto anterior"
+                className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white bg-black/40 rounded-full p-2 md:p-3 transition-colors"
+              >
+                <ChevronLeft size={28} />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => prev === null ? prev : (prev + 1) % ad.images.length); }}
+                aria-label="Próxima foto"
+                className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white bg-black/40 rounded-full p-2 md:p-3 transition-colors"
+              >
+                <ChevronRight size={28} />
+              </button>
+            </>
+          )}
+
+          <img
+            src={ad.images[lightboxIndex]}
+            alt={`${ad.title} — Foto ${lightboxIndex + 1}`}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[85vh] max-w-[92vw] md:max-w-[85vw] object-contain rounded-lg shadow-2xl"
+          />
+
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/90 text-sm font-medium bg-black/50 rounded-full px-4 py-1.5">
+            {lightboxIndex + 1} / {ad.images.length}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
