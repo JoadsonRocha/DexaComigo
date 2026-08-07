@@ -33,31 +33,6 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [location, setLocation] = useState('');
-  const [isLocating, setIsLocating] = useState(false);
-
-  const handleGetLocation = () => {
-      if (!navigator.geolocation) {
-          alert('Geolocalização não suportada no seu navegador.');
-          return;
-      }
-      setIsLocating(true);
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-          try {
-              const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=pt`);
-              const data = await res.json();
-              const loc = `${data.city || data.locality}, ${data.principalSubdivisionCode?.split('-')[1] || data.principalSubdivision}`;
-              setLocation(loc);
-          } catch(e) {
-              alert('Erro ao buscar localização.');
-          } finally {
-              setIsLocating(false);
-          }
-      }, () => {
-          alert('Permissão de localização negada.');
-          setIsLocating(false);
-      });
-  };
 
   useEffect(() => {
     const loadAds = async () => {
@@ -81,14 +56,9 @@ const Home: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm.trim() || location.trim()) {
-        const params = new URLSearchParams();
-        if (searchTerm.trim()) params.append('q', searchTerm.trim());
-        if (location.trim()) params.append('l', location.trim());
-        navigate(`/search?${params.toString()}`);
-    } else {
-        navigate(`/search`);
-    }
+    const params = new URLSearchParams();
+    if (searchTerm.trim()) params.append('q', searchTerm.trim());
+    navigate(params.toString() ? `/search?${params.toString()}` : `/search`);
   };
 
   return (
@@ -117,44 +87,25 @@ const Home: React.FC = () => {
           </p>
 
           <div className="w-full max-w-3xl mx-auto">
-             <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-3 bg-white p-2 rounded-3xl shadow-2xl border border-white/20">
+             <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-2 bg-white p-1.5 rounded-3xl shadow-2xl border border-white/20">
                 <div className="flex-1 relative">
-                    <Search className="absolute left-5 top-4 text-gray-400 w-6 h-6" />
+                    <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
                     <input 
                         type="text" 
                         placeholder="Cabelo, Maquiagem..." 
-                        className="w-full pl-12 pr-4 py-3 md:py-4 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base md:text-lg"
+                        className="w-full pl-11 pr-4 py-2.5 md:py-3 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base md:text-lg"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="flex-1 relative border-t md:border-t-0 md:border-l border-gray-100 flex items-center">
-                    <MapPin className="absolute left-5 top-4 md:top-4 text-gray-400 w-6 h-6" />
-                    <input 
-                        type="text" 
-                        placeholder="Sua cidade ou bairro" 
-                        className="w-full pl-12 pr-12 py-3 md:py-4 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base md:text-lg bg-transparent"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                    />
-                    <button 
-                        type="button" 
-                        onClick={handleGetLocation}
-                        disabled={isLocating}
-                        title="Usar minha localização"
-                        className="absolute right-3 top-3 md:top-3.5 p-2 bg-gray-100 hover:bg-gray-200 rounded-full text-brand-600 transition-colors disabled:opacity-50"
-                    >
-                        <Navigation size={18} className={isLocating ? "animate-pulse" : ""} />
-                    </button>
-                </div>
                 <button 
                     type="submit"
-                    className="px-6 md:px-10 py-3 md:py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl transition-all shadow-xl hover:shadow-brand-500/40 flex items-center justify-center text-base md:text-lg active:scale-95"
+                    className="px-6 md:px-10 py-2.5 md:py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl transition-all shadow-xl hover:shadow-brand-500/40 flex items-center justify-center text-base md:text-lg active:scale-95"
                 >
                     Encontrar agora
                 </button>
              </form>
-             <div className="mt-6 flex flex-wrap justify-center gap-6 text-brand-200 text-sm font-medium">
+             <div className="mt-5 flex flex-wrap justify-center gap-6 text-brand-200 text-sm font-medium">
                 <span className="flex items-center"><CheckCircle2 size={18} className="mr-2 text-brand-400" /> Sem custos de agenciamento</span>
                 <span className="flex items-center"><CheckCircle2 size={18} className="mr-2 text-brand-400" /> WhatsApp Direto</span>
                 <span className="flex items-center"><CheckCircle2 size={18} className="mr-2 text-brand-400" /> Histórico de confiança</span>
