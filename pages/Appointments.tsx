@@ -180,9 +180,23 @@ const Appointments: React.FC = () => {
   return (
     <>
     <div className="h-full p-4">
-        <div className="flex items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Meus Agendamentos</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Meus Agendamentos</h1>
+          <div className="flex items-center bg-white border border-gray-200 rounded-lg p-0.5 shadow-sm">
+            <button
+              onClick={() => setView('list')}
+              className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${view === 'list' ? 'bg-brand-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+              title="Vista em lista"
+            >
+              <List size={16} className="mr-1.5" /> Lista
+            </button>
+            <button
+              onClick={() => setView('grid')}
+              className={`flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${view === 'grid' ? 'bg-brand-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+              title="Vista em grade"
+            >
+              <LayoutGrid size={16} className="mr-1.5" /> Grid
+            </button>
           </div>
         </div>
 
@@ -204,7 +218,7 @@ const Appointments: React.FC = () => {
         {/* Appointments List */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-5 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-900">Lista de Agendamentos</h2>
+            <h2 className="text-lg font-bold text-gray-900">Seus Agendamentos</h2>
           </div>
 
           {appointments.length === 0 ? (
@@ -215,22 +229,13 @@ const Appointments: React.FC = () => {
               <p className="text-gray-500">Nenhum agendamento ainda.</p>
               <p className="text-gray-400 text-sm mt-1">Quando você tiver serviços agendados, eles aparecerão aqui.</p>
             </div>
-          ) : (
+          ) : view === 'list' ? (
             <ul className="divide-y divide-gray-100">
               {appointments.map(app => (
                 <li key={app.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
-                        app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                        app.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                        app.status === 'completed' ? 'bg-blue-100 text-blue-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
-                        {app.status === 'pending' ? 'Aguardando Confirmação' :
-                         app.status === 'confirmed' ? 'Confirmado' :
-                         app.status === 'completed' ? 'Concluído' : 'Cancelado'}
-                      </span>
+                      <span className={statusBadge(app.status)}>{statusLabel(app.status)}</span>
                       <span className="text-sm text-gray-500 flex items-center"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString('pt-BR')} às {app.time}</span>
                     </div>
                     <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
@@ -245,63 +250,32 @@ const Appointments: React.FC = () => {
                     {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
                   </div>
 
-                  {isClient && app.status === 'confirmed' && (
-                    <button
-                      onClick={() => handleConfirmService(app)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                    >
-                      <CheckCircle2 size={16} className="mr-1" /> Confirmar serviço realizado
-                    </button>
-                  )}
-
-                  {isClient && app.status === 'completed' && !app.reviewed && (
-                    <div className="flex flex-col gap-1 items-start sm:items-end">
-                      <span className="text-xs text-gray-500 flex items-center">
-                        <Star size={13} className="mr-1 text-yellow-500" /> Serviço concluído
-                      </span>
-                      <button
-                        onClick={() => { setReviewingApp(app); setReviewRating(5); setReviewComment(''); setReviewError(''); }}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                      >
-                        <Star size={16} className="mr-1" /> Avaliar serviço
-                      </button>
-                    </div>
-                  )}
-
-                  {isClient && app.status === 'completed' && app.reviewed && (
-                    <span className="text-xs text-green-600 flex items-center">
-                      <CheckCircle2 size={13} className="mr-1" /> Avaliado
-                    </span>
-                  )}
-
-                  {!isClient && app.status === 'pending' && (
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <button
-                        onClick={() => handleUpdateStatus(app.id, 'confirmed')}
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                      >
-                        <Check size={16} className="mr-1" /> Confirmar
-                      </button>
-                      <button
-                        onClick={() => handleUpdateStatus(app.id, 'cancelled')}
-                        className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                      >
-                        <X size={16} className="mr-1" /> Recusar
-                      </button>
-                    </div>
-                  )}
-
-                  {!isClient && app.status === 'confirmed' && (
-                    <button
-                      onClick={() => handleUpdateStatus(app.id, 'completed')}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                    >
-                      <CheckCircle2 size={16} className="mr-1" /> Concluir serviço
-                    </button>
-                  )}
+                  {renderActions(app)}
                 </li>
               ))}
             </ul>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-5">
+              {appointments.map(app => (
+                <div key={app.id} className="border border-gray-100 rounded-xl p-4 flex flex-col gap-3 shadow-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className={statusBadge(app.status)}>{statusLabel(app.status)}</span>
+                    <span className="text-xs text-gray-500 flex items-center whitespace-nowrap"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString('pt-BR')} às {app.time}</span>
+                  </div>
+                  <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
+                  <p className="text-sm text-gray-600">
+                    {isClient
+                      ? <>Profissional: <span className="font-medium text-brand-600">{app.providerName}</span></>
+                      : <>Cliente: <span className="font-medium text-brand-600">{app.clientName}</span></>}
+                  </p>
+                  {app.clientLocation && (
+                    <p className="text-sm text-gray-600 flex items-center"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
+                  )}
+                  {app.notes && <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
+                  <div className="mt-auto flex flex-col gap-2">{renderActions(app)}</div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
     </div>
