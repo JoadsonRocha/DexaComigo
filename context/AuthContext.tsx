@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '../types';
+import { User, UserRole } from '../types';
 import { store, supabase } from '../services/store';
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password?: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, name: string, role?: UserRole) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
@@ -57,10 +57,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (email: string, password: string, name: string, role?: UserRole) => {
       setLoading(true);
       try {
-          await store.register(email, password, name);
+          await store.register(email, password, name, role);
           const currentUser = await store.getCurrentUser();
           if (currentUser) setUser(currentUser);
       } catch (e) {

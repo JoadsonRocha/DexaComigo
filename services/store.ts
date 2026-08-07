@@ -203,7 +203,7 @@ class Store {
     return userProfile;
   }
 
-  async register(email: string, password: string, name: string): Promise<void> {
+  async register(email: string, password: string, name: string, role?: UserRole): Promise<void> {
     const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password
@@ -217,7 +217,7 @@ class Store {
                 id: authData.user.id,
                 email: authData.user.email,
                 name: name,
-                role: 'PROVIDER',
+                role: role || 'PROVIDER',
                 avatar: `https://picsum.photos/seed/${email}/100/100`
             }]);
         if (profileError) console.error("Error creating profile", profileError);

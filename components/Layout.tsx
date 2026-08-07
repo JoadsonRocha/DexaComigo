@@ -35,13 +35,15 @@ export const Navbar: React.FC = () => {
           </div>
           
           <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
-            <Link 
-              to="/create-ad" 
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors"
-            >
-              <PlusCircle className="w-4 h-4 mr-2" />
-              Anunciar
-            </Link>
+            {(!user || user.role !== 'CLIENT') && (
+              <Link 
+                to="/create-ad" 
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors"
+              >
+                <PlusCircle className="w-4 h-4 mr-2" />
+                Anunciar
+              </Link>
+            )}
 
             {user ? (
               <div className="relative ml-3 flex items-center space-x-4">
@@ -80,7 +82,9 @@ export const Navbar: React.FC = () => {
           <div className="pt-2 pb-3 space-y-1">
             <Link to="/" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-300 hover:text-brand-700">Início</Link>
             <Link to="/search" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-300 hover:text-brand-700">Buscar</Link>
-            <Link to="/create-ad" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-brand-600 hover:bg-brand-50 hover:border-brand-300">Anunciar Serviço</Link>
+            {(!user || user.role !== 'CLIENT') && (
+              <Link to="/create-ad" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-brand-600 hover:bg-brand-50 hover:border-brand-300">Anunciar Serviço</Link>
+            )}
              {user && <Link to="/chat" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-300">Mensagens</Link>}
           </div>
           <div className="pt-4 pb-4 border-t border-gray-200">
