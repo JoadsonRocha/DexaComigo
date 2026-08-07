@@ -217,250 +217,38 @@ const Dashboard: React.FC = () => {
 
             {/* Main Content Area */}
             <div className="lg:col-span-3">
-                
-                {isClient ? (
-                    // CLIENT DASHBOARD
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-800 mb-6">O que você deseja fazer hoje?</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Link to="/search" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex flex-col items-center text-center">
-                                <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-brand-100 transition-colors">
-                                    <Search size={32} />
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">Buscar Serviços</h3>
-                                <p className="text-gray-500 text-sm">Encontre as melhores profissionais de beleza perto de você para atendimento em domicílio.</p>
-                            </Link>
-
-                            <Link to="/dashboard/enquiries" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex flex-col items-center text-center">
-                                <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-purple-100 transition-colors">
-                                    <MessageSquare size={32} />
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">Minhas Consultas</h3>
-                                <p className="text-gray-500 text-sm">Acompanhe e gerencie todas as suas mensagens recebidas e conversas.</p>
-                            </Link>
-
-                            <Link to="/chat" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex flex-col items-center text-center">
-                                <div className="relative">
-                                    <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                                        <MessageSquare size={32} />
-                                    </div>
-                                    {unreadCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-white"></span>
-                                        </span>
-                                    )}
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">Minhas Mensagens</h3>
-                                <p className="text-gray-500 text-sm">Acompanhe suas conversas e agendamentos com as profissionais.</p>
-                            </Link>
-                        </div>
-                        
-                        {/* Agendamentos Cliente */}
-                        <div className="mt-8">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6">Meus Agendamentos</h2>
-                            {appointments.length === 0 ? (
-                                <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-                                    Você ainda não tem serviços agendados.
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {appointments.map(app => (
-                                        <div key={app.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
-                                                        app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                        app.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                                                        app.status === 'completed' ? 'bg-blue-100 text-blue-700' :
-                                                        'bg-red-100 text-red-700'
-                                                    }`}>
-                                                        {app.status === 'pending' ? 'Aguardando Confirmação' :
-                                                         app.status === 'confirmed' ? 'Confirmado' :
-                                                         app.status === 'completed' ? 'Concluído' : 'Cancelado'}
-                                                    </span>
-                                                    <span className="text-sm text-gray-500 flex items-center"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString()} às {app.time}</span>
-                                                </div>
-                                                <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
-                                                <p className="text-sm text-gray-600 mt-1">Profissional: <span className="font-medium text-brand-600">{app.providerName}</span></p>
-                                                {app.clientLocation && (
-                                                    <p className="text-sm text-gray-600 flex items-center mt-1"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
-                                                )}
-                                                {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
-                                            </div>
-                                            <div className="flex flex-col gap-2 sm:items-end">
-                                                {app.status === 'confirmed' && (
-                                                    <button 
-                                                        onClick={() => handleConfirmService(app)}
-                                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                                                    >
-                                                        <CheckCircle2 size={16} className="mr-1" /> Confirmar serviço realizado
-                                                    </button>
-                                                )}
-                                                {app.status === 'completed' && !app.reviewed && (
-                                                    <div className="flex flex-col gap-1 items-start sm:items-end">
-                                                        <span className="text-xs text-gray-500 flex items-center">
-                                                            <Star size={13} className="mr-1 text-yellow-500" /> Serviço concluído
-                                                        </span>
-                                                        <button 
-                                                            onClick={() => { setReviewingApp(app); setReviewRating(5); setReviewComment(''); setReviewError(''); }}
-                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                                                        >
-                                                            <Star size={16} className="mr-1" /> Avaliar serviço
-                                                        </button>
-                                                    </div>
-                                                )}
-                                                {app.status === 'completed' && app.reviewed && (
-                                                    <span className="text-xs text-green-600 flex items-center sm:justify-end">
-                                                        <CheckCircle2 size={13} className="mr-1" /> Avaliado
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                {/* Minhas Consultas */}
+                <div className="mb-10">
+                    <SectionHeader title="Minhas Consultas" to="/dashboard/enquiries" linkText="Ver todas" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <StatCard label="Total de Consultas" value={enquiriesTotal} icon={MessageSquare} color="bg-brand-50 text-brand-600" />
+                        <StatCard label="Novas Mensagens" value={enquiriesNew} icon={Mail} color="bg-green-50 text-green-600" />
+                        <StatCard label="Esta Semana" value={enquiriesWeek} icon={Calendar} color="bg-blue-50 text-blue-600" />
+                        <StatCard label="Total Resolvidas" value={enquiriesResolved} icon={CheckCircle2} color="bg-purple-50 text-purple-600" />
                     </div>
-                ) : (
-                    // PROVIDER DASHBOARD
-                    <div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <Link to="/create-ad" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
-                                <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-brand-100 transition-colors">
-                                    <Plus size={24} />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900">Novo Anúncio</h3>
-                                    <p className="text-gray-500 text-xs mt-1">Oferecer um novo serviço</p>
-                                </div>
-                            </Link>
+                </div>
 
-                            <Link to="/dashboard/enquiries" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
-                                <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-purple-100 transition-colors">
-                                    <MessageSquare size={24} />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900">Minhas Consultas</h3>
-                                    <p className="text-gray-500 text-xs mt-1">Acompanhe mensagens recebidas e pedidos</p>
-                                </div>
-                            </Link>
+                {/* Meus Agendamentos */}
+                <div className="mb-10">
+                    <SectionHeader title="Meus Agendamentos" to="/dashboard/appointments" linkText="Ver todos" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <StatCard label="Total de Agendamentos" value={apptTotal} icon={Calendar} color="bg-brand-50 text-brand-600" />
+                        <StatCard label="Pendentes" value={apptPending} icon={Clock} color="bg-yellow-50 text-yellow-600" />
+                        <StatCard label="Confirmados" value={apptConfirmed} icon={Check} color="bg-green-50 text-green-600" />
+                        <StatCard label="Concluídos" value={apptCompleted} icon={CheckCircle2} color="bg-blue-50 text-blue-600" />
+                    </div>
+                </div>
 
-                            <Link to="/chat" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
-                                <div className="relative mr-4">
-                                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                                        <MessageSquare size={24} />
-                                    </div>
-                                    {unreadCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500 border-2 border-white"></span>
-                                        </span>
-                                    )}
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900">Minhas Mensagens</h3>
-                                    <p className="text-gray-500 text-xs mt-1">Responder clientes e agendamentos</p>
-                                </div>
-                            </Link>
+                {/* Meus Anúncios (apenas profissional) */}
+                {!isClient && (
+                    <div className="mb-10">
+                        <SectionHeader title="Meus Anúncios" to="/dashboard/ads" linkText="Ver todos" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <StatCard label="Total de Anúncios" value={adsTotal} icon={Megaphone} color="bg-brand-50 text-brand-600" />
+                            <StatCard label="Anúncios Premium" value={adsPremium} icon={Star} color="bg-yellow-50 text-yellow-600" />
+                            <StatCard label="Categorias" value={adsCategories} icon={Search} color="bg-blue-50 text-blue-600" />
+                            <StatCard label="Avaliação Média" value={adsRating} icon={Star} color="bg-purple-50 text-purple-600" />
                         </div>
-
-                        {/* Agendamentos Profissional */}
-                        <div className="mb-8">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                                Agendamentos Solicitados
-                                {appointments.filter(a => a.status === 'pending').length > 0 && (
-                                    <span className="ml-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                        {appointments.filter(a => a.status === 'pending').length} novos
-                                    </span>
-                                )}
-                            </h2>
-                            
-                            {appointments.length === 0 ? (
-                                <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500 border border-dashed border-gray-200">
-                                    Nenhum agendamento no momento.
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {appointments.map(app => (
-                                        <div key={app.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
-                                                        app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                        app.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                                                        app.status === 'completed' ? 'bg-blue-100 text-blue-700' :
-                                                        'bg-red-100 text-red-700'
-                                                    }`}>
-                                                        {app.status === 'pending' ? 'Pendente' :
-                                                         app.status === 'confirmed' ? 'Confirmado' :
-                                                         app.status === 'completed' ? 'Concluído' : 'Cancelado'}
-                                                    </span>
-                                                    <span className="text-sm text-gray-500 flex items-center"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString()} às {app.time}</span>
-                                                </div>
-                                                <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
-                                                <div className="flex items-center gap-2 mt-2">
-                                                    {app.clientAvatar ? (
-                                                        <img src={app.clientAvatar} alt={app.clientName} className="w-6 h-6 rounded-full object-cover" />
-                                                    ) : (
-                                                        <div className="w-6 h-6 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xs font-bold">
-                                                            {app.clientName?.charAt(0) || 'U'}
-                                                        </div>
-                                                    )}
-                                                    <p className="text-sm text-gray-600">Cliente: <span className="font-medium text-brand-600">{app.clientName}</span></p>
-                                                    {app.clientLocation && (
-                                                        <p className="text-sm text-gray-600 flex items-center mt-1"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
-                                                    )}
-                                                </div>
-                                                {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
-                                            </div>
-                                            
-                                            {app.status === 'pending' && (
-                                                <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
-                                                    <button 
-                                                        onClick={() => handleUpdateAppointmentStatus(app.id, 'confirmed')}
-                                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                                                    >
-                                                        <Check size={16} className="mr-1" /> Confirmar
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleUpdateAppointmentStatus(app.id, 'cancelled')}
-                                                        className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
-                                                    >
-                                                        <X size={16} className="mr-1" /> Recusar
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <h2 className="text-xl font-bold text-gray-800 mb-6">Meus Anúncios ({myAds.length})</h2>
-                        {myAds.length === 0 ? (
-                            <div className="bg-white rounded-lg shadow p-10 text-center">
-                                <p className="text-gray-500 mb-4">Comece a gerar renda e autonomia. Crie seu primeiro anúncio de beleza em domicílio agora!</p>
-                                <Link to="/create-ad" className="text-brand-600 font-medium hover:underline">Começar agora</Link>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {myAds.map(ad => (
-                                    <div key={ad.id} className="relative group">
-                                        <ServiceCard ad={ad} />
-                                        <div className="absolute top-2 left-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Link to={`/edit-ad/${ad.id}`} className="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded shadow hover:bg-white font-medium">Editar</Link>
-                                            <button 
-                                                onClick={(e) => { e.preventDefault(); handleDelete(ad.id); }}
-                                                className="bg-red-500/90 text-white text-xs px-2 py-1 rounded shadow hover:bg-red-600 flex items-center"
-                                            >
-                                                <Trash2 size={12} className="mr-1" /> Excluir
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 )}
             </div>
