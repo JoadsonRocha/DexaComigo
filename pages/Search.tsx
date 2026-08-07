@@ -20,7 +20,7 @@ const SearchPage: React.FC = () => {
   const [location, setLocation] = useState(searchParams.get('l') || '');
   const [category, setCategory] = useState(searchParams.get('c') || 'all');
   const [priceRange, setPriceRange] = useState<string>(searchParams.get('p') || 'all');
-  const [showFilters, setShowFilters] = useState(window.innerWidth >= 768);
+  const [showFilters, setShowFilters] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
   const handleGetLocation = () => {
@@ -49,17 +49,6 @@ const SearchPage: React.FC = () => {
           setIsLocating(false);
       });
   };
-
-  // Resize listener for default showFilters behavior
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768 && !showFilters) {
-          setShowFilters(true);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [showFilters]);
 
   const loadData = async (pageNum: number, overwrite = false) => {
     if (pageNum === 1) setLoading(true);
