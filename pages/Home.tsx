@@ -4,14 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, 
   ArrowRight, 
-  Hammer, 
-  Laptop, 
   Sparkles, 
-  BookOpen, 
-  PartyPopper, 
-  Heart, 
-  Truck, 
-  SprayCan,
+  Scissors,
+  Brush,
+  Droplet,
+  Flower2,
+  Eye,
   MessageSquare,
   CalendarCheck,
   CheckCircle2,
@@ -24,14 +22,12 @@ import { ServiceAd } from '../types';
 
 // Mapeamento de ícones para as categorias
 const iconMap: Record<string, React.ReactNode> = {
-  home: <Hammer size={24} />,
-  tech: <Laptop size={24} />,
-  beauty: <Sparkles size={24} />,
-  education: <BookOpen size={24} />,
-  events: <PartyPopper size={24} />,
-  health: <Heart size={24} />,
-  transport: <Truck size={24} />,
-  cleaning: <SprayCan size={24} />,
+  hair: <Scissors size={24} />,
+  makeup: <Brush size={24} />,
+  nails: <Sparkles size={24} />,
+  'hair-removal': <Droplet size={24} />,
+  massage: <Flower2 size={24} />,
+  eyebrows: <Eye size={24} />,
 };
 
 const Home: React.FC = () => {
@@ -70,22 +66,22 @@ const Home: React.FC = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-brand-900 mix-blend-multiply opacity-85"></div>
           <img 
-            src="https://images.unsplash.com/photo-1581578731522-638de748f976?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+            src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
             className="w-full h-full object-cover" 
-            alt="Profissionais trabalhando"
+            alt="Profissional de beleza em atendimento"
           />
         </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center py-1 px-4 rounded-full bg-brand-500/30 text-brand-200 text-xs font-bold uppercase tracking-widest mb-6 border border-brand-400/20 backdrop-blur-md">
-            <Users size={14} className="mr-2" /> Comunidade de Profissionais Autônomos
+            <Users size={14} className="mr-2" /> Profissionais Certificadas em Domicílio
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-8 leading-[1.1]">
-            Precisa de alguém?<br/>
-            <span className="text-brand-400">Deixa comigo.</span>
+            Beleza que cuida.<br/>
+            <span className="text-brand-400">Liberdade que transforma.</span>
           </h1>
           <p className="max-w-3xl mx-auto text-lg md:text-2xl text-brand-100 mb-12 leading-relaxed font-light">
-            Conectamos você aos melhores prestadores de serviços. Busque, negocie e agende tudo em um só lugar.
+            Conectamos você a profissionais de beleza certificadas. Atendimento especializado no conforto da sua casa, gerando impacto social e autonomia.
           </p>
 
           <div className="w-full max-w-3xl mx-auto">
@@ -94,7 +90,7 @@ const Home: React.FC = () => {
                     <Search className="absolute left-5 top-4 text-gray-400 w-6 h-6" />
                     <input 
                         type="text" 
-                        placeholder="Ex: Pintor, Aulas de Inglês, Limpeza..." 
+                        placeholder="Ex: Cabelo, Maquiagem, Manicure..." 
                         className="w-full pl-14 pr-4 py-4 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-lg"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -121,7 +117,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
                 <h2 className="text-4xl font-bold text-gray-900 mb-4 tracking-tight">O que você está procurando?</h2>
-                <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Milhares de profissionais qualificados em mais de 50 especialidades diferentes para te ajudar no dia a dia.</p>
+                <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Profissionais de beleza certificadas, prontas para te atender no conforto da sua casa.</p>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
@@ -151,7 +147,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-20">
                 <h2 className="text-4xl font-bold mb-4 tracking-tight">Transparência do início ao fim</h2>
-                <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">Entenda como o Dexacomigo facilita a conexão entre você e o profissional.</p>
+                <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">Entenda como o Mais Beleza facilita a conexão entre você e a profissional de beleza.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
@@ -194,7 +190,7 @@ const Home: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
                 <div className="text-left">
                     <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Destaques da Comunidade</h2>
-                    <p className="text-gray-500 mt-3 text-lg font-light">Conheça alguns dos profissionais que são referência no Dexacomigo.</p>
+                    <p className="text-gray-500 mt-3 text-lg font-light">Conheça algumas das profissionais que são referência no Mais Beleza.</p>
                 </div>
                 <Link to="/search" className="group text-brand-600 font-bold flex items-center hover:text-brand-700 bg-white px-8 py-4 rounded-2xl shadow-sm border border-gray-100 transition-all active:scale-95">
                     Ver todos os profissionais <ArrowRight size={20} className="ml-3 group-hover:translate-x-2 transition-transform" />

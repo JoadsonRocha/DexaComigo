@@ -13,6 +13,7 @@ export interface User {
   location?: string;
   phone?: string;
   bio?: string;
+  isCertified?: boolean;
 }
 
 export interface Review {
@@ -42,6 +43,7 @@ export interface ServiceAd {
   createdAt: string;
   whatsapp: string;
   availability?: string; // New field e.g., "Seg à Sex, 08:00 - 18:00"
+  isCertified?: boolean;
 }
 
 export interface FilterState {
