@@ -65,6 +65,11 @@ const ServiceDetail: React.FC = () => {
     return h * 60 + m;
   };
 
+  const todayLocal = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
+
   const availability = parseAvailability(ad?.availability);
 
   const { user } = useAuth();
