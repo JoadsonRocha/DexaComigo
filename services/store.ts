@@ -270,23 +270,31 @@ class Store {
     
     if (error) { console.error("Store Error [getChats]:", error); throw error; }
     
-    return (data || []).map((c: any) => ({
-      id: c.id,
-      adId: c.ad_id,
-      adTitle: c.service_ads?.title || 'Anúncio',
-      participants: (c.chat_participants || []).map((p: any) => p.user_id),
-      lastMessage: c.last_message,
-      updatedAt: c.updated_at,
-      messages: (c.messages || []).map((m: any) => ({
+    return (data || []).map((c: any) => {
+      const messages = (c.messages || []).map((m: any) => ({
         id: m.id,
         senderId: m.sender_id,
         text: m.text,
+        read: m.read,
         timestamp: m.created_at
-      })).sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-    }));
+      })).sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+      const unreadCount = messages.filter((m: any) => !m.read && m.senderId !== userId).length;
+
+      return {
+        id: c.id,
+        adId: c.ad_id,
+        adTitle: c.service_ads?.title || 'Anúncio',
+        participants: (c.chat_participants || []).map((p: any) => p.user_id),
+        lastMessage: c.last_message,
+        updatedAt: c.updated_at,
+        unreadCount,
+        messages
+      };
+    });
   }
 
-  async getChatById(id: string): Promise<ChatSession | null> {
+  async getChatById(id: string, userId: string): Promise<ChatSession | null> {
     const { data, error } = await supabase
       .from('chat_sessions')
       .select(`
@@ -298,7 +306,21 @@ class Store {
       .eq('id', id)
       .maybeSingle();
     
-    if (error || !data) return null;
+     if (error || !data) {
+        if (error) console.error("Store Error [getChatById]:", error);
+        return null;
+    }
+
+    const messages = (data.messages || []).map((m: any) => ({
+      id: m.id,
+      senderId: m.sender_id,
+      text: m.text,
+      read: m.read,
+      timestamp: m.created_at
+    })).sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    const unreadCount = messages.filter((m: any) => !m.read && m.senderId !== userId).length;
+
     return {
       id: data.id,
       adId: data.ad_id,
@@ -306,13 +328,20 @@ class Store {
       participants: (data.chat_participants || []).map((p: any) => p.user_id),
       lastMessage: data.last_message,
       updatedAt: data.updated_at,
-      messages: (data.messages || []).map((m: any) => ({
-        id: m.id,
-        senderId: m.sender_id,
-        text: m.text,
-        timestamp: m.created_at
-      })).sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+      unreadCount,
+      messages
     };
+  }
+
+  async markMessagesAsRead(sessionId: string, userId: string): Promise<void> {
+    const { error } = await supabase
+        .from('messages')
+        .update({ read: true })
+        .eq('session_id', sessionId)
+        .neq('sender_id', userId)
+        .eq('read', false);
+    
+    if (error) console.error("Store Error [markMessagesAsRead]:", error);
   }
 
   async startChat(clientId: string, providerId: string, adId: string, adTitle: string): Promise<string> {

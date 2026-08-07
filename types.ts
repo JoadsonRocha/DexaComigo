@@ -66,6 +66,7 @@ export interface Message {
   id: string;
   senderId: string;
   text: string;
+  read: boolean;
   timestamp: string;
 }
 
@@ -75,6 +76,7 @@ export interface ChatSession {
   adId: string;
   adTitle: string;
   lastMessage?: string;
+  unreadCount?: number;
   updatedAt: string;
   messages: Message[];
 }

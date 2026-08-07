@@ -77,6 +77,7 @@ CREATE TABLE messages (
   session_id UUID NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
   sender_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   text TEXT NOT NULL,
+  read BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -120,3 +121,4 @@ CREATE POLICY "Usuários autenticados podem inserir participantes" ON chat_parti
 -- Políticas para Messages
 CREATE POLICY "Usuários autenticados podem ler mensagens" ON messages FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Usuários enviam mensagens com seu próprio ID" ON messages FOR INSERT WITH CHECK (auth.uid() = sender_id);
+CREATE POLICY "Usuários podem marcar mensagens como lidas" ON messages FOR UPDATE USING (auth.role() = 'authenticated');
