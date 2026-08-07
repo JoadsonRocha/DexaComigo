@@ -20,8 +20,8 @@ import { ServiceAd, User, UserRole, ChatSession, Message, Review } from '../type
  * CREATE POLICY "Atualização de anúncios" ON service_ads FOR UPDATE USING (true);
  */
 
-const supabaseUrl = 'https://seoisvkiyygrtoidjfog.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlb2lzdmtpeXlncnRvaWRqZm9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTQ5OTIsImV4cCI6MjA4NTI3MDk5Mn0.zQZRTN3Pew9pmymJPkdLZm5eoO_j273EesUo9MextWg';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://seoisvkiyygrtoidjfog.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlb2lzdmtpeXlncnRvaWRqZm9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTQ5OTIsImV4cCI6MjA4NTI3MDk5Mn0.zQZRTN3Pew9pmymJPkdLZm5eoO_j273EesUo9MextWg';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -139,13 +139,13 @@ class Store {
   }
 
   async getCurrentUser(): Promise<User | null> {
-    const userId = localStorage.getItem('dexacomigo_user_id');
-    if (!userId) return null;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session || !session.user) return null;
 
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', userId)
+      .eq('id', session.user.id)
       .maybeSingle();
 
     if (error || !data) return null;
@@ -189,42 +189,43 @@ class Store {
     };
   }
 
-  async login(email: string): Promise<User> {
-    let { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('email', email)
-      .maybeSingle();
+  async login(email: string, password?: string): Promise<User> {
+    if (!password) throw new Error("Senha é obrigatória");
+    
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+    });
+    if (authError) throw authError;
 
-    if (!profile) {
-      const { data: newProfile, error } = await supabase
-        .from('profiles')
-        .insert([{
-          id: crypto.randomUUID(), 
-          email,
-          name: email.split('@')[0],
-          role: 'PROVIDER',
-          avatar_url: `https://picsum.photos/seed/${email}/100/100`
-        }])
-        .select()
-        .single();
-      
-      if (error) { console.error("Store Error [login/create]:", error); throw error; }
-      profile = newProfile;
+    const userProfile = await this.getCurrentUser();
+    if (!userProfile) throw new Error("Perfil não encontrado");
+    return userProfile;
+  }
+
+  async register(email: string, password: string, name: string): Promise<void> {
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password
+    });
+    if (authError) throw authError;
+
+    if (authData.user) {
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([{
+                id: authData.user.id,
+                email: authData.user.email,
+                name: name,
+                role: 'PROVIDER',
+                avatar_url: `https://picsum.photos/seed/${email}/100/100`
+            }]);
+        if (profileError) console.error("Error creating profile", profileError);
     }
-
-    localStorage.setItem('dexacomigo_user_id', profile.id);
-    return {
-      id: profile.id,
-      name: profile.name,
-      email: profile.email,
-      role: profile.role as UserRole,
-      avatar: profile.avatar_url
-    };
   }
 
   async logout(): Promise<void> {
-    localStorage.removeItem('dexacomigo_user_id');
+    await supabase.auth.signOut();
   }
 
   async getChats(userId: string): Promise<ChatSession[]> {
