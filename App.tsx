@@ -7,6 +7,7 @@ import SearchPage from './pages/Search';
 import ServiceDetail from './pages/ServiceDetail';
 import CreateAd from './pages/CreateAd';
 import Dashboard from './pages/Dashboard';
+import Enquiries from './pages/Enquiries';
 import Login from './pages/Login';
 import Chat from './pages/Chat';
 import EditProfile from './pages/EditProfile';
@@ -31,6 +32,7 @@ const MainLayout: React.FC = () => {
           <Route path="/create-ad" element={<CreateAd />} />
           <Route path="/edit-ad/:id" element={<CreateAd />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/enquiries" element={<Enquiries />} />
           <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/chat/:id" element={<Chat />} />

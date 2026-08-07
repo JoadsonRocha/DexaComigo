@@ -183,6 +183,14 @@ const Dashboard: React.FC = () => {
                                 <p className="text-gray-500 text-sm">Encontre as melhores profissionais de beleza perto de você para atendimento em domicílio.</p>
                             </Link>
 
+                            <Link to="/dashboard/enquiries" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex flex-col items-center text-center">
+                                <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-purple-100 transition-colors">
+                                    <MessageSquare size={32} />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">Minhas Consultas</h3>
+                                <p className="text-gray-500 text-sm">Acompanhe e gerencie todas as suas mensagens recebidas e conversas.</p>
+                            </Link>
+
                             <Link to="/chat" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex flex-col items-center text-center">
                                 <div className="relative">
                                     <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
@@ -269,7 +277,7 @@ const Dashboard: React.FC = () => {
                 ) : (
                     // PROVIDER DASHBOARD
                     <div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <Link to="/create-ad" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
                                 <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-brand-100 transition-colors">
                                     <Plus size={24} />
@@ -277,6 +285,16 @@ const Dashboard: React.FC = () => {
                                 <div>
                                     <h3 className="font-bold text-gray-900">Novo Anúncio</h3>
                                     <p className="text-gray-500 text-xs mt-1">Oferecer um novo serviço</p>
+                                </div>
+                            </Link>
+
+                            <Link to="/dashboard/enquiries" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
+                                <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-purple-100 transition-colors">
+                                    <MessageSquare size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900">Minhas Consultas</h3>
+                                    <p className="text-gray-500 text-xs mt-1">Acompanhe mensagens recebidas e pedidos</p>
                                 </div>
                             </Link>
 
