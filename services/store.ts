@@ -31,8 +31,8 @@ export interface GetAdsParams {
  * CREATE POLICY "Atualização de anúncios" ON service_ads FOR UPDATE USING (true);
  */
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://seoisvkiyygrtoidjfog.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlb2lzdmtpeXlncnRvaWRqZm9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTQ5OTIsImV4cCI6MjA4NTI3MDk5Mn0.zQZRTN3Pew9pmymJPkdLZm5eoO_j273EesUo9MextWg';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tdbtkmtjtkidfesgalgk.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'COLE_A_ANON_KEY_DO_PROJETO_AQUI';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
