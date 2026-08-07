@@ -36,7 +36,6 @@ const Dashboard: React.FC = () => {
     { to: '/dashboard', label: 'Meu Painel', icon: LayoutDashboard },
     { to: '/dashboard/chat', label: 'Chat', icon: MessageSquare },
     { to: '/dashboard/appointments', label: 'Meus Agendamentos', icon: Calendar },
-    { to: '/dashboard/enquiries', label: 'Minhas Consultas', icon: MessageSquare },
     ...(isClient ? [] : [{ to: '/dashboard/ads', label: 'Meus Anúncios', icon: Megaphone }]),
   ];
 

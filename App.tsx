@@ -8,7 +8,6 @@ import ServiceDetail from './pages/ServiceDetail';
 import CreateAd from './pages/CreateAd';
 import Dashboard from './pages/Dashboard';
 import DashboardHome from './pages/DashboardHome';
-import Enquiries from './pages/Enquiries';
 import Appointments from './pages/Appointments';
 import Ads from './pages/Ads';
 import Login from './pages/Login';
@@ -36,7 +35,6 @@ const MainLayout: React.FC = () => {
           <Route path="/edit-ad/:id" element={<CreateAd />} />
           <Route path="/dashboard" element={<Dashboard />}>
             <Route index element={<DashboardHome />} />
-            <Route path="enquiries" element={<Enquiries />} />
             <Route path="appointments" element={<Appointments />} />
             <Route path="ads" element={<Ads />} />
             <Route path="chat" element={<Chat />} />
