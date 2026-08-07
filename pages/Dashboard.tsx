@@ -138,17 +138,19 @@ const Dashboard: React.FC = () => {
                             </Link>
 
                             <Link to="/chat" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
-                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
-                                    <div className="relative">
-                                <MessageSquare size={32} className="md:w-16 md:h-16 w-12 h-12 mb-4 group-hover:scale-110 transition-transform" />
-                                {unreadCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-brand-700"></span>
-                                    </span>
-                                )}
-                            </div>
-                            <span className="font-bold">Minhas Mensagens</span>
+                                <div className="relative mr-4">
+                                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                                        <MessageSquare size={24} />
+                                    </div>
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500 border-2 border-white"></span>
+                                        </span>
+                                    )}
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900">Minhas Mensagens</h3>
                                     <p className="text-gray-500 text-xs mt-1">Responder clientes e agendamentos</p>
                                 </div>
                             </Link>
