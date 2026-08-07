@@ -104,6 +104,7 @@ const Appointments: React.FC = () => {
   ];
 
   return (
+    <>
     <div className="flex-1 bg-gray-50 py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center mb-8">
@@ -241,6 +242,81 @@ const Appointments: React.FC = () => {
         </div>
       </div>
     </div>
+
+    {/* Review Modal */}
+    {reviewingApp && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform animate-in slide-in-from-bottom-4 duration-300">
+          <div className="bg-indigo-600 p-4 flex justify-between items-center">
+            <h3 className="text-lg font-bold text-white flex items-center tracking-tight">
+              <Star size={20} className="mr-2" /> Avalie o serviço
+            </h3>
+            <button onClick={() => setReviewingApp(null)} className="text-white/80 hover:text-white transition-colors">
+              <X size={20} />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmitReview} className="p-4 space-y-3">
+            <p className="text-xs text-gray-600 bg-indigo-50 p-2.5 rounded-lg border border-indigo-100">
+              <strong>{reviewingApp.adTitle}</strong> — {new Date(reviewingApp.date).toLocaleDateString('pt-BR')} às {reviewingApp.time} com {reviewingApp.providerName}.
+            </p>
+
+            {reviewError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-2.5 rounded-lg">
+                {reviewError}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1">Qual sua nota para este serviço?</label>
+              <div className="flex gap-1.5">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setReviewRating(s)}
+                    className={`p-1.5 rounded-lg border transition-all ${reviewRating >= s ? 'bg-yellow-50 border-yellow-300 text-yellow-600' : 'bg-white border-gray-200 text-gray-300'}`}
+                  >
+                    <Star size={22} className={reviewRating >= s ? 'fill-current' : ''} />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1">Comentário</label>
+              <textarea
+                placeholder="Como foi o atendimento? Recomendaria?"
+                className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                rows={3}
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setReviewingApp(null)}
+                className="flex-1 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-bold text-sm transition-colors"
+              >
+                Agora não
+              </button>
+              <button
+                type="submit"
+                disabled={submittingReview}
+                className="flex-1 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold text-sm shadow-lg transition-all flex items-center justify-center disabled:opacity-50"
+              >
+                {submittingReview ? <Loader2 className="animate-spin mr-2" size={16} /> : <Send size={16} className="mr-2" />}
+                {submittingReview ? 'Enviando...' : 'Publicar'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 
