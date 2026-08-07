@@ -36,7 +36,7 @@ export const Navbar: React.FC = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-brand-600 tracking-tight">+B Mais <span className="text-gray-800">Beleza</span></span>
+              <span className="text-2xl font-bold text-brand-600 tracking-tight">Dexa<span className="text-gray-800">Comigo</span></span>
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link to="/" className={`${isActive('/')} inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium`}>
