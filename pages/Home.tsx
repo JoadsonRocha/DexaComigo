@@ -22,12 +22,12 @@ import { ServiceAd } from '../types';
 
 // Mapeamento de ícones para as categorias
 const iconMap: Record<string, React.ReactNode> = {
-  hair: <Scissors size={24} />,
-  makeup: <Brush size={24} />,
-  nails: <Sparkles size={24} />,
-  'hair-removal': <Droplet size={24} />,
-  massage: <Flower2 size={24} />,
-  eyebrows: <Eye size={24} />,
+  hair: <Scissors size={20} />,
+  makeup: <Brush size={20} />,
+  nails: <Sparkles size={20} />,
+  'hair-removal': <Droplet size={20} />,
+  massage: <Flower2 size={20} />,
+  eyebrows: <Eye size={20} />,
 };
 
 const Home: React.FC = () => {
@@ -56,6 +56,8 @@ const Home: React.FC = () => {
     e.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+    } else {
+      navigate(`/search`);
     }
   };
 
@@ -112,27 +114,58 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Categories Explanation */}
-      <section className="py-24 bg-white">
+      {/* Featured Services (Destaques) */}
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4 tracking-tight">O que você está procurando?</h2>
-                <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Profissionais de beleza certificadas, prontas para te atender no conforto da sua casa.</p>
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+                <div className="text-left">
+                    <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Destaques da Comunidade</h2>
+                    <p className="text-gray-500 mt-2 text-base font-light">Conheça as profissionais que são referência.</p>
+                </div>
+                <Link to="/search" className="group text-brand-600 font-bold flex items-center hover:text-brand-700 bg-white px-6 py-3 rounded-xl shadow-sm border border-gray-100 transition-all active:scale-95">
+                    Ver todos <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Link>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
-                {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+            {loading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
+                    {[1, 2, 3, 4].map(i => <div key={i} className="h-[380px] bg-gray-200 rounded-2xl"></div>)}
+                </div>
+            ) : featuredAds.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {featuredAds.map(ad => (
+                        <div key={ad.id} className="scale-95 origin-top">
+                           <ServiceCard ad={ad} />
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+                    <p className="text-gray-400">Nenhum anúncio em destaque no momento.</p>
+                </div>
+            )}
+        </div>
+      </section>
+
+      {/* Categories Explanation */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+                <h2 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">Categorias</h2>
+                <p className="text-gray-500 text-base max-w-2xl mx-auto font-light">Encontre exatamente o que você precisa.</p>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {CATEGORIES.filter(c => c.id !== 'all').slice(0, 6).map(cat => (
                     <Link 
                         key={cat.id} 
                         to={`/search?c=${cat.id}`}
-                        className="group flex flex-col items-center p-8 bg-white rounded-[2.5rem] border border-gray-100 hover:shadow-[0_20px_50px_rgba(124,58,237,0.1)] hover:border-brand-200 transition-all duration-500"
+                        className="group flex flex-col items-center p-4 bg-white rounded-2xl border border-gray-100 hover:shadow-md hover:border-brand-200 transition-all duration-300"
                     >
-                        <div className="w-20 h-20 rounded-3xl bg-brand-50 text-brand-600 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition-all duration-500 shadow-sm">
-                            {iconMap[cat.id] || <ArrowRight size={28} />}
+                        <div className="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-3 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
+                            {iconMap[cat.id] || <ArrowRight size={20} />}
                         </div>
-                        <h3 className="font-bold text-gray-800 text-lg text-center mb-2">{cat.label}</h3>
-                        <div className="h-1 w-8 bg-brand-200 rounded-full mb-3 group-hover:w-16 transition-all duration-500"></div>
-                        <p className="text-xs text-gray-400 text-center opacity-0 group-hover:opacity-100 transition-all duration-500">Explorar serviços</p>
+                        <h3 className="font-bold text-gray-800 text-sm text-center mb-1">{cat.label}</h3>
                     </Link>
                 ))}
             </div>
@@ -184,36 +217,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Services (Demo Section) */}
-      <section className="py-28 bg-gray-50/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
-                <div className="text-left">
-                    <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Destaques da Comunidade</h2>
-                    <p className="text-gray-500 mt-3 text-lg font-light">Conheça algumas das profissionais que são referência no Mais Beleza.</p>
-                </div>
-                <Link to="/search" className="group text-brand-600 font-bold flex items-center hover:text-brand-700 bg-white px-8 py-4 rounded-2xl shadow-sm border border-gray-100 transition-all active:scale-95">
-                    Ver todos os profissionais <ArrowRight size={20} className="ml-3 group-hover:translate-x-2 transition-transform" />
-                </Link>
-            </div>
-            
-            {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 animate-pulse">
-                    {[1, 2, 3, 4].map(i => <div key={i} className="h-[420px] bg-gray-200 rounded-[2.5rem]"></div>)}
-                </div>
-            ) : featuredAds.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {featuredAds.map(ad => (
-                        <ServiceCard key={ad.id} ad={ad} />
-                    ))}
-                </div>
-            ) : (
-                <div className="text-center py-20 bg-white rounded-[2.5rem] border-2 border-dashed border-gray-200">
-                    <p className="text-gray-400">Nenhum anúncio em destaque no momento.</p>
-                </div>
-            )}
-        </div>
-      </section>
+
 
       {/* Demo Call to Action */}
       <section className="py-24">
