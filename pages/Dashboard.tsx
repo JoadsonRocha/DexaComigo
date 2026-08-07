@@ -10,6 +10,8 @@ const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const [unreadCount, setUnreadCount] = useState(0);
+
   const handleLogout = async () => {
       await logout();
       navigate('/');
@@ -22,11 +24,13 @@ const Dashboard: React.FC = () => {
         return;
     }
     if (user.role === UserRole.PROVIDER) {
-        const loadAds = async () => {
-            const ads = await store.getAds();
-            setMyAds(ads.filter(ad => ad.providerId === user.id));
-        };
-        loadAds();
+        const loadData = async () => {
+        const ads = await store.getAds();
+        setMyAds(ads.filter(a => a.providerId === user.id));
+        const unread = await store.getGlobalUnreadCount(user.id);
+        setUnreadCount(unread);
+    };
+    loadData();
     }
   }, [user, navigate]);
 
@@ -103,8 +107,16 @@ const Dashboard: React.FC = () => {
                             </Link>
 
                             <Link to="/chat" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex flex-col items-center text-center">
-                                <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
-                                    <MessageSquare size={32} />
+                                <div className="relative">
+                                    <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+                                        <MessageSquare size={32} />
+                                    </div>
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-white"></span>
+                                        </span>
+                                    )}
                                 </div>
                                 <h3 className="text-lg font-bold text-gray-900 mb-2">Minhas Mensagens</h3>
                                 <p className="text-gray-500 text-sm">Acompanhe suas conversas e agendamentos com as profissionais.</p>
@@ -127,10 +139,16 @@ const Dashboard: React.FC = () => {
 
                             <Link to="/chat" className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex items-center">
                                 <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
-                                    <MessageSquare size={24} />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900">Minhas Mensagens</h3>
+                                    <div className="relative">
+                                <MessageSquare size={32} className="md:w-16 md:h-16 w-12 h-12 mb-4 group-hover:scale-110 transition-transform" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-brand-700"></span>
+                                    </span>
+                                )}
+                            </div>
+                            <span className="font-bold">Minhas Mensagens</span>
                                     <p className="text-gray-500 text-xs mt-1">Responder clientes e agendamentos</p>
                                 </div>
                             </Link>
