@@ -37,8 +37,8 @@ const Home: React.FC = () => {
   useEffect(() => {
     const loadAds = async () => {
         try {
-            // Featured: Only premium ads, max 4
-            const ads = await store.getAds({ isPremium: true, limit: 4 });
+            // Featured: All active ads, sorted by rating/reviews
+            const ads = await store.getAds();
             // Sort locally by rating/reviews
             const featured = ads.sort((a, b) => {
                 if (b.rating !== a.rating) return b.rating - a.rating;
