@@ -146,7 +146,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row justify-between items-end mb-10 md:mb-12 gap-4">
                 <div className="text-left">
-                    <h2 id="featured-heading" className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Serviços em destaque</h2>
+                    <h2 id="featured-heading" className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Serviços em destaque</h2>
                     <p className="text-gray-500 mt-2 text-sm md:text-base font-light">Conheça as profissionais que são referência.</p>
                 </div>
                 <Link to="/search" className="group text-brand-600 font-bold flex items-center hover:text-brand-700 bg-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl shadow-sm border border-gray-100 transition-all active:scale-95 text-sm md:text-base">
