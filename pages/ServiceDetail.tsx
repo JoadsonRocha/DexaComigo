@@ -2,7 +2,7 @@
 // Add React import to resolve namespace errors for FC and FormEvent
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, MessageCircle, Star, Shield, Clock, Calendar, MessageSquare, CalendarCheck, X, Send, AlertTriangle, Loader2, CheckCircle, Navigation, LocateFixed } from 'lucide-react';
+import { MapPin, MessageCircle, Star, Shield, Clock, Calendar, MessageSquare, CalendarCheck, X, Send, AlertTriangle, Loader2, CheckCircle, Navigation, LocateFixed, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { store } from '../services/store';
 import { ServiceAd, Review } from '../types';
 import { RatingStars, Badge } from '../components/UI';
@@ -24,6 +24,9 @@ const ServiceDetail: React.FC = () => {
   const [isScheduling, setIsScheduling] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [scheduleError, setScheduleError] = useState('');
+
+  // Lightbox State
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const parseAvailability = (availability?: string): { days: string[]; start: string; end: string } | null => {
     if (!availability) return null;
@@ -100,6 +103,22 @@ const ServiceDetail: React.FC = () => {
     };
     loadAd();
   }, [id]);
+
+  // Lightbox: navegação por teclado (Esc, setas) e trava o scroll
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxIndex(null);
+      if (e.key === 'ArrowRight') setLightboxIndex(prev => (prev === null || !ad) ? prev : (prev + 1) % ad.images.length);
+      if (e.key === 'ArrowLeft') setLightboxIndex(prev => (prev === null || !ad) ? prev : (prev - 1 + ad.images.length) % ad.images.length);
+    };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [lightboxIndex, ad]);
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center p-20">
@@ -276,9 +295,16 @@ const ServiceDetail: React.FC = () => {
     <div className="flex-1 bg-gray-50 pb-12 relative">
       {/* Header Image */}
       <div className="bg-gray-900 h-64 md:h-80 w-full relative">
-        <img src={ad.images[0]} className="w-full h-full object-cover opacity-60" alt={ad.title} />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full p-4 md:p-8">
+        <button
+          type="button"
+          onClick={() => setLightboxIndex(0)}
+          aria-label="Abrir foto em tela cheia"
+          className="absolute inset-0 w-full h-full cursor-zoom-in"
+        >
+          <img src={ad.images[0]} className="w-full h-full object-cover opacity-60" alt={ad.title} />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent" />
+        </button>
+        <div className="absolute inset-x-0 bottom-0 left-0 w-full p-4 md:p-8 pointer-events-none">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                     <Badge variant="primary">{ad.category}</Badge>
