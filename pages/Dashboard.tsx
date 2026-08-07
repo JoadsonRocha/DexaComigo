@@ -65,11 +65,6 @@ const Dashboard: React.FC = () => {
   const enquiriesWeek = chats.filter(c => new Date(c.updatedAt) >= weekAgo).length;
   const enquiriesResolved = appointments.filter(a => a.status === 'completed').length;
 
-  const apptTotal = appointments.length;
-  const apptPending = appointments.filter(a => a.status === 'pending').length;
-  const apptConfirmed = appointments.filter(a => a.status === 'confirmed').length;
-  const apptCompleted = appointments.filter(a => a.status === 'completed').length;
-
   const adsTotal = myAds.length;
   const adsPremium = myAds.filter(a => a.isPremium).length;
   const adsCategories = new Set(myAds.map(a => a.category)).size;
@@ -136,6 +131,9 @@ const Dashboard: React.FC = () => {
                         <Link to="/dashboard/appointments" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
                             <Calendar size={16} className="mr-3 text-brand-600" /> Meus Agendamentos
                         </Link>
+                        <Link to="/chat" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
+                            <MessageSquare size={16} className="mr-3 text-brand-600" /> Chat
+                        </Link>
                         {!isClient && (
                             <Link to="/dashboard/ads" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
                                 <Megaphone size={16} className="mr-3 text-brand-600" /> Meus Anúncios
@@ -147,25 +145,14 @@ const Dashboard: React.FC = () => {
 
             {/* Main Content Area */}
             <div className="lg:col-span-3">
-                {/* Minhas Consultas */}
+                {/* Meus Serviços */}
                 <div className="mb-10">
-                    <SectionHeader title="Minhas Consultas" to="/dashboard/enquiries" linkText="Ver todas" />
+                    <SectionHeader title="Meus Serviços" to="/dashboard/enquiries" linkText="Ver todos" />
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <StatCard label="Total de Consultas" value={enquiriesTotal} icon={MessageSquare} color="bg-brand-50 text-brand-600" />
                         <StatCard label="Novas Mensagens" value={enquiriesNew} icon={Mail} color="bg-green-50 text-green-600" />
                         <StatCard label="Esta Semana" value={enquiriesWeek} icon={Calendar} color="bg-blue-50 text-blue-600" />
                         <StatCard label="Total Resolvidas" value={enquiriesResolved} icon={CheckCircle2} color="bg-purple-50 text-purple-600" />
-                    </div>
-                </div>
-
-                {/* Meus Agendamentos */}
-                <div className="mb-10">
-                    <SectionHeader title="Meus Agendamentos" to="/dashboard/appointments" linkText="Ver todos" />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <StatCard label="Total de Agendamentos" value={apptTotal} icon={Calendar} color="bg-brand-50 text-brand-600" />
-                        <StatCard label="Pendentes" value={apptPending} icon={Clock} color="bg-yellow-50 text-yellow-600" />
-                        <StatCard label="Confirmados" value={apptConfirmed} icon={Check} color="bg-green-50 text-green-600" />
-                        <StatCard label="Concluídos" value={apptCompleted} icon={CheckCircle2} color="bg-blue-50 text-blue-600" />
                     </div>
                 </div>
 
