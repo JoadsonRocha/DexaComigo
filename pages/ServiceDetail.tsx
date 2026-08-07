@@ -521,7 +521,7 @@ const ServiceDetail: React.FC = () => {
                                 setScheduleData(prev => ({...prev, date: e.target.value}));
                                 setScheduleError('');
                             }}
-                            min={new Date().toISOString().split('T')[0]}
+                            min={todayLocal}
                         />
                         {availability && availability.days.length > 0 && (
                             <p className="text-xs text-gray-500 mt-1.5">
