@@ -291,7 +291,7 @@ class Store {
       .select(`
         *,
         service_ads(title),
-        chat_participants(user_id),
+        chat_participants(user_id, profiles(name)),
         messages(*)
       `)
       .in('id', sessionIds)
@@ -310,11 +310,16 @@ class Store {
 
       const unreadCount = messages.filter((m: any) => !m.read && m.senderId !== userId).length;
 
+      // Find the other participant's name
+      const otherParticipant = (c.chat_participants || []).find((p: any) => p.user_id !== userId);
+      const otherUserName = otherParticipant?.profiles?.name;
+
       return {
         id: c.id,
         adId: c.ad_id,
         adTitle: c.service_ads?.title || 'Anúncio',
         participants: (c.chat_participants || []).map((p: any) => p.user_id),
+        otherUserName: otherUserName,
         lastMessage: c.last_message,
         updatedAt: c.updated_at,
         unreadCount,
@@ -329,7 +334,7 @@ class Store {
       .select(`
         *,
         service_ads(title),
-        chat_participants(user_id),
+        chat_participants(user_id, profiles(name)),
         messages(*)
       `)
       .eq('id', id)
@@ -350,11 +355,16 @@ class Store {
 
     const unreadCount = messages.filter((m: any) => !m.read && m.senderId !== userId).length;
 
+    // Find the other participant's name
+    const otherParticipant = (data.chat_participants || []).find((p: any) => p.user_id !== userId);
+    const otherUserName = otherParticipant?.profiles?.name;
+
     return {
       id: data.id,
       adId: data.ad_id,
       adTitle: data.service_ads?.title || 'Anúncio',
       participants: (data.chat_participants || []).map((p: any) => p.user_id),
+      otherUserName: otherUserName,
       lastMessage: data.last_message,
       updatedAt: data.updated_at,
       unreadCount,

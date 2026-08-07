@@ -75,6 +75,7 @@ export interface ChatSession {
   participants: string[]; // [userId1, userId2]
   adId: string;
   adTitle: string;
+  otherUserName?: string;
   lastMessage?: string;
   unreadCount?: number;
   updatedAt: string;

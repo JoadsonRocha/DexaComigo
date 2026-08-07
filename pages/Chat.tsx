@@ -136,8 +136,8 @@ const Chat: React.FC = () => {
                         <ArrowLeft />
                     </button>
                     <div>
-                        <h3 className="font-bold text-gray-800">{activeChat.adTitle}</h3>
-                        <p className="text-xs text-gray-500">Negociação direta</p>
+                        <h3 className="font-bold text-gray-800">{activeChat.otherUserName || 'Usuário'}</h3>
+                        <p className="text-xs text-gray-500">{activeChat.adTitle}</p>
                     </div>
                 </div>
 
