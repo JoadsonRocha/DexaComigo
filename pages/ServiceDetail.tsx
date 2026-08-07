@@ -137,6 +137,15 @@ const ServiceDetail: React.FC = () => {
         const chatId = await store.startChat(user.id, ad.providerId, ad.id, ad.title);
         await store.sendMessage(chatId, user.id, message);
         
+        await store.createAppointment({
+          clientId: user.id,
+          providerId: ad.providerId,
+          adId: ad.id,
+          date: scheduleData.date,
+          time: scheduleData.time,
+          notes: scheduleData.notes
+        });
+
         setShowScheduleModal(false);
         navigate(`/chat/${chatId}`);
       } catch (e: any) {
