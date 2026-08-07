@@ -12,9 +12,9 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
-  const { user, login, register, loading } = useAuth();
+  const { user, login, register, loading: authLoading } = useAuth();
 
-  if (loading) {
+  if (authLoading) {
     return null;
   }
 
