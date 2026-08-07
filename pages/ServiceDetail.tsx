@@ -495,27 +495,27 @@ const ServiceDetail: React.FC = () => {
       {/* Appointment Modal */}
       {showScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform animate-in slide-in-from-bottom-4 duration-300">
-                <div className="bg-indigo-600 p-5 flex justify-between items-center">
-                    <h3 className="text-xl font-bold text-white flex items-center tracking-tight">
-                        <CalendarCheck size={22} className="mr-2" /> Agendar Serviço
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform animate-in slide-in-from-bottom-4 duration-300">
+                <div className="bg-indigo-600 p-4 flex justify-between items-center">
+                    <h3 className="text-lg font-bold text-white flex items-center tracking-tight">
+                        <CalendarCheck size={20} className="mr-2" /> Agendar Serviço
                     </h3>
                     <button onClick={() => setShowScheduleModal(false)} className="text-white/80 hover:text-white transition-colors">
-                        <X size={24} />
+                        <X size={20} />
                     </button>
                 </div>
                 
-                <form onSubmit={handleScheduleSubmit} className="p-6 space-y-4">
-                    <p className="text-sm text-gray-600 mb-4 bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                <form onSubmit={handleScheduleSubmit} className="p-4 space-y-3">
+                    <p className="text-xs text-gray-600 mb-2 bg-indigo-50 p-2.5 rounded-lg border border-indigo-100">
                         Seu pedido será enviado via chat para <strong>{ad.providerName}</strong>.
                     </p>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Qual o melhor dia?</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Qual o melhor dia?</label>
                         <input 
                             type="date" 
                             required
-                            className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                            className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                             value={scheduleData.date}
                             onChange={(e) => {
                                 setScheduleData(prev => ({...prev, date: e.target.value}));
@@ -524,18 +524,18 @@ const ServiceDetail: React.FC = () => {
                             min={todayLocal}
                         />
                         {availability && availability.days.length > 0 && (
-                            <p className="text-xs text-gray-500 mt-1.5">
+                            <p className="text-[11px] text-gray-500 mt-1">
                                 Dias de atendimento: <strong>{availability.days.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(', ')}</strong>
                             </p>
                         )}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Qual o horário?</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Qual o horário?</label>
                         <input 
                             type="time" 
                             required
-                            className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                            className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                             value={scheduleData.time}
                             min={availability?.start}
                             max={availability?.end}
@@ -545,68 +545,68 @@ const ServiceDetail: React.FC = () => {
                             }}
                         />
                         {availability && (
-                            <p className="text-xs text-gray-500 mt-1.5">
+                            <p className="text-[11px] text-gray-500 mt-1">
                                 Horário de atendimento: <strong>{availability.start} às {availability.end}</strong>
                             </p>
                         )}
                     </div>
 
                     {scheduleError && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-xl">
+                        <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-2.5 rounded-lg">
                             {scheduleError}
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center justify-between">
-                            <span className="flex items-center"><MapPin size={14} className="mr-1.5 text-indigo-500" /> Onde deseja ser atendido?</span>
+                        <label className="block text-xs font-bold text-gray-700 mb-1 flex items-center justify-between">
+                            <span className="flex items-center"><MapPin size={13} className="mr-1.5 text-indigo-500" /> Onde deseja ser atendido?</span>
                             <button 
                                 type="button"
                                 onClick={handleGetLocation}
                                 disabled={isLocating}
-                                className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center disabled:opacity-50"
+                                className="text-[11px] text-indigo-600 hover:text-indigo-800 font-semibold flex items-center disabled:opacity-50"
                             >
-                                {isLocating ? <Loader2 size={12} className="animate-spin mr-1" /> : <LocateFixed size={12} className="mr-1" />}
+                                {isLocating ? <Loader2 size={11} className="animate-spin mr-1" /> : <LocateFixed size={11} className="mr-1" />}
                                 Usar GPS
                             </button>
                         </label>
                         <input 
                             type="text" 
-                            className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                            className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                             placeholder="Ex: Pinheiros, São Paulo - SP"
                             value={scheduleData.location}
                             onChange={(e) => setScheduleData(prev => ({...prev, location: e.target.value}))}
                         />
-                        <p className="text-xs text-gray-500 mt-1.5">
+                        <p className="text-[11px] text-gray-500 mt-1">
                             {scheduleData.location ? 'A localização será enviada ao profissional.' : (user?.location ? `Localização do seu perfil: ${user.location}` : 'Usado o endereço informado no agendamento.')}
                         </p>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Alguma observação?</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Alguma observação?</label>
                         <textarea 
-                            className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
-                            rows={3}
+                            className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                            rows={2}
                             placeholder="Descreva brevemente o que precisa ser feito..."
                             value={scheduleData.notes}
                             onChange={(e) => setScheduleData(prev => ({...prev, notes: e.target.value}))}
                         />
                     </div>
 
-                    <div className="pt-4 flex gap-3">
+                    <div className="pt-3 flex gap-3">
                         <button 
                             type="button" 
                             onClick={() => setShowScheduleModal(false)}
-                            className="flex-1 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-bold transition-colors"
+                            className="flex-1 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-bold text-sm transition-colors"
                         >
                             Cancelar
                         </button>
                         <button 
                             type="submit" 
                             disabled={isScheduling}
-                            className="flex-1 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-bold shadow-lg transition-all flex items-center justify-center disabled:opacity-50"
+                            className="flex-1 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold text-sm shadow-lg transition-all flex items-center justify-center disabled:opacity-50"
                         >
-                            {isScheduling ? <Loader2 className="animate-spin mr-2" size={18} /> : null}
+                            {isScheduling ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
                             {isScheduling ? 'Enviando...' : 'Confirmar'}
                         </button>
                     </div>
