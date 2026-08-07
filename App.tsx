@@ -1,20 +1,20 @@
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar, Footer } from './components/Layout';
-import Home from './pages/Home';
-import SearchPage from './pages/Search';
-import ServiceDetail from './pages/ServiceDetail';
-import CreateAd from './pages/CreateAd';
-import Dashboard from './pages/Dashboard';
-import DashboardHome from './pages/DashboardHome';
-import Appointments from './pages/Appointments';
-import Ads from './pages/Ads';
-import Login from './pages/Login';
-import Chat from './pages/Chat';
-import EditProfile from './pages/EditProfile';
-import CategoryPage from './pages/CategoryPage';
-import PublicProfile from './pages/PublicProfile';
+const Home = lazy(() => import('./pages/Home'));
+const SearchPage = lazy(() => import('./pages/Search'));
+const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
+const CreateAd = lazy(() => import('./pages/CreateAd'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const DashboardHome = lazy(() => import('./pages/DashboardHome'));
+const Appointments = lazy(() => import('./pages/Appointments'));
+const Ads = lazy(() => import('./pages/Ads'));
+const Login = lazy(() => import('./pages/Login'));
+const Chat = lazy(() => import('./pages/Chat'));
+const EditProfile = lazy(() => import('./pages/EditProfile'));
+const CategoryPage = lazy(() => import('./pages/CategoryPage'));
+const PublicProfile = lazy(() => import('./pages/PublicProfile'));
 import { AuthProvider } from './context/AuthContext';
 
 const MainLayout: React.FC = () => {
@@ -25,6 +25,7 @@ const MainLayout: React.FC = () => {
     <div className={`flex flex-col bg-gray-50 ${isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
       <Navbar />
       <main id="main-content" className="flex-grow flex flex-col overflow-hidden">
+        <Suspense fallback={<div className="flex items-center justify-center p-8">Carregando...</div>}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<SearchPage />} />
@@ -46,6 +47,7 @@ const MainLayout: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+        </Suspense>
       </main>
       {!isDashboardRoute && <Footer />}
     </div>
