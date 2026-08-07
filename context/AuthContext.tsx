@@ -46,20 +46,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password?: string) => {
-    setLoading(true);
     try {
       const loggedUser = await store.login(email, password);
       setUser(loggedUser);
     } catch (e) {
       console.error("Login error:", e);
       throw e;
-    } finally {
-      setLoading(false);
     }
   };
 
   const register = async (email: string, password: string, name: string, role?: UserRole) => {
-      setLoading(true);
       try {
           await store.register(email, password, name, role);
           const currentUser = await store.getCurrentUser();
@@ -67,8 +63,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (e) {
           console.error("Register error:", e);
           throw e;
-      } finally {
-          setLoading(false);
       }
   };
 

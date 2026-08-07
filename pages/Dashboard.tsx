@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { ServiceAd, UserRole, Appointment, AppointmentStatus } from '../types';
 
 const Dashboard: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
 
   const [unreadCount, setUnreadCount] = useState(0);
@@ -25,6 +25,7 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
         navigate('/login');
         return;

@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
 
 const EditProfile: React.FC = () => {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, loading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
@@ -19,6 +19,7 @@ const EditProfile: React.FC = () => {
   });
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
       navigate('/login');
       return;

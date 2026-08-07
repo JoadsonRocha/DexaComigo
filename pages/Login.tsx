@@ -12,7 +12,11 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
-  const { user, login, register } = useAuth();
+  const { user, login, register, loading } = useAuth();
+
+  if (loading) {
+    return null;
+  }
 
   if (user) {
     return <Navigate to="/dashboard" replace />;

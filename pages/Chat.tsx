@@ -7,7 +7,7 @@ import { store } from '../services/store';
 import { ChatSession } from '../types';
 
 const Chat: React.FC = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { id: routeChatId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -18,6 +18,7 @@ const Chat: React.FC = () => {
 
   // Initial load
   useEffect(() => {
+    if (loading) return;
     if (!user) {
         navigate('/login');
         return;
