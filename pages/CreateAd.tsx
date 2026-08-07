@@ -318,6 +318,30 @@ const CreateAd: React.FC = () => {
                     )}
                 </div>
 
+                {/* Tags Section */}
+                <div className="bg-white">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tags do Serviço (Opcional)</label>
+                    <p className="text-xs text-gray-500 mb-2">Digite uma característica (ex: vegano, domicílio) e aperte Enter ou Vírgula.</p>
+                    <div className="border border-gray-300 rounded-md p-2 focus-within:ring-1 focus-within:ring-brand-500 focus-within:border-brand-500 flex flex-wrap gap-2 items-center bg-white">
+                        {tags.map(tag => (
+                            <span key={tag} className="flex items-center bg-brand-50 text-brand-700 text-sm px-2 py-1 rounded-md border border-brand-100">
+                                {tag}
+                                <button type="button" onClick={() => removeTag(tag)} className="ml-1 text-brand-500 hover:text-brand-800">
+                                    <X size={14} />
+                                </button>
+                            </span>
+                        ))}
+                        <input 
+                            type="text" 
+                            className="flex-1 outline-none min-w-[120px] text-sm p-1"
+                            placeholder={tags.length === 0 ? "Adicionar tag..." : ""}
+                            value={tagInput}
+                            onChange={(e) => setTagInput(e.target.value)}
+                            onKeyDown={handleTagKeyDown}
+                        />
+                    </div>
+                </div>
+
                 {/* AI Assistant Section */}
                 <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-4 relative">
                     <div className="absolute -top-3 left-4 bg-indigo-600 text-white text-xs px-2 py-1 rounded-full flex items-center shadow-sm">
