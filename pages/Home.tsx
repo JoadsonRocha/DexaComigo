@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import heroLocal from '../Captura de Tela (3).png';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, 
@@ -65,30 +66,30 @@ const Home: React.FC = () => {
     <div className="flex-1 bg-white flex flex-col">
       {/* Hero Section */}
             <section role="banner" className="relative bg-brand-900 overflow-hidden h-[50vh] max-h-[50vh] flex items-center">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-brand-900 mix-blend-multiply opacity-85"></div>
-          <img 
-                        src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
-                        className="w-full h-full object-cover" 
-                        alt="Profissional de beleza em atendimento"
-                        loading="lazy"
-                        aria-hidden="true"
-          />
-        </div>
+                    <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-brand-900 mix-blend-multiply opacity-85"></div>
+                    <img 
+                                                src={heroLocal} 
+                                                className="w-full h-full object-cover" 
+                                                alt="Profissional de beleza em atendimento"
+                                                loading="lazy"
+                                                aria-hidden="true"
+                    />
+                </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center h-full">
                     <div className="inline-flex items-center py-1 px-4 rounded-full bg-brand-500/30 text-brand-200 text-xs font-bold uppercase tracking-widest mb-3 border border-brand-400/20 backdrop-blur-md">
             <Users size={14} className="mr-2" /> Profissionais Certificadas em Domicílio
           </div>
-                                        <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tighter mb-3 leading-[1.02]">
+                                        <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tighter mb-3 leading-[1.02]">
                         Beleza que cuida.<br/>
                         <span className="text-brand-400">Liberdade que transforma.</span>
                     </h1>
-                    <p className="max-w-3xl mx-auto text-base md:text-lg text-brand-100 mb-6 leading-relaxed font-light">
+                    <p className="max-w-3xl mx-auto text-base md:text-base text-brand-100 mb-4 leading-relaxed font-light">
             Conectamos você a profissionais de beleza certificadas. Atendimento especializado no conforto da sua casa, gerando impacto social e autonomia.
           </p>
 
-          <div className="w-full max-w-3xl mx-auto">
+             <div className="w-full max-w-3xl mx-auto">
              <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-2 bg-white p-1.5 rounded-3xl shadow-2xl border border-white/20">
                 <div className="flex-1 relative">
                     <label htmlFor="home-search" className="sr-only">Pesquisar serviços</label>
@@ -112,7 +113,7 @@ const Home: React.FC = () => {
                     Encontrar agora
                 </button>
              </form>
-             <div className="mt-5 flex flex-wrap justify-center gap-6 text-brand-200 text-sm font-medium">
+             <div className="mt-4 flex flex-wrap justify-center gap-6 text-brand-200 text-sm font-medium">
                 <span className="flex items-center"><CheckCircle2 size={18} className="mr-2 text-brand-400" /> Sem custos de agenciamento</span>
                 <span className="flex items-center"><CheckCircle2 size={18} className="mr-2 text-brand-400" /> WhatsApp Direto</span>
                 <span className="flex items-center"><CheckCircle2 size={18} className="mr-2 text-brand-400" /> Histórico de confiança</span>
