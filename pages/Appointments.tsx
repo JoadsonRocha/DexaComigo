@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, Check, X, Clock, CheckCircle2, MapPin, Star, Loader2, Send } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
@@ -140,11 +140,6 @@ const Appointments: React.FC = () => {
               </div>
               <p className="text-gray-500">Nenhum agendamento ainda.</p>
               <p className="text-gray-400 text-sm mt-1">Quando você tiver serviços agendados, eles aparecerão aqui.</p>
-              {!isClient && (
-                <Link to="/dashboard/enquiries" className="inline-block mt-4 text-brand-600 font-medium hover:underline">
-                  Ver minhas consultas
-                </Link>
-              )}
             </div>
           ) : (
             <ul className="divide-y divide-gray-100">
