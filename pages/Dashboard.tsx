@@ -4,7 +4,7 @@ import { ServiceCard } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
 import { Settings, Plus, Trash2, Search, MessageSquare, LogOut, Calendar, Check, X, Clock, MapPin, Star, CheckCircle2, Loader2, Send, Megaphone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { ServiceAd, UserRole, Appointment, AppointmentStatus } from '../types';
+import { ServiceAd, UserRole, Appointment, AppointmentStatus, ChatSession } from '../types';
 
 const Dashboard: React.FC = () => {
   const { user, logout, loading } = useAuth();
@@ -18,6 +18,7 @@ const Dashboard: React.FC = () => {
   };
   const [myAds, setMyAds] = useState<ServiceAd[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [chats, setChats] = useState<ChatSession[]>([]);
 
   // Review State
   const [reviewingApp, setReviewingApp] = useState<Appointment | null>(null);
@@ -44,6 +45,8 @@ const Dashboard: React.FC = () => {
         const unread = await store.getGlobalUnreadCount(user.id);
         setUnreadCount(unread);
         await loadAppointments(user.id, user.role);
+        const userChats = await store.getChats(user.id);
+        setChats(userChats);
     };
     loadData();
     } else {
@@ -51,6 +54,8 @@ const Dashboard: React.FC = () => {
             const unread = await store.getGlobalUnreadCount(user.id);
             setUnreadCount(unread);
             await loadAppointments(user.id, user.role);
+            const userChats = await store.getChats(user.id);
+            setChats(userChats);
         };
         loadClientData();
     }
@@ -121,6 +126,43 @@ const Dashboard: React.FC = () => {
   if (!user) return null;
 
   const isClient = user.role === UserRole.CLIENT;
+
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const enquiriesTotal = chats.length;
+  const enquiriesNew = chats.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
+  const enquiriesWeek = chats.filter(c => new Date(c.updatedAt) >= weekAgo).length;
+  const enquiriesResolved = appointments.filter(a => a.status === 'completed').length;
+
+  const apptTotal = appointments.length;
+  const apptPending = appointments.filter(a => a.status === 'pending').length;
+  const apptConfirmed = appointments.filter(a => a.status === 'confirmed').length;
+  const apptCompleted = appointments.filter(a => a.status === 'completed').length;
+
+  const adsTotal = myAds.length;
+  const adsPremium = myAds.filter(a => a.isPremium).length;
+  const adsCategories = new Set(myAds.map(a => a.category)).size;
+  const adsRating = myAds.length ? (myAds.reduce((acc, a) => acc + (a.rating || 0), 0) / myAds.length).toFixed(1) : '0';
+
+  const StatCard: React.FC<{ label: string; value: number | string; icon: React.ComponentType<{ size?: number | string; className?: string }>; color: string }> = ({ label, value, icon: Icon, color }) => (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${color}`}>
+        <Icon size={22} />
+      </div>
+      <div>
+        <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <p className="text-sm text-gray-500">{label}</p>
+      </div>
+    </div>
+  );
+
+  const SectionHeader: React.FC<{ title: string; to: string; linkText: string }> = ({ title, to, linkText }) => (
+    <div className="flex items-center justify-between mb-6">
+      <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+      <Link to={to} className="text-brand-600 font-medium text-sm hover:underline">{linkText} →</Link>
+    </div>
+  );
 
   return (
     <>
