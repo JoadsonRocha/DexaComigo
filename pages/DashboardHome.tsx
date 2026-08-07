@@ -84,7 +84,7 @@ const DashboardHome: React.FC = () => {
 
         {/* Meus Serviços */}
         <div className="mb-6">
-            <SectionHeader title="Meus Serviços" to="/dashboard/enquiries" linkText="Ver todos" />
+            <SectionHeader title="Meus Serviços" to="/dashboard/appointments" linkText="Ver todos" />
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 <StatCard label="Total de Consultas" value={enquiriesTotal} icon={MessageSquare} color="bg-brand-50 text-brand-600" />
                 <StatCard label="Novas Mensagens" value={enquiriesNew} icon={Mail} color="bg-green-50 text-green-600" />
