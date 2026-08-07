@@ -80,11 +80,11 @@ const Home: React.FC = () => {
                     <div className="inline-flex items-center py-1 px-4 rounded-full bg-brand-500/30 text-brand-200 text-xs font-bold uppercase tracking-widest mb-3 border border-brand-400/20 backdrop-blur-md">
             <Users size={14} className="mr-2" /> Profissionais Certificadas em Domicílio
           </div>
-                                        <h1 className="text-4xl md:text-7xl font-extrabold text-white tracking-tighter mb-3 leading-[1.02]">
+                                        <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tighter mb-3 leading-[1.02]">
                         Beleza que cuida.<br/>
                         <span className="text-brand-400">Liberdade que transforma.</span>
                     </h1>
-                    <p className="max-w-3xl mx-auto text-lg md:text-2xl text-brand-100 mb-6 leading-relaxed font-light">
+                    <p className="max-w-3xl mx-auto text-base md:text-lg text-brand-100 mb-6 leading-relaxed font-light">
             Conectamos você a profissionais de beleza certificadas. Atendimento especializado no conforto da sua casa, gerando impacto social e autonomia.
           </p>
 
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
                         name="q"
                         type="text" 
                         placeholder="Cabelo, Maquiagem..." 
-                        className="w-full pl-11 pr-4 py-2.5 md:py-3 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base md:text-lg"
+                        className="w-full pl-11 pr-4 py-2 md:py-2.5 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-sm md:text-base"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         aria-label="Pesquisar serviços"
@@ -107,7 +107,7 @@ const Home: React.FC = () => {
                 <button 
                     type="submit"
                     aria-label="Pesquisar serviços"
-                    className="px-6 md:px-10 py-2.5 md:py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl transition-all shadow-xl hover:shadow-brand-500/40 flex items-center justify-center text-base md:text-lg active:scale-95"
+                    className="px-4 md:px-6 py-2 md:py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl transition-all shadow-xl hover:shadow-brand-500/40 flex items-center justify-center text-sm md:text-base active:scale-95"
                 >
                     Encontrar agora
                 </button>
