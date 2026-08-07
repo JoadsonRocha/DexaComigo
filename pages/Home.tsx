@@ -162,7 +162,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {featuredAds.map(ad => (
                         <div key={ad.id} className="scale-95 origin-top">
-                           <ServiceCard ad={ad} />
+                           <ServiceCard ad={ad} compact />
                         </div>
                     ))}
                 </div>
