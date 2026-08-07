@@ -38,7 +38,7 @@ export const ServiceCard: React.FC<{ ad: ServiceAd; compact?: boolean }> = ({ ad
   const navigate = useNavigate();
   return (
     <Link to={`/service/${ad.id}`} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 flex flex-col h-full">
-      <div className={`relative ${compact ? 'h-[140px] md:h-[188px]' : 'aspect-video'} overflow-hidden bg-gray-100`}>
+      <div className={`relative ${compact ? 'h-[132px] md:h-[176px]' : 'aspect-video'} overflow-hidden bg-gray-100`}>
         <img 
           src={ad.images[0]} 
           alt={ad.title} 

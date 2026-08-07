@@ -80,10 +80,10 @@ const Home: React.FC = () => {
           <div className="inline-flex items-center py-1 px-4 rounded-full bg-brand-500/30 text-brand-200 text-xs font-bold uppercase tracking-widest mb-6 border border-brand-400/20 backdrop-blur-md">
             <Users size={14} className="mr-2" /> Profissionais Certificadas em Domicílio
           </div>
-          <h1 className="text-4xl md:text-7xl font-extrabold text-white tracking-tight mb-8 leading-[1.1]">
-            Beleza que cuida.<br/>
-            <span className="text-brand-400">Liberdade que transforma.</span>
-          </h1>
+                    <h1 className="text-4xl md:text-7xl font-extrabold text-white tracking-tighter mb-6 leading-[1.02]">
+                        Beleza que cuida.<br/>
+                        <span className="text-brand-400">Liberdade que transforma.</span>
+                    </h1>
           <p className="max-w-3xl mx-auto text-lg md:text-2xl text-brand-100 mb-12 leading-relaxed font-light">
             Conectamos você a profissionais de beleza certificadas. Atendimento especializado no conforto da sua casa, gerando impacto social e autonomia.
           </p>
@@ -147,7 +147,7 @@ const Home: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between items-end mb-10 md:mb-12 gap-4">
                 <div className="text-left">
                     <h2 id="featured-heading" className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">Serviços em destaque</h2>
-                    <p className="text-gray-500 mt-2 text-sm md:text-base font-light">Conheça as profissionais que são referência.</p>
+                    <p className="text-gray-500 mt-1 text-sm md:text-sm font-light">Conheça as profissionais que são referência.</p>
                 </div>
                 <Link to="/search" className="group text-brand-600 font-bold flex items-center hover:text-brand-700 bg-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl shadow-sm border border-gray-100 transition-all active:scale-95 text-sm md:text-base">
                     Ver todos <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
