@@ -54,9 +54,6 @@ export const Navbar: React.FC = () => {
                    <img className="h-8 w-8 rounded-full object-cover border border-gray-200" src={user.avatar || "https://via.placeholder.com/100"} alt="" />
                    <span className="font-medium">{user.name}</span>
                 </Link>
-                <button onClick={handleLogout} className="text-gray-400 hover:text-red-500" title="Sair">
-                  <LogOut className="w-5 h-5" />
-                </button>
               </div>
             ) : (
               <Link to="/login" className="text-brand-600 font-medium hover:text-brand-800">
@@ -96,7 +93,6 @@ export const Navbar: React.FC = () => {
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">{user.name}</div>
                   <div className="text-sm font-medium text-gray-500">{user.email}</div>
-                  <button onClick={handleLogout} className="mt-2 text-sm text-red-600">Sair</button>
                 </div>
               </div>
             ) : (
