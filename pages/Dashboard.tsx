@@ -125,14 +125,14 @@ const Dashboard: React.FC = () => {
                 <div className="mt-8 border-t border-gray-100 pt-6">
                     <h3 className="font-semibold text-gray-700 mb-4">Menu</h3>
                     <nav className="space-y-1">
-                        <Link to="/dashboard/enquiries" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
-                            <MessageSquare size={16} className="mr-3 text-brand-600" /> Minhas Consultas
+                        <Link to="/chat" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
+                            <MessageSquare size={16} className="mr-3 text-brand-600" /> Chat
                         </Link>
                         <Link to="/dashboard/appointments" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
                             <Calendar size={16} className="mr-3 text-brand-600" /> Meus Agendamentos
                         </Link>
-                        <Link to="/chat" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
-                            <MessageSquare size={16} className="mr-3 text-brand-600" /> Chat
+                        <Link to="/dashboard/enquiries" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
+                            <MessageSquare size={16} className="mr-3 text-brand-600" /> Minhas Consultas
                         </Link>
                         {!isClient && (
                             <Link to="/dashboard/ads" className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors text-sm font-medium">
