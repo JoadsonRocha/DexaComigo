@@ -72,7 +72,7 @@ export const Navbar: React.FC = () => {
 
             {user ? (
               <div className="relative ml-3 flex items-center space-x-4">
-                <Link to="/chat" className={`${isActive('/chat')} text-gray-500 hover:text-brand-600 relative`} title="Mensagens">
+                <Link to="/dashboard/chat" className={`${isActive('/dashboard/chat')} text-gray-500 hover:text-brand-600 relative`} title="Mensagens">
                     <MessageSquare className="w-6 h-6" />
                     {unreadCount > 0 && (
                         <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -114,7 +114,7 @@ export const Navbar: React.FC = () => {
               <Link to="/create-ad" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-brand-600 hover:bg-brand-50 hover:border-brand-300">Anunciar Serviço</Link>
             )}
              {user && (
-                 <Link to="/chat" className="flex items-center justify-between pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-300">
+                 <Link to="/dashboard/chat" className="flex items-center justify-between pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-brand-300">
                      Mensagens
                      {unreadCount > 0 && (
                          <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">{unreadCount}</span>

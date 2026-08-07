@@ -138,7 +138,7 @@ const ServiceDetail: React.FC = () => {
 
       try {
         const chatId = await store.startChat(user.id, ad.providerId, ad.id, ad.title);
-        navigate(`/chat/${chatId}`);
+        navigate(`/dashboard/chat/${chatId}`);
       } catch (e: any) {
         alert("Erro ao iniciar chat. Verifique as permissões de banco de dados (RLS).");
       }
@@ -264,7 +264,7 @@ const ServiceDetail: React.FC = () => {
         });
 
         setShowScheduleModal(false);
-        navigate(`/chat/${chatId}`);
+        navigate(`/dashboard/chat/${chatId}`);
       } catch (e: any) {
         alert("Não foi possível solicitar o agendamento. Tente novamente mais tarde.");
       } finally {
@@ -450,7 +450,7 @@ const ServiceDetail: React.FC = () => {
                                     Editar Meu Anúncio
                                 </button>
                                 <button 
-                                    onClick={() => navigate('/chat')}
+                                    onClick={() => navigate('/dashboard/chat')}
                                     className="w-full bg-brand-50 text-brand-700 hover:bg-brand-100 font-bold py-3.5 px-4 rounded-xl border border-brand-200 flex items-center justify-center transition-all"
                                 >
                                     Ver Minhas Mensagens

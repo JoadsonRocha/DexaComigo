@@ -44,7 +44,7 @@ const PublicProfile: React.FC = () => {
 
     try {
         const chatId = await store.startChat(user.id, id!, adId);
-        navigate(`/chat/${chatId}`);
+        navigate(`/dashboard/chat/${chatId}`);
     } catch (e) {
         alert("Erro ao iniciar chat.");
     }

@@ -44,7 +44,7 @@ const Chat: React.FC = () => {
                 }
             }
         } else if (userChats.length > 0 && window.innerWidth >= 768) {
-            navigate(`/chat/${userChats[0].id}`);
+            navigate(`/dashboard/chat/${userChats[0].id}`);
         }
     };
     loadChats();
@@ -124,7 +124,7 @@ const Chat: React.FC = () => {
   };
 
   const handleChatSelect = (chatId: string) => {
-      navigate(`/chat/${chatId}`);
+      navigate(`/dashboard/chat/${chatId}`);
   };
 
   // Formata a hora e o dia da mensagem
@@ -208,7 +208,7 @@ const Chat: React.FC = () => {
             <>
                 {/* Chat Header */}
                 <div className="p-4 bg-white border-b border-gray-200 shadow-sm flex items-center">
-                    <button onClick={() => navigate('/chat')} className="mr-3 md:hidden text-gray-500">
+                    <button onClick={() => navigate('/dashboard/chat')} className="mr-3 md:hidden text-gray-500">
                         <ArrowLeft />
                     </button>
                     <div className="flex items-center">

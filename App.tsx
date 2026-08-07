@@ -7,6 +7,7 @@ import SearchPage from './pages/Search';
 import ServiceDetail from './pages/ServiceDetail';
 import CreateAd from './pages/CreateAd';
 import Dashboard from './pages/Dashboard';
+import DashboardHome from './pages/DashboardHome';
 import Enquiries from './pages/Enquiries';
 import Appointments from './pages/Appointments';
 import Ads from './pages/Ads';
@@ -19,11 +20,10 @@ import { AuthProvider } from './context/AuthContext';
 
 const MainLayout: React.FC = () => {
   const location = useLocation();
-  const isChatRoute = location.pathname.startsWith('/chat');
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
 
   return (
-    <div className={`flex flex-col bg-gray-50 ${isChatRoute || isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
+    <div className={`flex flex-col bg-gray-50 ${isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
       <Navbar />
       <main className="flex-grow flex flex-col overflow-hidden">
         <Routes>
@@ -34,18 +34,22 @@ const MainLayout: React.FC = () => {
           <Route path="/profissional/:id" element={<PublicProfile />} />
           <Route path="/create-ad" element={<CreateAd />} />
           <Route path="/edit-ad/:id" element={<CreateAd />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/enquiries" element={<Enquiries />} />
-          <Route path="/dashboard/appointments" element={<Appointments />} />
-          <Route path="/dashboard/ads" element={<Ads />} />
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route index element={<DashboardHome />} />
+            <Route path="enquiries" element={<Enquiries />} />
+            <Route path="appointments" element={<Appointments />} />
+            <Route path="ads" element={<Ads />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="chat/:id" element={<Chat />} />
+          </Route>
           <Route path="/profile/edit" element={<EditProfile />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/chat/:id" element={<Chat />} />
+          <Route path="/chat" element={<Navigate to="/dashboard/chat" replace />} />
+          <Route path="/chat/:id" element={<Navigate to="/dashboard/chat/:id" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
-      {!isChatRoute && !isDashboardRoute && <Footer />}
+      {!isDashboardRoute && <Footer />}
     </div>
   );
 };
