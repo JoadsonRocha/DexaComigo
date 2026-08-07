@@ -5,13 +5,17 @@ import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
 import { ServiceAd, UserRole } from '../types';
 import { ServiceCard } from '../components/UI';
+import { useToast } from '../context/ToastContext';
 
 const Ads: React.FC = () => {
   const { user, loading } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const [ads, setAds] = useState<ServiceAd[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -38,9 +42,22 @@ const Ads: React.FC = () => {
   }, [user, loading]);
 
   const handleDelete = async (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este anúncio?')) {
+    if (confirmingId !== id) {
+      setConfirmingId(id);
+      window.setTimeout(() => setConfirmingId(prev => prev === id ? null : prev), 3000);
+      return;
+    }
+    setDeletingId(id);
+    try {
       await store.deleteAd(id);
       setAds(prev => prev.filter(ad => ad.id !== id));
+      toast('Anúncio excluído com sucesso.', 'success');
+    } catch (e) {
+      console.error("Erro ao excluir anúncio:", e);
+      toast('Não foi possível excluir o anúncio.', 'error');
+    } finally {
+      setConfirmingId(null);
+      setDeletingId(null);
     }
   };
 
@@ -114,9 +131,10 @@ const Ads: React.FC = () => {
                     <Link to={`/edit-ad/${ad.id}`} className="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded shadow hover:bg-white font-medium">Editar</Link>
                     <button
                       onClick={() => handleDelete(ad.id)}
-                      className="bg-red-500/90 text-white text-xs px-2 py-1 rounded shadow hover:bg-red-600 flex items-center"
+                      disabled={deletingId === ad.id}
+                      className={`${confirmingId === ad.id ? 'bg-red-600' : 'bg-red-500/90'} text-white text-xs px-2 py-1 rounded shadow hover:bg-red-600 flex items-center disabled:opacity-50 transition-colors`}
                     >
-                      <Trash2 size={12} className="mr-1" /> Excluir
+                      <Trash2 size={12} className="mr-1" /> {deletingId === ad.id ? 'Excluindo...' : confirmingId === ad.id ? 'Confirmar?' : 'Excluir'}
                     </button>
                   </div>
                 </div>

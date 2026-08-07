@@ -5,6 +5,7 @@ import { User, ServiceAd } from '../types';
 import { ServiceCard } from '../components/UI';
 import { MessageSquare, MapPin, Star, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const PublicProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +13,7 @@ const PublicProfile: React.FC = () => {
   const [ads, setAds] = useState<ServiceAd[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,7 +48,8 @@ const PublicProfile: React.FC = () => {
         const chatId = await store.startChat(user.id, id!, adId);
         navigate(`/dashboard/chat/${chatId}`);
     } catch (e) {
-        alert("Erro ao iniciar chat.");
+        console.error(e);
+        toast("Erro ao iniciar chat.", 'error');
     }
   };
 
