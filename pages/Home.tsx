@@ -64,13 +64,15 @@ const Home: React.FC = () => {
   return (
     <div className="flex-1 bg-white flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-brand-900 pt-24 pb-[84px] overflow-hidden">
+            <section role="banner" className="relative bg-brand-900 pt-24 pb-[84px] overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-brand-900 mix-blend-multiply opacity-85"></div>
           <img 
-            src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
-            className="w-full h-full object-cover" 
-            alt="Profissional de beleza em atendimento"
+                        src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                        className="w-full h-full object-cover" 
+                        alt="Profissional de beleza em atendimento"
+                        loading="lazy"
+                        aria-hidden="true"
           />
         </div>
         
@@ -89,17 +91,22 @@ const Home: React.FC = () => {
           <div className="w-full max-w-3xl mx-auto">
              <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-2 bg-white p-1.5 rounded-3xl shadow-2xl border border-white/20">
                 <div className="flex-1 relative">
-                    <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
+                    <label htmlFor="home-search" className="sr-only">Pesquisar serviços</label>
+                    <Search aria-hidden="true" className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
                     <input 
+                        id="home-search"
+                        name="q"
                         type="text" 
                         placeholder="Cabelo, Maquiagem..." 
                         className="w-full pl-11 pr-4 py-2.5 md:py-3 rounded-2xl border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base md:text-lg"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        aria-label="Pesquisar serviços"
                     />
                 </div>
                 <button 
                     type="submit"
+                    aria-label="Pesquisar serviços"
                     className="px-6 md:px-10 py-2.5 md:py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl transition-all shadow-xl hover:shadow-brand-500/40 flex items-center justify-center text-base md:text-lg active:scale-95"
                 >
                     Encontrar agora
