@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { store } from '../services/store';
 import { ServiceAd } from '../types';
 import { ServiceCard } from '../components/UI';
+import { categoryIcon } from '../components/CategoryIcon';
 import { CATEGORIES } from '../constants';
 import { Search, ArrowRight } from 'lucide-react';
 
