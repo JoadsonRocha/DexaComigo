@@ -617,6 +617,26 @@ class Store {
 
     await this.sendMessage(chatId, senderId, text);
   }
+
+  async notifyAppointmentConfirmed(
+    appointment: Appointment,
+    providerName: string,
+    clientName?: string,
+    providerId?: string
+  ): Promise<void> {
+    const chatId = await this.findChatForAppointment(appointment.adId, appointment.clientId, appointment.providerId);
+    if (!chatId) {
+      console.warn("Chat not found for appointment", appointment.id);
+      return;
+    }
+
+    const formattedDate = new Date(appointment.date).toLocaleDateString('pt-BR');
+    const senderId = providerId || appointment.providerId;
+    const name = clientName || appointment.clientName || 'Cliente';
+    const text = `Olá, ${name}! Seu agendamento para o dia ${formattedDate} às ${appointment.time} foi confirmado! Qualquer dúvida é só me chamar. Até lá!`;
+
+    await this.sendMessage(chatId, senderId, text);
+  }
 }
 
 export const store = new Store();
