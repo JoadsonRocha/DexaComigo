@@ -17,6 +17,11 @@ export const Navbar: React.FC = () => {
     }
   }, [user, location.pathname]); // Refresh when navigating
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
 
   const handleLogout = () => {
     logout();
