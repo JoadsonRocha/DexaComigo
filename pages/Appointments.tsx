@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Check, X, Clock, CheckCircle2, MapPin, Star, Loader2, Send } from 'lucide-react';
+import { Calendar, Check, X, Clock, CheckCircle2, MapPin, Star, Loader2, Send, List, LayoutGrid } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
 import { Appointment, AppointmentStatus, UserRole } from '../types';
@@ -11,6 +11,7 @@ const Appointments: React.FC = () => {
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [view, setView] = useState<'list' | 'grid'>('list');
 
   const [reviewingApp, setReviewingApp] = useState<Appointment | null>(null);
   const [reviewRating, setReviewRating] = useState(5);
@@ -89,6 +90,79 @@ const Appointments: React.FC = () => {
     } finally {
       setSubmittingReview(false);
     }
+  };
+
+  const statusLabel = (status: AppointmentStatus) =>
+    status === 'pending' ? 'Aguardando Confirmação' :
+    status === 'confirmed' ? 'Confirmado' :
+    status === 'completed' ? 'Concluído' : 'Cancelado';
+
+  const statusBadge = (status: AppointmentStatus) => `px-2 py-0.5 rounded text-xs font-bold uppercase ${
+    status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+    status === 'confirmed' ? 'bg-green-100 text-green-700' :
+    status === 'completed' ? 'bg-blue-100 text-blue-700' :
+    'bg-red-100 text-red-700'
+  }`;
+
+  const renderActions = (app: Appointment) => {
+    return (
+      <>
+        {isClient && app.status === 'confirmed' && (
+          <button
+            onClick={() => handleConfirmService(app)}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+          >
+            <CheckCircle2 size={16} className="mr-1" /> Confirmar serviço realizado
+          </button>
+        )}
+
+        {isClient && app.status === 'completed' && !app.reviewed && (
+          <div className="flex flex-col gap-1 items-start sm:items-end">
+            <span className="text-xs text-gray-500 flex items-center">
+              <Star size={13} className="mr-1 text-yellow-500" /> Serviço concluído
+            </span>
+            <button
+              onClick={() => { setReviewingApp(app); setReviewRating(5); setReviewComment(''); setReviewError(''); }}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+            >
+              <Star size={16} className="mr-1" /> Avaliar serviço
+            </button>
+          </div>
+        )}
+
+        {isClient && app.status === 'completed' && app.reviewed && (
+          <span className="text-xs text-green-600 flex items-center">
+            <CheckCircle2 size={13} className="mr-1" /> Avaliado
+          </span>
+        )}
+
+        {!isClient && app.status === 'pending' && (
+          <div className="flex flex-col sm:flex-row gap-2">
+            <button
+              onClick={() => handleUpdateStatus(app.id, 'confirmed')}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+            >
+              <Check size={16} className="mr-1" /> Confirmar
+            </button>
+            <button
+              onClick={() => handleUpdateStatus(app.id, 'cancelled')}
+              className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+            >
+              <X size={16} className="mr-1" /> Recusar
+            </button>
+          </div>
+        )}
+
+        {!isClient && app.status === 'confirmed' && (
+          <button
+            onClick={() => handleUpdateStatus(app.id, 'completed')}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+          >
+            <CheckCircle2 size={16} className="mr-1" /> Concluir serviço
+          </button>
+        )}
+      </>
+    );
   };
 
   const total = appointments.length;
