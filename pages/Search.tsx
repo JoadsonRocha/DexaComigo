@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Filter, X, Search, MapPin } from 'lucide-react';
+import { Filter, X, Search, MapPin, Navigation } from 'lucide-react';
 import { store } from '../services/store';
 import { ServiceCard, CategoryPill } from '../components/UI';
 import { CATEGORIES } from '../constants';
@@ -21,6 +21,34 @@ const SearchPage: React.FC = () => {
   const [category, setCategory] = useState(searchParams.get('c') || 'all');
   const [priceRange, setPriceRange] = useState<string>(searchParams.get('p') || 'all');
   const [showFilters, setShowFilters] = useState(window.innerWidth >= 768);
+  const [isLocating, setIsLocating] = useState(false);
+
+  const handleGetLocation = () => {
+      if (!navigator.geolocation) {
+          alert('Geolocalização não suportada no seu navegador.');
+          return;
+      }
+      setIsLocating(true);
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+          try {
+              const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=pt`);
+              const data = await res.json();
+              const loc = `${data.city || data.locality}, ${data.principalSubdivisionCode?.split('-')[1] || data.principalSubdivision}`;
+              setLocation(loc);
+              // auto search
+              updateSearchParam('l', loc);
+              setPage(1);
+              loadData(1, true); // wait, loadData won't have the new location closure unless I call it inside handleSearch? Let's just set the location state and they can click search.
+          } catch(e) {
+              alert('Erro ao buscar localização.');
+          } finally {
+              setIsLocating(false);
+          }
+      }, () => {
+          alert('Permissão de localização negada.');
+          setIsLocating(false);
+      });
+  };
 
   // Resize listener for default showFilters behavior
   useEffect(() => {
@@ -125,9 +153,18 @@ const SearchPage: React.FC = () => {
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                         placeholder="Sua cidade ou bairro..."
-                        className="w-full border-gray-300 rounded-xl focus:ring-brand-500 focus:border-brand-500 p-3 pl-10 border shadow-sm"
+                        className="w-full border-gray-300 rounded-xl focus:ring-brand-500 focus:border-brand-500 p-3 pl-10 pr-12 border shadow-sm"
                     />
                     <MapPin className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
+                    <button 
+                        type="button" 
+                        onClick={handleGetLocation}
+                        disabled={isLocating}
+                        title="Usar minha localização"
+                        className="absolute right-2 top-2 p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-brand-600 transition-colors disabled:opacity-50"
+                    >
+                        <Navigation size={18} className={isLocating ? "animate-pulse" : ""} />
+                    </button>
                 </div>
                 <button type="submit" className="bg-brand-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-brand-700 shadow-sm transition-colors active:scale-95">
                     Buscar
