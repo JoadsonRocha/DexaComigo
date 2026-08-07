@@ -499,6 +499,80 @@ class Store {
       updated_at: new Date().toISOString()
     }).eq('id', chatId);
   }
+
+  // --- APPOINTMENTS ---
+  async createAppointment(data: Omit<Appointment, 'id' | 'status' | 'createdAt' | 'adTitle' | 'clientName' | 'providerName' | 'clientAvatar'>): Promise<Appointment> {
+    const { data: appointment, error } = await supabase
+      .from('appointments')
+      .insert([{
+        client_id: data.clientId,
+        provider_id: data.providerId,
+        ad_id: data.adId,
+        date: data.date,
+        time: data.time,
+        notes: data.notes
+      }])
+      .select()
+      .single();
+
+    if (error) { console.error("Store Error [createAppointment]:", error); throw error; }
+
+    return {
+      id: appointment.id,
+      clientId: appointment.client_id,
+      providerId: appointment.provider_id,
+      adId: appointment.ad_id,
+      date: appointment.date,
+      time: appointment.time,
+      notes: appointment.notes,
+      status: appointment.status as AppointmentStatus,
+      createdAt: appointment.created_at
+    };
+  }
+
+  async getMyAppointments(userId: string, role: UserRole): Promise<Appointment[]> {
+    const query = supabase.from('appointments').select(`
+      *,
+      service_ads(title),
+      client:profiles!appointments_client_id_fkey(name, avatar),
+      provider:profiles!appointments_provider_id_fkey(name)
+    `);
+
+    if (role === 'CLIENT') {
+      query.eq('client_id', userId);
+    } else {
+      query.eq('provider_id', userId);
+    }
+
+    const { data, error } = await query.order('date', { ascending: false });
+
+    if (error) { console.error("Store Error [getMyAppointments]:", error); throw error; }
+
+    return (data || []).map((app: any) => ({
+      id: app.id,
+      clientId: app.client_id,
+      providerId: app.provider_id,
+      adId: app.ad_id,
+      date: app.date,
+      time: app.time,
+      notes: app.notes,
+      status: app.status as AppointmentStatus,
+      createdAt: app.created_at,
+      adTitle: app.service_ads?.title,
+      clientName: app.client?.name,
+      clientAvatar: app.client?.avatar,
+      providerName: app.provider?.name
+    }));
+  }
+
+  async updateAppointmentStatus(id: string, status: AppointmentStatus): Promise<void> {
+    const { error } = await supabase
+      .from('appointments')
+      .update({ status })
+      .eq('id', id);
+
+    if (error) { console.error("Store Error [updateAppointmentStatus]:", error); throw error; }
+  }
 }
 
 export const store = new Store();
