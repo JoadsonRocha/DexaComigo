@@ -2,6 +2,15 @@
 import { createClient } from '@supabase/supabase-js';
 import { ServiceAd, User, UserRole, ChatSession, Message, Review } from '../types';
 
+export interface GetAdsParams {
+  category?: string;
+  searchTerm?: string;
+  providerId?: string;
+  isPremium?: boolean;
+  page?: number;
+  limit?: number;
+}
+
 /**
  * GUIA DE CONFIGURAÇÃO SQL PARA O SUPABASE (Execute no SQL Editor):
  * 
@@ -55,11 +64,31 @@ class Store {
     };
   }
 
-  async getAds(): Promise<ServiceAd[]> {
-    const { data, error } = await supabase
-      .from('service_ads')
-      .select('*, profiles(name), reviews(*)')
-      .order('created_at', { ascending: false });
+  async getAds(params?: GetAdsParams): Promise<ServiceAd[]> {
+    let query = supabase.from('service_ads').select('*, profiles(name)');
+    
+    if (params?.category && params.category !== 'all') {
+      query = query.eq('category', params.category);
+    }
+    if (params?.providerId) {
+      query = query.eq('provider_id', params.providerId);
+    }
+    if (params?.isPremium !== undefined) {
+      query = query.eq('is_premium', params.isPremium);
+    }
+    if (params?.searchTerm) {
+      // Basic ilike search on title or description
+      query = query.or(`title.ilike.%${params.searchTerm}%,description.ilike.%${params.searchTerm}%`);
+    }
+
+    const limit = params?.limit || 50;
+    const page = params?.page || 1;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    query = query.range(from, to).order('created_at', { ascending: false });
+
+    const { data, error } = await query;
     
     if (error) { console.error("Store Error [getAds]:", error); throw error; }
     return (data || []).map(ad => this.mapAd(ad));
