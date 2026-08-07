@@ -61,6 +61,21 @@ export const ServiceCard: React.FC<{ ad: ServiceAd }> = ({ ad }) => {
             </h3>
         </div>
         
+        {ad.tags && ad.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+                {ad.tags.slice(0, 2).map(tag => (
+                    <span key={tag} className="text-[10px] font-medium bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full border border-brand-100">
+                        {tag}
+                    </span>
+                ))}
+                {ad.tags.length > 2 && (
+                    <span className="text-[10px] font-medium bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full border border-gray-100">
+                        +{ad.tags.length - 2}
+                    </span>
+                )}
+            </div>
+        )}
+
         <p className="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">
           {ad.description}
         </p>
@@ -80,8 +95,12 @@ export const ServiceCard: React.FC<{ ad: ServiceAd }> = ({ ad }) => {
                     }}
                     className="flex items-center space-x-2 group/profile hover:bg-gray-50 p-1 -ml-1 rounded-lg transition-colors text-left"
                 >
-                    <div className="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-xs font-bold group-hover/profile:bg-brand-600 group-hover/profile:text-white transition-colors">
-                        {ad.providerName.charAt(0)}
+                    <div className="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-xs font-bold group-hover/profile:bg-brand-600 group-hover/profile:text-white transition-colors overflow-hidden">
+                        {ad.providerAvatar ? (
+                            <img src={ad.providerAvatar} alt={ad.providerName} className="w-full h-full object-cover" />
+                        ) : (
+                            ad.providerName.charAt(0)
+                        )}
                     </div>
                     <span className="text-xs text-gray-600 group-hover/profile:text-brand-600 truncate max-w-[100px] flex items-center transition-colors">
                         {ad.providerName}

@@ -62,12 +62,15 @@ class Store {
       isPremium: data.is_premium,
       createdAt: data.created_at,
       whatsapp: data.whatsapp,
-      availability: data.availability
+      availability: data.availability,
+      tags: data.tags || [],
+      providerAvatar: data.profiles?.avatar || undefined,
+      isCertified: data.profiles?.is_certified || false
     };
   }
 
   async getAds(params?: GetAdsParams): Promise<ServiceAd[]> {
-    let query = supabase.from('service_ads').select('*, profiles(name)');
+    let query = supabase.from('service_ads').select('*, profiles(name, avatar, is_certified)');
     
     if (params?.category && params.category !== 'all') {
       query = query.eq('category', params.category);
@@ -108,7 +111,7 @@ class Store {
   async getAdById(id: string): Promise<ServiceAd | null> {
     const { data, error } = await supabase
       .from('service_ads')
-      .select('*, profiles(name), reviews(*)')
+      .select('*, profiles(name, avatar, is_certified), reviews(*)')
       .eq('id', id)
       .single();
     
@@ -130,6 +133,7 @@ class Store {
         images: ad.images,
         whatsapp: ad.whatsapp,
         availability: ad.availability,
+        tags: ad.tags || [],
         is_premium: ad.isPremium || false
       }])
       .select()
@@ -150,6 +154,7 @@ class Store {
     if (ad.whatsapp !== undefined) updateData.whatsapp = ad.whatsapp;
     if (ad.images !== undefined) updateData.images = ad.images;
     if (ad.availability !== undefined) updateData.availability = ad.availability;
+    if (ad.tags !== undefined) updateData.tags = ad.tags;
 
     const { error } = await supabase
       .from('service_ads')

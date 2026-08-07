@@ -41,6 +41,7 @@ CREATE TABLE service_ads (
   is_premium BOOLEAN DEFAULT false,
   whatsapp TEXT NOT NULL,
   availability TEXT,
+  tags TEXT[] DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

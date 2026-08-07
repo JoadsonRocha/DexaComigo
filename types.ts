@@ -42,8 +42,10 @@ export interface ServiceAd {
   isPremium?: boolean;
   createdAt: string;
   whatsapp: string;
-  availability?: string; // New field e.g., "Seg à Sex, 08:00 - 18:00"
+  availability?: string; 
+  tags?: string[];
   isCertified?: boolean;
+  providerAvatar?: string;
 }
 
 export interface FilterState {
