@@ -27,19 +27,42 @@ const ServiceDetail: React.FC = () => {
 
   const parseAvailability = (availability?: string): { days: string[]; start: string; end: string } | null => {
     if (!availability) return null;
-    const parts = availability.split(',');
-    const timePart = parts.pop()?.trim();
-    if (!timePart || !timePart.includes('-')) return null;
-    const [start, end] = timePart.split('-').map(t => t.trim());
-    const days = parts.map(d => d.trim().toLowerCase()).filter(Boolean);
-    if (!start || !end) return null;
+    const timeMatch = availability.match(/(\d{1,2}:\d{2})\s*[-àa]\s*(\d{1,2}:\d{2})/i);
+    if (!timeMatch) return null;
+    const start = timeMatch[1].padStart(5, '0');
+    const end = timeMatch[2].padStart(5, '0');
+    const dayPart = availability.replace(timeMatch[0], '');
+    const dayAliases: Record<string, string> = {
+      'seg': 'seg', 'segunda': 'seg', 'segunda-feira': 'seg',
+      'ter': 'ter', 'terça': 'ter', 'terca': 'ter', 'terça-feira': 'ter', 'terca-feira': 'ter',
+      'qua': 'qua', 'quarta': 'qua', 'quarta-feira': 'qua',
+      'qui': 'qui', 'quinta': 'qui', 'quinta-feira': 'qui',
+      'sex': 'sex', 'sexta': 'sex', 'sexta-feira': 'sex',
+      'sab': 'sab', 'sáb': 'sab', 'sábado': 'sab', 'sabado': 'sab',
+      'dom': 'dom', 'domingo': 'dom',
+    };
+    const rawDays = dayPart.split(',').map(d => d.trim().toLowerCase()).filter(Boolean);
+    const days: string[] = [];
+    for (const raw of rawDays) {
+      const normalized = raw.replace(/[áàâã]/g, 'a').replace(/[éèê]/g, 'e').replace(/[íìî]/g, 'i').replace(/[óòôõ]/g, 'o').replace(/[úùû]/g, 'u').replace(/ç/g, 'c');
+      if (dayAliases[normalized]) {
+        const key = dayAliases[normalized];
+        if (!days.includes(key)) days.push(key);
+      }
+    }
+    if (days.length === 0) return { days: [], start, end };
     return { days, start, end };
   };
 
-  const WEEKDAY_LABELS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  const WEEKDAY_LABELS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
   const getWeekdayLabel = (dateStr: string): string => {
-    const d = new Date(dateStr + 'T00:00:00');
+    const d = new Date(dateStr + 'T12:00:00');
     return WEEKDAY_LABELS[d.getDay()];
+  };
+
+  const timeToMinutes = (time: string): number => {
+    const [h = 0, m = 0] = time.split(':').map(Number);
+    return h * 60 + m;
   };
 
   const availability = parseAvailability(ad?.availability);
