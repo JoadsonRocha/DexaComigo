@@ -134,7 +134,6 @@ const Enquiries: React.FC = () => {
             </ul>
           )}
         </div>
-      </div>
     </div>
   );
 };

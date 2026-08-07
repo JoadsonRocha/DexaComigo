@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Clock, ArrowLeft, Star, Megaphone, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, Clock, Star, Megaphone, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
 import { ServiceAd, UserRole } from '../types';
@@ -46,10 +46,8 @@ const Ads: React.FC = () => {
 
   if (loading || isLoading) {
     return (
-      <div className="flex-1 bg-gray-50 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center p-20">
-          <Clock className="animate-spin text-brand-600" size={32} />
-        </div>
+      <div className="h-full p-6 flex items-center justify-center">
+        <Clock className="animate-spin text-brand-600" size={32} />
       </div>
     );
   }
@@ -69,33 +67,24 @@ const Ads: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 bg-gray-50 py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center">
-            <button onClick={() => navigate('/dashboard')} className="mr-3 text-gray-500 hover:text-gray-700">
-              <ArrowLeft size={20} />
-            </button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Meus Anúncios</h1>
-              <p className="text-gray-500 mt-1">Gerencie e acompanhe todos os seus serviços publicados</p>
-            </div>
-          </div>
-          <Link to="/create-ad" className="bg-brand-600 text-white px-4 py-2 rounded-md flex items-center hover:bg-brand-700 transition-colors">
-            <Plus size={18} className="mr-2" /> Novo Anúncio
+    <div className="h-full p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Meus Anúncios</h1>
+          <Link to="/create-ad" className="bg-brand-600 text-white px-3 py-1.5 rounded-md text-sm flex items-center hover:bg-brand-700 transition-colors">
+            <Plus size={16} className="mr-1.5" /> Novo Anúncio
           </Link>
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {stats.map(stat => (
-            <div key={stat.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${stat.color}`}>
-                <stat.icon size={22} />
+            <div key={stat.label} className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3 flex items-center">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${stat.color}`}>
+                <stat.icon size={18} />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className="text-xl font-bold text-gray-900 leading-tight">{stat.value}</p>
+                <p className="text-xs text-gray-500">{stat.label}</p>
               </div>
             </div>
           ))}
@@ -103,7 +92,7 @@ const Ads: React.FC = () => {
 
         {/* Ads List */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
             <h2 className="text-lg font-bold text-gray-900">Seus Anúncios ({ads.length})</h2>
           </div>
 
@@ -117,7 +106,7 @@ const Ads: React.FC = () => {
               <Link to="/create-ad" className="inline-block mt-4 text-brand-600 font-medium hover:underline">Criar meu primeiro anúncio</Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-5">
               {ads.map(ad => (
                 <div key={ad.id} className="relative group">
                   <ServiceCard ad={ad} />
@@ -135,7 +124,6 @@ const Ads: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 };
