@@ -46,11 +46,11 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-    <div className="min-h-screen bg-gray-50 overflow-hidden">
-      <div className="px-3 h-screen flex flex-col">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-full">
+    <div className="h-full bg-gray-50 overflow-hidden">
+      <div className="px-3 h-full flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 h-full min-h-0">
             {/* Sidebar Profile */}
-            <aside className="bg-white rounded-lg shadow p-5 flex flex-col overflow-hidden">
+            <aside className="bg-white rounded-lg shadow p-5 flex flex-col overflow-hidden min-h-0">
                 <div className="flex flex-col items-center">
                   <img loading="lazy" decoding="async" src={user.avatar || 'https://via.placeholder.com/100'} alt="Profile" className="w-16 h-16 rounded-full mb-3 object-cover" />
                     <h2 className="text-lg font-bold text-center">{user.name}</h2>
@@ -89,7 +89,7 @@ const Dashboard: React.FC = () => {
             </aside>
 
             {/* Main Content Area */}
-            <div className="lg:col-span-3 h-full overflow-y-auto">
+            <div className="lg:col-span-3 h-full overflow-y-auto min-h-0">
                 <Outlet />
             </div>
         </div>
