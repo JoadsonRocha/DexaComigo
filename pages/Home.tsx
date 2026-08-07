@@ -80,11 +80,11 @@ const Home: React.FC = () => {
                     <div className="inline-flex items-center py-1 px-4 rounded-full bg-brand-500/30 text-brand-200 text-xs font-bold uppercase tracking-widest mb-3 border border-brand-400/20 backdrop-blur-md">
             <Users size={14} className="mr-2" /> Profissionais Certificadas em Domicílio
           </div>
-                                        <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tighter mb-3 leading-[1.02]">
+                                        <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tighter mb-3 leading-[1.05]">
                         Beleza que cuida.<br/>
                         <span className="text-brand-400">Liberdade que transforma.</span>
                     </h1>
-                    <p className="max-w-3xl mx-auto text-base md:text-base text-brand-100 mb-4 leading-relaxed font-light">
+                    <p className="max-w-3xl mx-auto text-sm md:text-base text-brand-100 mb-4 leading-relaxed font-light">
             Conectamos você a profissionais de beleza certificadas. Atendimento especializado no conforto da sua casa, gerando impacto social e autonomia.
           </p>
 
