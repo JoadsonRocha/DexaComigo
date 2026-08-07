@@ -13,8 +13,8 @@ const Dashboard: React.FC = () => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const handleLogout = async () => {
-      await logout();
       navigate('/');
+      await logout();
   };
   const [myAds, setMyAds] = useState<ServiceAd[]>([]);
 

@@ -23,9 +23,9 @@ export const Navbar: React.FC = () => {
   }, [location.pathname]);
 
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
     navigate('/');
+    await logout();
   };
 
   const isActive = (path: string) => location.pathname === path ? 'text-brand-600 font-semibold' : 'text-gray-600 hover:text-brand-600';
@@ -45,6 +45,17 @@ export const Navbar: React.FC = () => {
               <Link to="/search" className={`${isActive('/search')} inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium`}>
                 Buscar Serviços
               </Link>
+              <div className="relative flex items-center group">
+                <button className="text-gray-600 hover:text-brand-600 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium">
+                    Categorias
+                </button>
+                <div className="absolute left-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-1">
+                    <Link to="/categoria/cabelo" className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600">Cabelo</Link>
+                    <Link to="/categoria/maquiagem" className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600">Maquiagem</Link>
+                    <Link to="/categoria/unhas" className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600">Manicure/Pedicure</Link>
+                    <Link to="/categoria/estetica" className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600">Estética</Link>
+                </div>
+              </div>
             </div>
           </div>
           
