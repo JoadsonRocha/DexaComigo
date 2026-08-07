@@ -24,7 +24,7 @@ const MainLayout: React.FC = () => {
   return (
     <div className={`flex flex-col bg-gray-50 ${isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
       <Navbar />
-      <main className="flex-grow flex flex-col overflow-hidden">
+      <main id="main-content" className="flex-grow flex flex-col overflow-hidden">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<SearchPage />} />
