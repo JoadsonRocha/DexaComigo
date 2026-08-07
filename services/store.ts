@@ -154,7 +154,7 @@ class Store {
       name: data.name,
       email: data.email,
       role: data.role as UserRole,
-      avatar: data.avatar_url,
+      avatar: data.avatar,
       location: data.location,
       phone: data.phone,
       bio: data.bio
@@ -169,7 +169,7 @@ class Store {
         bio: updates.bio,
         location: updates.location,
         phone: updates.phone,
-        avatar_url: updates.avatar
+        avatar: updates.avatar
       })
       .eq('id', userId)
       .select()
@@ -182,7 +182,7 @@ class Store {
       name: data.name,
       email: data.email,
       role: data.role as UserRole,
-      avatar: data.avatar_url,
+      avatar: data.avatar,
       location: data.location,
       phone: data.phone,
       bio: data.bio
@@ -218,7 +218,7 @@ class Store {
                 email: authData.user.email,
                 name: name,
                 role: 'PROVIDER',
-                avatar_url: `https://picsum.photos/seed/${email}/100/100`
+                avatar: `https://picsum.photos/seed/${email}/100/100`
             }]);
         if (profileError) console.error("Error creating profile", profileError);
     }
