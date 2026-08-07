@@ -58,14 +58,6 @@ const Dashboard: React.FC = () => {
                     <div className="mb-3 bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full font-medium">
                         {isClient ? 'Cliente' : 'Profissional'}
                     </div>
-                    <div className="w-full flex space-x-2">
-                        <Link to="/profile/edit" className="flex-1 border border-gray-300 text-gray-700 px-2 py-1.5 rounded-md flex items-center justify-center hover:bg-gray-50 transition-colors text-xs">
-                            <Settings size={14} className="mr-1" /> Editar
-                        </Link>
-                        <button onClick={handleLogout} className="flex-1 bg-red-50 text-red-600 border border-red-100 px-2 py-1.5 rounded-md flex items-center justify-center hover:bg-red-100 transition-colors text-xs">
-                            <LogOut size={14} className="mr-1" /> Sair
-                        </button>
-                    </div>
                 </div>
 
                 <div className="mt-4 border-t border-gray-100 pt-4">
