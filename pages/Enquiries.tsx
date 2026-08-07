@@ -70,7 +70,6 @@ const Enquiries: React.FC = () => {
             </button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Minhas Consultas</h1>
-              <p className="text-gray-500 mt-1">Acompanhe e gerencie todas as suas mensagens recebidas</p>
             </div>
           </div>
         </div>
