@@ -64,7 +64,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex-1 bg-white flex flex-col">
       {/* Hero Section */}
-            <section role="banner" className="relative bg-brand-900 pt-24 pb-[84px] overflow-hidden">
+            <section role="banner" className="relative bg-brand-900 pt-24 pb-[84px] overflow-hidden min-h-[320px] md:min-h-[520px] lg:min-h-[680px]">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-brand-900 mix-blend-multiply opacity-85"></div>
           <img 
