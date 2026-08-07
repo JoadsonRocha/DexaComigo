@@ -65,9 +65,8 @@ const CategoryPage: React.FC = () => {
       <div className="bg-brand-900 text-white py-16 md:py-20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-600/30 rounded-full blur-[80px] -mr-32 -mt-32"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl backdrop-blur-sm mb-6 border border-white/20">
-                {/* Dynamically render icon if available, otherwise fallback */}
-                {categoryObj.icon && <span className="text-3xl text-brand-100">✨</span>}
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl backdrop-blur-sm mb-6 border border-white/20 text-brand-100">
+                {categoryIcon(categoryObj.id, 32)}
             </div>
             <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">Especialistas em {categoryObj.label}</h1>
             <p className="text-brand-100 text-lg md:text-xl max-w-2xl mx-auto font-light">
