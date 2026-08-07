@@ -53,6 +53,10 @@ const ServiceDetail: React.FC = () => {
   );
 
   const handleContact = () => {
+      if (!user) {
+          navigate('/login');
+          return;
+      }
       const message = `Olá, vi seu anúncio "${ad.title}" no Dexacomigo e gostaria de mais informações.`;
       const url = `https://wa.me/${ad.whatsapp}?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
@@ -155,12 +159,22 @@ const ServiceDetail: React.FC = () => {
                     {ad.isPremium && <Badge variant="secondary">Destaque</Badge>}
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{ad.title}</h1>
-                <div className="flex items-center text-gray-300 text-sm">
+                <div className="flex items-center text-gray-300 text-sm mb-4">
                     <MapPin size={16} className="mr-1" /> {ad.location}
                     <span className="mx-2">•</span>
                     <RatingStars rating={ad.rating} />
                     <span className="ml-1">({ad.reviewCount} avaliações)</span>
                 </div>
+                
+                {ad.tags && ad.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {ad.tags.map(tag => (
+                            <span key={tag} className="text-xs font-semibold bg-white/10 text-white px-3 py-1 rounded-full backdrop-blur-sm border border-white/20">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
       </div>
@@ -348,7 +362,11 @@ const ServiceDetail: React.FC = () => {
                     <div className="border-t border-gray-100 pt-6">
                         <div className="flex items-center mb-5">
                             <div className="w-14 h-14 bg-gray-100 rounded-full flex-shrink-0 mr-4 overflow-hidden border-2 border-brand-100">
-                                {ad.providerId === 'u1' ? <img src="https://picsum.photos/100/100?random=1" className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full flex items-center justify-center text-brand-600 font-bold text-xl">{ad.providerName.charAt(0)}</div>}
+                                {ad.providerAvatar ? (
+                                    <img src={ad.providerAvatar} className="w-full h-full object-cover" alt={ad.providerName} />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-brand-600 font-bold text-xl">{ad.providerName.charAt(0)}</div>
+                                )}
                             </div>
                             <div>
                                 <p className="font-bold text-gray-900 text-lg leading-tight">{ad.providerName}</p>
