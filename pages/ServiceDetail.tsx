@@ -179,13 +179,13 @@ const ServiceDetail: React.FC = () => {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(async (pos) => {
         try {
-            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=pt`);
+            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=pt`);
             const data = await res.json();
             const informative = data.localityInfo?.informative || [];
             const road = informative.find((i: any) => ['road', 'street'].includes(i.description))?.name;
             const neighborhood = informative.find((i: any) => ['neighbourhood', 'neighborhood', 'suburb'].includes(i.description))?.name;
-            const city = data.city || informative.find((i: any) => i.description === 'city')?.name || informative.find((i: any) => i.description === 'locality')?.name;
-            const state = data.principalSubdivisionCode?.split('-')[1] || data.principalSubdivision || informative.find((i: any) => i.description === 'principalsubdivision')?.name;
+            const city = data.city || data.locality || informative.find((i: any) => i.description === 'city')?.name;
+            const state = data.principalSubdivisionCode?.split('-')[1] || data.principalSubdivision;
             const parts: string[] = [];
             if (road) parts.push(road);
             if (neighborhood) parts.push(neighborhood);
