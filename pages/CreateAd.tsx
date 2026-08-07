@@ -43,6 +43,10 @@ const CreateAd: React.FC = () => {
   const [generationError, setGenerationError] = useState('');
   const [loadingAd, setLoadingAd] = useState(false);
 
+  // Tags State
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+
   const { id } = useParams<{ id: string }>();
   const isEditing = !!id;
 
@@ -64,6 +68,7 @@ const CreateAd: React.FC = () => {
                     keywords: ''
                 });
                 setImages(ad.images || []);
+                setTags(ad.tags || []);
                 
                 // Parse availability if possible, else leave defaults
                 // Format was: "Seg, Ter, 08:00 - 18:00"
@@ -140,6 +145,21 @@ const CreateAd: React.FC = () => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const newTag = tagInput.trim();
+      if (newTag && !tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
+      setTagInput('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(t => t !== tagToRemove));
+  };
+
   const handleGenerateDescription = async () => {
     if (!formData.title) {
         setGenerationError('Digite um título primeiro.');
@@ -166,11 +186,8 @@ const CreateAd: React.FC = () => {
     e.preventDefault();
     
     // Format availability string
-    const daysStr = selectedDays.length === 7 ? 'Todos os dias' 
-                  : selectedDays.length === 5 && !selectedDays.includes('sab') && !selectedDays.includes('dom') ? 'Segunda à Sexta'
-                  : selectedDays.map(d => DAYS_OF_WEEK.find(dw => dw.id === d)?.label).join(', ');
-    
-    const availabilityStr = `${daysStr}, ${hoursStart} - ${hoursEnd}`;
+    const selectedDayLabels = selectedDays.map(id => DAYS_OF_WEEK.find(d => d.id === id)?.label).join(', ');
+    const availabilityString = selectedDays.length > 0 ? `${selectedDayLabels}, ${hoursStart} - ${hoursEnd}` : '';
 
     if (isEditing && id) {
         await store.updateAd(id, {
@@ -182,9 +199,11 @@ const CreateAd: React.FC = () => {
             location: formData.location,
             whatsapp: formData.whatsapp,
             images: images.length > 0 ? images : undefined,
-            availability: availabilityStr
+            availability: availabilityString,
+            tags: tags
         });
-        navigate(`/service/${id}`);
+        alert('Anúncio atualizado com sucesso!');
+        navigate('/dashboard');
     } else {
         const newAd = await store.addAd({
             providerId: user.id,
@@ -197,9 +216,11 @@ const CreateAd: React.FC = () => {
             whatsapp: formData.whatsapp,
             images: images.length > 0 ? images : ['https://picsum.photos/400/300?random=' + Math.floor(Math.random() * 100)],
             isPremium: false,
-            availability: availabilityStr
+            availability: availabilityString,
+            tags: tags
         });
-        navigate(`/service/${newAd.id}`);
+        alert('Anúncio criado com sucesso!');
+        navigate('/dashboard');
     }
   };
 
