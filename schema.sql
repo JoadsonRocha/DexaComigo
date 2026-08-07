@@ -125,7 +125,8 @@ CREATE POLICY "Usuários enviam mensagens com seu próprio ID" ON messages FOR I
 CREATE POLICY "Usuários podem marcar mensagens como lidas" ON messages FOR UPDATE USING (auth.role() = 'authenticated');
 
 -- Tabela de Agendamentos (Appointments)
-CREATE TABLE appointments (
+-- IF NOT EXISTS permite rodar o script novamente sem erro
+CREATE TABLE IF NOT EXISTS appointments (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   client_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
   provider_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
@@ -133,17 +134,24 @@ CREATE TABLE appointments (
   date DATE NOT NULL,
   time TEXT NOT NULL,
   notes TEXT,
+  client_location TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled', 'completed')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
+-- Para bancos onde a tabela já existia antes da coluna de localização
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS client_location TEXT;
+
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Usuários autenticados podem ver seus agendamentos" ON appointments;
 CREATE POLICY "Usuários autenticados podem ver seus agendamentos" ON appointments 
   FOR SELECT USING (auth.uid() = client_id OR auth.uid() = provider_id);
 
+DROP POLICY IF EXISTS "Clientes podem criar agendamentos" ON appointments;
 CREATE POLICY "Clientes podem criar agendamentos" ON appointments 
   FOR INSERT WITH CHECK (auth.uid() = client_id);
 
+DROP POLICY IF EXISTS "Participantes podem atualizar agendamentos" ON appointments;
 CREATE POLICY "Participantes podem atualizar agendamentos" ON appointments 
   FOR UPDATE USING (auth.uid() = client_id OR auth.uid() = provider_id);

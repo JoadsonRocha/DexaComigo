@@ -98,6 +98,7 @@ export interface Appointment {
   notes?: string;
   status: AppointmentStatus;
   createdAt: string;
+  clientLocation?: string;
   
   // Dados populados no Join
   adTitle?: string;

@@ -2,7 +2,7 @@
 // Add React import to resolve namespace errors for FC and FormEvent
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, MessageCircle, Star, Shield, Clock, Calendar, MessageSquare, CalendarCheck, X, Send, AlertTriangle, Loader2, CheckCircle } from 'lucide-react';
+import { MapPin, MessageCircle, Star, Shield, Clock, Calendar, MessageSquare, CalendarCheck, X, Send, AlertTriangle, Loader2, CheckCircle, Navigation, LocateFixed } from 'lucide-react';
 import { store } from '../services/store';
 import { ServiceAd, Review } from '../types';
 import { RatingStars, Badge } from '../components/UI';
@@ -20,8 +20,9 @@ const ServiceDetail: React.FC = () => {
 
   // Scheduling State
   const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [scheduleData, setScheduleData] = useState({ date: '', time: '', notes: '' });
+  const [scheduleData, setScheduleData] = useState({ date: '', time: '', notes: '', location: '' });
   const [isScheduling, setIsScheduling] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [scheduleError, setScheduleError] = useState('');
 
   const parseAvailability = (availability?: string): { days: string[]; start: string; end: string } | null => {
@@ -142,6 +143,29 @@ const ServiceDetail: React.FC = () => {
       }
   };
 
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+        alert("Seu navegador não suporta geolocalização.");
+        return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=pt`);
+            const data = await res.json();
+            const loc = `${data.city || data.locality}, ${data.principalSubdivisionCode?.split('-')[1] || data.principalSubdivision}`;
+            setScheduleData(prev => ({ ...prev, location: loc }));
+        } catch (e) {
+            alert('Erro ao buscar localização.');
+        } finally {
+            setIsLocating(false);
+        }
+    }, () => {
+        alert('Permissão de localização negada.');
+        setIsLocating(false);
+    });
+  };
+
   const handleScheduleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!user) {
@@ -171,7 +195,7 @@ const ServiceDetail: React.FC = () => {
       setScheduleError('');
       try {
         const formattedDate = new Date(scheduleData.date).toLocaleDateString('pt-BR');
-        const message = `📅 *SOLICITAÇÃO DE AGENDAMENTO*\n\nOlá, gostaria de agendar um serviço:\n\n🗓️ Data: ${formattedDate}\n⏰ Horário: ${scheduleData.time}\n📝 Observações: ${scheduleData.notes || 'Nenhuma'}\n\nPodemos confirmar?`;
+        const message = `📅 *SOLICITAÇÃO DE AGENDAMENTO*\n\nOlá, gostaria de agendar um serviço:\n\n🗓️ Data: ${formattedDate}\n⏰ Horário: ${scheduleData.time}\n📍 Local: ${scheduleData.location || 'A combinar'}\n📝 Observações: ${scheduleData.notes || 'Nenhuma'}\n\nPodemos confirmar?`;
 
         const chatId = await store.startChat(user.id, ad.providerId, ad.id, ad.title);
         await store.sendMessage(chatId, user.id, message);
@@ -182,7 +206,8 @@ const ServiceDetail: React.FC = () => {
           adId: ad.id,
           date: scheduleData.date,
           time: scheduleData.time,
-          notes: scheduleData.notes
+          notes: scheduleData.notes,
+          clientLocation: scheduleData.location || user.location
         });
 
         setShowScheduleModal(false);
@@ -503,6 +528,31 @@ const ServiceDetail: React.FC = () => {
                             {scheduleError}
                         </div>
                     )}
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1.5 flex items-center justify-between">
+                            <span className="flex items-center"><MapPin size={14} className="mr-1.5 text-indigo-500" /> Onde deseja ser atendido?</span>
+                            <button 
+                                type="button"
+                                onClick={handleGetLocation}
+                                disabled={isLocating}
+                                className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center disabled:opacity-50"
+                            >
+                                {isLocating ? <Loader2 size={12} className="animate-spin mr-1" /> : <LocateFixed size={12} className="mr-1" />}
+                                Usar GPS
+                            </button>
+                        </label>
+                        <input 
+                            type="text" 
+                            className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
+                            placeholder="Ex: Pinheiros, São Paulo - SP"
+                            value={scheduleData.location}
+                            onChange={(e) => setScheduleData(prev => ({...prev, location: e.target.value}))}
+                        />
+                        <p className="text-xs text-gray-500 mt-1.5">
+                            {scheduleData.location ? 'A localização será enviada ao profissional.' : (user?.location ? `Localização do seu perfil: ${user.location}` : 'Usado o endereço informado no agendamento.')}
+                        </p>
+                    </div>
 
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-1.5">Alguma observação?</label>

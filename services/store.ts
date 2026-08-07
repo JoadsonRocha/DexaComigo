@@ -510,7 +510,8 @@ class Store {
         ad_id: data.adId,
         date: data.date,
         time: data.time,
-        notes: data.notes
+        notes: data.notes,
+        client_location: data.clientLocation
       }])
       .select()
       .single();
@@ -526,7 +527,8 @@ class Store {
       time: appointment.time,
       notes: appointment.notes,
       status: appointment.status as AppointmentStatus,
-      createdAt: appointment.created_at
+      createdAt: appointment.created_at,
+      clientLocation: appointment.client_location
     };
   }
 
@@ -558,6 +560,7 @@ class Store {
       notes: app.notes,
       status: app.status as AppointmentStatus,
       createdAt: app.created_at,
+      clientLocation: app.client_location,
       adTitle: app.service_ads?.title,
       clientName: app.client?.name,
       clientAvatar: app.client?.avatar,

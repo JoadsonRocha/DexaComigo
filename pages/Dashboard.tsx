@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { store } from '../services/store';
 import { ServiceCard } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
-import { Settings, Plus, Trash2, Search, MessageSquare, LogOut, Calendar, Check, X, Clock } from 'lucide-react';
+import { Settings, Plus, Trash2, Search, MessageSquare, LogOut, Calendar, Check, X, Clock, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ServiceAd, UserRole, Appointment, AppointmentStatus } from '../types';
 
@@ -169,6 +169,9 @@ const Dashboard: React.FC = () => {
                                                 </div>
                                                 <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
                                                 <p className="text-sm text-gray-600 mt-1">Profissional: <span className="font-medium text-brand-600">{app.providerName}</span></p>
+                                                {app.clientLocation && (
+                                                    <p className="text-sm text-gray-600 flex items-center mt-1"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
+                                                )}
                                                 {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
                                             </div>
                                         </div>
@@ -253,6 +256,9 @@ const Dashboard: React.FC = () => {
                                                         </div>
                                                     )}
                                                     <p className="text-sm text-gray-600">Cliente: <span className="font-medium text-brand-600">{app.clientName}</span></p>
+                                                    {app.clientLocation && (
+                                                        <p className="text-sm text-gray-600 flex items-center mt-1"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
+                                                    )}
                                                 </div>
                                                 {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
                                             </div>
