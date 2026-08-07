@@ -7,6 +7,7 @@ export interface GetAdsParams {
   searchTerm?: string;
   location?: string;
   providerId?: string;
+  priceRange?: string;
   isPremium?: boolean;
   page?: number;
   limit?: number;
@@ -79,6 +80,12 @@ class Store {
     }
     if (params?.isPremium !== undefined) {
       query = query.eq('is_premium', params.isPremium);
+    }
+    if (params?.priceRange && params.priceRange !== 'all') {
+        if (params.priceRange === 'low') query = query.lte('price', 100).gt('price', 0);
+        if (params.priceRange === 'mid') query = query.gt('price', 100).lte('price', 300);
+        if (params.priceRange === 'high') query = query.gt('price', 300);
+        if (params.priceRange === 'estimate') query = query.eq('price', 0);
     }
     if (params?.searchTerm) {
       // Basic ilike search on title or description
