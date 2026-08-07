@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { store } from '../services/store';
-import { ServiceCard } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
-import { Settings, Plus, Trash2, Search, MessageSquare, LogOut, Calendar, Check, X, Clock, MapPin, Star, CheckCircle2, Loader2, Send, Megaphone } from 'lucide-react';
+import { Settings, Plus, Search, MessageSquare, LogOut, Calendar, Check, X, Clock, Star, CheckCircle2, Loader2, Send, Megaphone, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ServiceAd, UserRole, Appointment, AppointmentStatus, ChatSession } from '../types';
 
