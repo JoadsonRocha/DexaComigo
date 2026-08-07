@@ -153,7 +153,7 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-xl font-bold text-brand-400 mb-4">+B Mais Beleza</h3>
+            <h3 className="text-xl font-bold text-brand-400 mb-4">DexaComigo</h3>
             <p className="text-gray-400 text-sm">
               Conectando profissionais de beleza certificadas a clientes que desejam atendimento em domicílio. Beleza que cuida, liberdade que transforma.
             </p>
