@@ -51,10 +51,14 @@ CREATE TABLE reviews (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   ad_id UUID NOT NULL REFERENCES service_ads(id) ON DELETE CASCADE,
   author_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  author_name TEXT,
   rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
   comment TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- Para bancos onde a tabela reviews já existia antes da coluna do nome
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS author_name TEXT;
 
 -- Tabela de Sessões de Chat (Negociações)
 CREATE TABLE chat_sessions (
