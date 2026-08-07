@@ -123,3 +123,27 @@ CREATE POLICY "Usuários autenticados podem inserir participantes" ON chat_parti
 CREATE POLICY "Usuários autenticados podem ler mensagens" ON messages FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Usuários enviam mensagens com seu próprio ID" ON messages FOR INSERT WITH CHECK (auth.uid() = sender_id);
 CREATE POLICY "Usuários podem marcar mensagens como lidas" ON messages FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- Tabela de Agendamentos (Appointments)
+CREATE TABLE appointments (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  client_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  provider_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  ad_id UUID REFERENCES service_ads(id) ON DELETE CASCADE,
+  date DATE NOT NULL,
+  time TEXT NOT NULL,
+  notes TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled', 'completed')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+
+ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Usuários autenticados podem ver seus agendamentos" ON appointments 
+  FOR SELECT USING (auth.uid() = client_id OR auth.uid() = provider_id);
+
+CREATE POLICY "Clientes podem criar agendamentos" ON appointments 
+  FOR INSERT WITH CHECK (auth.uid() = client_id);
+
+CREATE POLICY "Participantes podem atualizar agendamentos" ON appointments 
+  FOR UPDATE USING (auth.uid() = client_id OR auth.uid() = provider_id);

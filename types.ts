@@ -85,3 +85,23 @@ export interface ChatSession {
   updatedAt: string;
   messages: Message[];
 }
+
+export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+
+export interface Appointment {
+  id: string;
+  clientId: string;
+  providerId: string;
+  adId: string;
+  date: string;
+  time: string;
+  notes?: string;
+  status: AppointmentStatus;
+  createdAt: string;
+  
+  // Dados populados no Join
+  adTitle?: string;
+  clientName?: string;
+  providerName?: string;
+  clientAvatar?: string;
+}
