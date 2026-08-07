@@ -530,7 +530,8 @@ class Store {
       notes: appointment.notes,
       status: appointment.status as AppointmentStatus,
       createdAt: appointment.created_at,
-      clientLocation: appointment.client_location
+      clientLocation: appointment.client_location,
+      reviewed: appointment.reviewed
     };
   }
 
@@ -563,11 +564,21 @@ class Store {
       status: app.status as AppointmentStatus,
       createdAt: app.created_at,
       clientLocation: app.client_location,
+      reviewed: app.reviewed,
       adTitle: app.service_ads?.title,
       clientName: app.client?.name,
       clientAvatar: app.client?.avatar,
       providerName: app.provider?.name
     }));
+  }
+
+  async markAppointmentReviewed(id: string): Promise<void> {
+    const { error } = await supabase
+      .from('appointments')
+      .update({ reviewed: true })
+      .eq('id', id);
+
+    if (error) { console.error("Store Error [markAppointmentReviewed]:", error); throw error; }
   }
 
   async updateAppointmentStatus(id: string, status: AppointmentStatus): Promise<void> {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { store } from '../services/store';
 import { ServiceCard } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
-import { Settings, Plus, Trash2, Search, MessageSquare, LogOut, Calendar, Check, X, Clock, MapPin } from 'lucide-react';
+import { Settings, Plus, Trash2, Search, MessageSquare, LogOut, Calendar, Check, X, Clock, MapPin, Star, CheckCircle2, Loader2, Send } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ServiceAd, UserRole, Appointment, AppointmentStatus } from '../types';
 
@@ -18,6 +18,13 @@ const Dashboard: React.FC = () => {
   };
   const [myAds, setMyAds] = useState<ServiceAd[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+  // Review State
+  const [reviewingApp, setReviewingApp] = useState<Appointment | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState('');
 
   const loadAppointments = async (userId: string, role: UserRole) => {
       const data = await store.getMyAppointments(userId, role);
@@ -66,6 +73,42 @@ const Dashboard: React.FC = () => {
           }
       }
       setAppointments(prev => prev.map(app => app.id === id ? { ...app, status } : app));
+  };
+
+  const handleConfirmService = async (app: Appointment) => {
+      await store.updateAppointmentStatus(app.id, 'completed');
+      setAppointments(prev => prev.map(a => a.id === app.id ? { ...a, status: 'completed' } : a));
+      setReviewingApp(app);
+      setReviewRating(5);
+      setReviewComment('');
+      setReviewError('');
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!reviewingApp) return;
+
+      setSubmittingReview(true);
+      setReviewError('');
+      try {
+          await store.addReview(reviewingApp.adId, {
+              authorId: user!.id,
+              authorName: user!.name,
+              rating: reviewRating,
+              comment: reviewComment,
+          });
+          await store.markAppointmentReviewed(reviewingApp.id);
+          setAppointments(prev => prev.map(a => a.id === reviewingApp.id ? { ...a, reviewed: true } : a));
+          setReviewingApp(null);
+          alert("Avaliação publicada com sucesso! Ela já aparece no anúncio do profissional.");
+      } catch (err: any) {
+          console.error("Erro ao enviar avaliação:", err);
+          setReviewError(err.code === '42501'
+              ? "Erro de permissão no Supabase (RLS): verifique as políticas da tabela 'reviews'."
+              : "Houve um erro ao publicar sua avaliação. Tente novamente.");
+      } finally {
+          setSubmittingReview(false);
+      }
   };
 
   const handleDelete = async (id: string) => {
@@ -188,6 +231,26 @@ const Dashboard: React.FC = () => {
                                                     <p className="text-sm text-gray-600 flex items-center mt-1"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
                                                 )}
                                                 {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
+                                            </div>
+                                            <div className="flex flex-col gap-2 sm:items-end">
+                                                {app.status === 'confirmed' && (
+                                                    <button 
+                                                        onClick={() => handleConfirmService(app)}
+                                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+                                                    >
+                                                        <CheckCircle2 size={16} className="mr-1" /> Confirmar serviço realizado
+                                                    </button>
+                                                )}
+                                                {app.status === 'completed' && !app.reviewed && (
+                                                    <span className="text-xs text-gray-500 flex items-center sm:justify-end">
+                                                        <Star size={13} className="mr-1 text-yellow-500" /> Serviço concluído — aguardando avaliação
+                                                    </span>
+                                                )}
+                                                {app.status === 'completed' && app.reviewed && (
+                                                    <span className="text-xs text-green-600 flex items-center sm:justify-end">
+                                                        <CheckCircle2 size={13} className="mr-1" /> Avaliado
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     ))}

@@ -99,6 +99,7 @@ export interface Appointment {
   status: AppointmentStatus;
   createdAt: string;
   clientLocation?: string;
+  reviewed?: boolean;
   
   // Dados populados no Join
   adTitle?: string;

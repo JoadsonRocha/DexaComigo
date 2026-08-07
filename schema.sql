@@ -136,11 +136,13 @@ CREATE TABLE IF NOT EXISTS appointments (
   notes TEXT,
   client_location TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled', 'completed')),
+  reviewed BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
 -- Para bancos onde a tabela já existia antes da coluna de localização
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS client_location TEXT;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reviewed BOOLEAN DEFAULT false;
 
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 
