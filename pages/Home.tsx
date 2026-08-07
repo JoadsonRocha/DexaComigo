@@ -64,7 +64,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex-1 bg-white flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-brand-900 pt-24 pb-[104px] overflow-hidden">
+      <section className="relative bg-brand-900 pt-24 pb-[84px] overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-brand-900 mix-blend-multiply opacity-85"></div>
           <img 
