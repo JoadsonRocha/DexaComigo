@@ -5,8 +5,10 @@ import { store } from '../services/store';
 import { ServiceCard, CategoryPill } from '../components/UI';
 import { CATEGORIES } from '../constants';
 import { ServiceAd } from '../types';
+import { useToast } from '../context/ToastContext';
 
 const SearchPage: React.FC = () => {
+  const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [ads, setAds] = useState<ServiceAd[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,7 @@ const SearchPage: React.FC = () => {
 
   const handleGetLocation = () => {
       if (!navigator.geolocation) {
-          alert('Geolocalização não suportada no seu navegador.');
+          toast('Geolocalização não suportada no seu navegador.', 'error');
           return;
       }
       setIsLocating(true);
@@ -35,31 +37,30 @@ const SearchPage: React.FC = () => {
               const data = await res.json();
               const loc = `${data.city || data.locality}, ${data.principalSubdivisionCode?.split('-')[1] || data.principalSubdivision}`;
               setLocation(loc);
-              // auto search
               updateSearchParam('l', loc);
               setPage(1);
-              loadData(1, true); // wait, loadData won't have the new location closure unless I call it inside handleSearch? Let's just set the location state and they can click search.
+              loadData(1, true, { location: loc });
           } catch(e) {
-              alert('Erro ao buscar localização.');
+              toast('Erro ao buscar localização.', 'error');
           } finally {
               setIsLocating(false);
           }
       }, () => {
-          alert('Permissão de localização negada.');
+          toast('Permissão de localização negada.', 'error');
           setIsLocating(false);
       });
   };
 
-  const loadData = async (pageNum: number, overwrite = false) => {
+  const loadData = async (pageNum: number, overwrite = false, overrides?: { location?: string; query?: string; category?: string; priceRange?: string }) => {
     if (pageNum === 1) setLoading(true);
     else setLoadingMore(true);
 
     try {
       const data = await store.getAds({
-          category,
-          searchTerm: query,
-          location,
-          priceRange,
+          category: overrides?.category ?? category,
+          searchTerm: overrides?.query ?? query,
+          location: overrides?.location ?? location,
+          priceRange: overrides?.priceRange ?? priceRange,
           page: pageNum,
           limit
       });
@@ -71,6 +72,7 @@ const SearchPage: React.FC = () => {
       else setAds(prev => [...prev, ...data]);
     } catch (e) {
       console.error("Error loading ads:", e);
+      toast('Erro ao carregar os resultados.', 'error');
     } finally {
       setLoading(false);
       setLoadingMore(false);
