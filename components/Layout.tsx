@@ -170,12 +170,12 @@ export const Footer: React.FC = () => {
           </div>
           <div>
             <h4 className="text-lg font-semibold mb-4">Contato</h4>
-            <p className="text-gray-400 text-sm">suporte@maisbeleza.com.br</p>
+            <p className="text-gray-400 text-sm">suporte@dexacomigo.com.br</p>
             <p className="text-gray-400 text-sm mt-2">São Paulo, Brasil</p>
           </div>
         </div>
         <div className="mt-8 border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-          &copy; {new Date().getFullYear()} Mais Beleza. Todos os direitos reservados.
+          &copy; {new Date().getFullYear()} DexaComigo. Todos os direitos reservados.
         </div>
       </div>
     </footer>

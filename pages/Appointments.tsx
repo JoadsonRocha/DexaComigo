@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Check, X, Clock, CheckCircle2, MapPin, Star, Loader2, Send, List, LayoutGrid, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { store } from '../services/store';
+import { store, supabase } from '../services/store';
 import { Appointment, AppointmentStatus, UserRole } from '../types';
+import { useToast } from '../context/ToastContext';
 
 const Appointments: React.FC = () => {
   const { user, loading } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -33,11 +35,24 @@ const Appointments: React.FC = () => {
         setAppointments(data);
       } catch (e) {
         console.error("Erro ao carregar agendamentos:", e);
+        toast('Não foi possível carregar seus agendamentos.', 'error');
       } finally {
         setIsLoading(false);
       }
     };
     load();
+
+    const roleField = user.role === UserRole.CLIENT ? 'client_id' : 'provider_id';
+    const channel = supabase
+      .channel('appointments-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments', filter: `${roleField}=eq.${user.id}` }, () => {
+        load();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user, loading]);
 
   if (loading || isLoading) {
