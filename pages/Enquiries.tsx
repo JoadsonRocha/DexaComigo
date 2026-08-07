@@ -59,7 +59,7 @@ const Enquiries: React.FC = () => {
   ];
 
   return (
-    <div className="h-full p-6">
+    <div className="h-full p-4">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Minhas Consultas</h1>

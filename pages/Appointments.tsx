@@ -105,7 +105,7 @@ const Appointments: React.FC = () => {
 
   return (
     <>
-    <div className="h-full p-6">
+    <div className="h-full p-4">
         <div className="flex items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Meus Agendamentos</h1>

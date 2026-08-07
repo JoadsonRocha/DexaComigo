@@ -67,7 +67,7 @@ const Ads: React.FC = () => {
   ];
 
   return (
-    <div className="h-full p-6">
+    <div className="h-full p-4">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Meus Anúncios</h1>
           <Link to="/create-ad" className="bg-brand-600 text-white px-3 py-1.5 rounded-md text-sm flex items-center hover:bg-brand-700 transition-colors">

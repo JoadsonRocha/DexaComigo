@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate, Outlet, useLocation } from 'react-router-dom';
-import { Settings, Plus, MessageSquare, LogOut, Calendar, Megaphone } from 'lucide-react';
+import { Settings, Plus, MessageSquare, LogOut, Calendar, Megaphone, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types';
 
@@ -33,19 +33,23 @@ const Dashboard: React.FC = () => {
   const isClient = user.role === UserRole.CLIENT;
 
   const menuItems = [
+    { to: '/dashboard', label: 'Meu Painel', icon: LayoutDashboard },
     { to: '/dashboard/chat', label: 'Chat', icon: MessageSquare },
     { to: '/dashboard/appointments', label: 'Meus Agendamentos', icon: Calendar },
     { to: '/dashboard/enquiries', label: 'Minhas Consultas', icon: MessageSquare },
     ...(isClient ? [] : [{ to: '/dashboard/ads', label: 'Meus Anúncios', icon: Megaphone }]),
   ];
 
-  const isActive = (to: string) => location.pathname.startsWith(to) ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-gray-700 hover:bg-brand-50 hover:text-brand-700';
+  const isActive = (to: string) => {
+    if (to === '/dashboard') return location.pathname === '/dashboard';
+    return location.pathname.startsWith(to) ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-gray-700 hover:bg-brand-50 hover:text-brand-700';
+  };
 
   return (
     <>
     <div className="flex-1 bg-gray-50 py-4 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0">
+      <div className="px-3 h-full flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1 min-h-0">
             {/* Sidebar Profile */}
             <aside className="bg-white rounded-lg shadow p-5 flex flex-col overflow-hidden">
                 <div className="flex flex-col items-center">
