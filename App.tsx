@@ -16,9 +16,9 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-gray-50">
           <Navbar />
-          <main className="flex-grow">
+          <main className="flex-grow flex flex-col">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/search" element={<SearchPage />} />

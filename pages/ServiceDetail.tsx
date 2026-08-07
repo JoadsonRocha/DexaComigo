@@ -143,7 +143,7 @@ const ServiceDetail: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-12 relative">
+    <div className="flex-1 bg-gray-50 pb-12 relative">
       {/* Header Image */}
       <div className="bg-gray-900 h-64 md:h-80 w-full relative">
         <img src={ad.images[0]} className="w-full h-full object-cover opacity-60" alt={ad.title} />
