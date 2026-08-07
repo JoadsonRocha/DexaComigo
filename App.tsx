@@ -20,9 +20,10 @@ import { AuthProvider } from './context/AuthContext';
 const MainLayout: React.FC = () => {
   const location = useLocation();
   const isChatRoute = location.pathname.startsWith('/chat');
+  const isDashboardRoute = location.pathname.startsWith('/dashboard');
 
   return (
-    <div className={`flex flex-col bg-gray-50 ${isChatRoute ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
+    <div className={`flex flex-col bg-gray-50 ${isChatRoute || isDashboardRoute ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
       <Navbar />
       <main className="flex-grow flex flex-col overflow-hidden">
         <Routes>
@@ -44,7 +45,7 @@ const MainLayout: React.FC = () => {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
-      {!isChatRoute && <Footer />}
+      {!isChatRoute && !isDashboardRoute && <Footer />}
     </div>
   );
 };

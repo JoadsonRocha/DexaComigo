@@ -91,18 +91,18 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-    <div className="flex-1 bg-gray-50 py-6">
+    <div className="flex-1 bg-gray-50 py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col">        
-        <div className="flex justify-between items-center mb-5">
-            <h1 className="text-2xl font-bold text-gray-900">Meu Painel</h1>
+        <div className="flex justify-between items-center mb-4">
+            <h1 className="text-lg font-bold text-gray-900">Meu Painel</h1>
             {!isClient && (
-                <Link to="/create-ad" className="bg-brand-600 text-white px-4 py-2 rounded-md flex items-center hover:bg-brand-700">
-                    <Plus size={18} className="mr-2" /> Novo Anúncio
+                <Link to="/create-ad" className="bg-brand-600 text-white px-3 py-1.5 text-sm rounded-md flex items-center hover:bg-brand-700">
+                    <Plus size={16} className="mr-1" /> Novo Anúncio
                 </Link>
             )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Sidebar Profile */}
             <div className="bg-white rounded-lg shadow p-5 h-fit">
                 <div className="flex flex-col items-center">
