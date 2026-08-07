@@ -58,7 +58,7 @@ export const ServiceCard: React.FC<{ ad: ServiceAd; compact?: boolean }> = ({ ad
       
       <div className="p-4 flex-1 flex flex-col">
         <div className="flex justify-between items-start mb-2">
-            <h3 className="text-lg font-semibold text-gray-900 line-clamp-1 group-hover:text-brand-600 transition-colors">
+            <h3 className="text-base font-semibold text-gray-900 line-clamp-1 group-hover:text-brand-600 transition-colors">
             {ad.title}
             </h3>
         </div>
@@ -78,7 +78,7 @@ export const ServiceCard: React.FC<{ ad: ServiceAd; compact?: boolean }> = ({ ad
             </div>
         )}
 
-        <p className="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">
+        <p className="text-xs text-gray-500 line-clamp-2 mb-3 flex-1">
           {ad.description}
         </p>
 
@@ -104,7 +104,7 @@ export const ServiceCard: React.FC<{ ad: ServiceAd; compact?: boolean }> = ({ ad
                           ad.providerName.charAt(0)
                         )}
                     </div>
-                    <span className="text-xs text-gray-600 group-hover/profile:text-brand-600 truncate max-w-[100px] flex items-center transition-colors">
+                    <span className="text-[11px] text-gray-600 group-hover/profile:text-brand-600 truncate max-w-[100px] flex items-center transition-colors">
                         {ad.providerName}
                         {ad.isCertified && <CheckCircle size={12} className="ml-1 text-brand-500" title="Profissional Certificada" />}
                     </span>
