@@ -22,6 +22,18 @@ const ServiceDetail: React.FC = () => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleData, setScheduleData] = useState({ date: '', time: '', notes: '' });
   const [isScheduling, setIsScheduling] = useState(false);
+  const [scheduleError, setScheduleError] = useState('');
+
+  const parseAvailability = (availability?: string): { start: string; end: string } | null => {
+    if (!availability) return null;
+    const timePart = availability.split(',').pop()?.trim();
+    if (!timePart || !timePart.includes('-')) return null;
+    const [start, end] = timePart.split('-').map(t => t.trim());
+    if (!start || !end) return null;
+    return { start, end };
+  };
+
+  const availability = parseAvailability(ad?.availability);
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -129,7 +141,15 @@ const ServiceDetail: React.FC = () => {
           return;
       }
 
+      if (availability && scheduleData.time) {
+          if (scheduleData.time < availability.start || scheduleData.time > availability.end) {
+              setScheduleError(`O horário escolhido está fora do horário de atendimento (${availability.start} às ${availability.end}).`);
+              return;
+          }
+      }
+
       setIsScheduling(true);
+      setScheduleError('');
       try {
         const formattedDate = new Date(scheduleData.date).toLocaleDateString('pt-BR');
         const message = `📅 *SOLICITAÇÃO DE AGENDAMENTO*\n\nOlá, gostaria de agendar um serviço:\n\n🗓️ Data: ${formattedDate}\n⏰ Horário: ${scheduleData.time}\n📝 Observações: ${scheduleData.notes || 'Nenhuma'}\n\nPodemos confirmar?`;
@@ -437,9 +457,25 @@ const ServiceDetail: React.FC = () => {
                             required
                             className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none"
                             value={scheduleData.time}
-                            onChange={(e) => setScheduleData(prev => ({...prev, time: e.target.value}))}
+                            min={availability?.start}
+                            max={availability?.end}
+                            onChange={(e) => {
+                                setScheduleData(prev => ({...prev, time: e.target.value}));
+                                setScheduleError('');
+                            }}
                         />
+                        {availability && (
+                            <p className="text-xs text-gray-500 mt-1.5">
+                                Horário de atendimento: <strong>{availability.start} às {availability.end}</strong>
+                            </p>
+                        )}
                     </div>
+
+                    {scheduleError && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-xl">
+                            {scheduleError}
+                        </div>
+                    )}
 
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-1.5">Alguma observação?</label>
