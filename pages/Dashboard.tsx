@@ -242,9 +242,17 @@ const Dashboard: React.FC = () => {
                                                     </button>
                                                 )}
                                                 {app.status === 'completed' && !app.reviewed && (
-                                                    <span className="text-xs text-gray-500 flex items-center sm:justify-end">
-                                                        <Star size={13} className="mr-1 text-yellow-500" /> Serviço concluído — aguardando avaliação
-                                                    </span>
+                                                    <div className="flex flex-col gap-1 items-start sm:items-end">
+                                                        <span className="text-xs text-gray-500 flex items-center">
+                                                            <Star size={13} className="mr-1 text-yellow-500" /> Serviço concluído
+                                                        </span>
+                                                        <button 
+                                                            onClick={() => { setReviewingApp(app); setReviewRating(5); setReviewComment(''); setReviewError(''); }}
+                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+                                                        >
+                                                            <Star size={16} className="mr-1" /> Avaliar serviço
+                                                        </button>
+                                                    </div>
                                                 )}
                                                 {app.status === 'completed' && app.reviewed && (
                                                     <span className="text-xs text-green-600 flex items-center sm:justify-end">

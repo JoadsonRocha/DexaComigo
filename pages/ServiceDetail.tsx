@@ -60,6 +60,21 @@ const ServiceDetail: React.FC = () => {
     return WEEKDAY_LABELS[d.getDay()];
   };
 
+  const DAY_NAMES: Record<string, string> = {
+    seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado', dom: 'Domingo'
+  };
+
+  const formatAvailability = (): string => {
+    if (!ad?.availability) return 'Consultar disponibilidade';
+    const av = parseAvailability(ad.availability);
+    if (!av) return 'Consultar disponibilidade';
+    const daysText = av.days.length > 0
+      ? av.days.map(d => DAY_NAMES[d] || d).join(', ')
+      : 'Dias a combinar';
+    const timeText = `${av.start.replace(':00', 'h')} às ${av.end.replace(':00', 'h')}`;
+    return `${daysText} • ${timeText}`;
+  };
+
   const timeToMinutes = (time: string): number => {
     const [h = 0, m = 0] = time.split(':').map(Number);
     return h * 60 + m;
@@ -494,7 +509,7 @@ const ServiceDetail: React.FC = () => {
                         <div className="space-y-3 text-sm text-gray-600 bg-gray-50 p-4 rounded-xl">
                              {ad.isCertified && <div className="flex items-center"><Shield size={16} className="mr-3 text-green-500"/> Identidade Verificada</div>}
                              <div className="flex items-center"><Clock size={16} className="mr-3 text-indigo-500"/> Responde em poucos minutos</div>
-                             <div className="flex items-center"><Calendar size={16} className="mr-3 text-orange-500"/> {ad.availability || 'Consultar disponibilidade'}</div>
+                             <div className="flex items-start"><Calendar size={16} className="mr-3 text-orange-500 mt-0.5"/> <span>{formatAvailability()}</span></div>
                         </div>
                     </div>
                 </div>
@@ -535,7 +550,7 @@ const ServiceDetail: React.FC = () => {
                         />
                         {availability && availability.days.length > 0 && (
                             <p className="text-[11px] text-gray-500 mt-1">
-                                Dias de atendimento: <strong>{availability.days.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(', ')}</strong>
+                                Dias de atendimento: <strong>{availability.days.map(d => DAY_NAMES[d] || d).join(', ')}</strong>
                             </p>
                         )}
                     </div>
