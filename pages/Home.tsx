@@ -26,8 +26,9 @@ const iconMap: Record<string, React.ReactNode> = {
   makeup: <Brush size={20} />,
   nails: <Sparkles size={20} />,
   'hair-removal': <Droplet size={20} />,
-  massage: <Flower2 size={20} />,
   eyebrows: <Eye size={20} />,
+  facial: <Sparkles size={20} />,
+  body: <Flower2 size={20} />,
 };
 
 const Home: React.FC = () => {
