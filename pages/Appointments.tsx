@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, Check, X, Clock, CheckCircle2, ArrowLeft, MapPin, Star } from 'lucide-react';
+import { Calendar, Check, X, Clock, CheckCircle2, ArrowLeft, MapPin, Star, Loader2, Send } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
 import { Appointment, AppointmentStatus, UserRole } from '../types';
@@ -11,6 +11,12 @@ const Appointments: React.FC = () => {
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [reviewingApp, setReviewingApp] = useState<Appointment | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState('');
 
   useEffect(() => {
     if (loading) return;
@@ -47,6 +53,42 @@ const Appointments: React.FC = () => {
   const handleUpdateStatus = async (id: string, status: AppointmentStatus) => {
     await store.updateAppointmentStatus(id, status);
     setAppointments(prev => prev.map(app => app.id === id ? { ...app, status } : app));
+  };
+
+  const handleConfirmService = async (app: Appointment) => {
+    await store.updateAppointmentStatus(app.id, 'completed');
+    setAppointments(prev => prev.map(a => a.id === app.id ? { ...a, status: 'completed' } : a));
+    setReviewingApp(app);
+    setReviewRating(5);
+    setReviewComment('');
+    setReviewError('');
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewingApp || !user) return;
+
+    setSubmittingReview(true);
+    setReviewError('');
+    try {
+      await store.addReview(reviewingApp.adId, {
+        authorId: user.id,
+        authorName: user.name,
+        rating: reviewRating,
+        comment: reviewComment,
+      });
+      await store.markAppointmentReviewed(reviewingApp.id);
+      setAppointments(prev => prev.map(a => a.id === reviewingApp.id ? { ...a, reviewed: true } : a));
+      setReviewingApp(null);
+      alert("Avaliação publicada com sucesso! Ela já aparece no anúncio do profissional.");
+    } catch (err: any) {
+      console.error("Erro ao enviar avaliação:", err);
+      setReviewError(err.code === '42501'
+        ? "Erro de permissão no Supabase (RLS): verifique as políticas da tabela 'reviews'."
+        : "Houve um erro ao publicar sua avaliação. Tente novamente.");
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   const total = appointments.length;
@@ -138,10 +180,33 @@ const Appointments: React.FC = () => {
                     {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
                   </div>
 
-                  {isClient && app.status === 'completed' && (
-                    <div className="text-xs text-green-600 flex items-center">
-                      <Star size={13} className="mr-1 text-yellow-500" /> Serviço concluído
+                  {isClient && app.status === 'confirmed' && (
+                    <button
+                      onClick={() => handleConfirmService(app)}
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+                    >
+                      <CheckCircle2 size={16} className="mr-1" /> Confirmar serviço realizado
+                    </button>
+                  )}
+
+                  {isClient && app.status === 'completed' && !app.reviewed && (
+                    <div className="flex flex-col gap-1 items-start sm:items-end">
+                      <span className="text-xs text-gray-500 flex items-center">
+                        <Star size={13} className="mr-1 text-yellow-500" /> Serviço concluído
+                      </span>
+                      <button
+                        onClick={() => { setReviewingApp(app); setReviewRating(5); setReviewComment(''); setReviewError(''); }}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+                      >
+                        <Star size={16} className="mr-1" /> Avaliar serviço
+                      </button>
                     </div>
+                  )}
+
+                  {isClient && app.status === 'completed' && app.reviewed && (
+                    <span className="text-xs text-green-600 flex items-center">
+                      <CheckCircle2 size={13} className="mr-1" /> Avaliado
+                    </span>
                   )}
 
                   {!isClient && app.status === 'pending' && (
