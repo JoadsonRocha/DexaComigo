@@ -23,7 +23,7 @@ const CreateAd: React.FC = () => {
 
   const [formData, setFormData] = useState({
     title: '',
-    category: 'home',
+    category: 'hair',
     price: '',
     priceUnit: 'job',
     location: '',
@@ -140,8 +140,8 @@ const CreateAd: React.FC = () => {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-brand-700 py-6 px-8">
-                <h1 className="text-2xl font-bold text-white">Publicar Novo Anúncio</h1>
-                <p className="text-brand-100">Preencha os dados para que clientes te encontrem.</p>
+                <h1 className="text-2xl font-bold text-white">Anunciar Serviço de Beleza</h1>
+                <p className="text-brand-100">Preencha os dados para que clientes te encontrem para atendimento em domicílio.</p>
             </div>
             
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
@@ -154,7 +154,7 @@ const CreateAd: React.FC = () => {
                         name="title"
                         required
                         className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500"
-                        placeholder="Ex: Instalação de Ar Condicionado"
+                        placeholder="Ex: Maquiagem para Noivas, Mechas e Luzes..."
                         value={formData.title}
                         onChange={handleInputChange}
                     />
@@ -175,13 +175,13 @@ const CreateAd: React.FC = () => {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Localização (Cidade/Bairro)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Região de Atendimento (Domicílio)</label>
                         <input 
                             type="text" 
                             name="location"
                             required
                             className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500"
-                            placeholder="Ex: Centro, São Paulo"
+                            placeholder="Ex: Zona Sul, São Paulo"
                             value={formData.location}
                             onChange={handleInputChange}
                         />
@@ -236,7 +236,7 @@ const CreateAd: React.FC = () => {
                          <input 
                             type="text" 
                             name="keywords"
-                            placeholder="Ex: rápido, limpo, garantia, 10 anos de experiência"
+                            placeholder="Ex: vegano, hipoalergênico, material esterilizado"
                             className="w-full border border-indigo-200 rounded-md p-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                             value={formData.keywords}
                             onChange={handleInputChange}
