@@ -1,7 +1,8 @@
 import React from 'react';
 import { Star, MapPin, CheckCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CATEGORIES } from '../constants';
+import { ServiceAd } from '../types';
 
 export const Badge: React.FC<{ children: React.ReactNode; variant?: 'primary' | 'secondary' | 'outline' }> = ({ children, variant = 'primary' }) => {
   const styles = {
@@ -34,8 +35,10 @@ export const RatingStars: React.FC<{ rating: number; count?: number; size?: numb
 };
 
 export const ServiceCard: React.FC<{ ad: ServiceAd }> = ({ ad }) => {
-  const navigate = import('react-router-dom').then(m => m.useNavigate).catch(() => null); 
-  // Wait, I should just import useNavigate at the top. Let's do it properly.
+  const navigate = useNavigate();
+  return (
+    <Link to={`/service/${ad.id}`} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 flex flex-col h-full">
+      <div className="relative aspect-video overflow-hidden bg-gray-100">
         <img 
           src={ad.images[0]} 
           alt={ad.title} 
@@ -69,15 +72,22 @@ export const ServiceCard: React.FC<{ ad: ServiceAd }> = ({ ad }) => {
             </div>
 
             <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-xs font-bold">
+                <button 
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/profissional/${ad.providerId}`);
+                    }}
+                    className="flex items-center space-x-2 group/profile hover:bg-gray-50 p-1 -ml-1 rounded-lg transition-colors text-left"
+                >
+                    <div className="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-xs font-bold group-hover/profile:bg-brand-600 group-hover/profile:text-white transition-colors">
                         {ad.providerName.charAt(0)}
                     </div>
-                    <span className="text-xs text-gray-600 truncate max-w-[100px] flex items-center">
+                    <span className="text-xs text-gray-600 group-hover/profile:text-brand-600 truncate max-w-[100px] flex items-center transition-colors">
                         {ad.providerName}
                         {ad.isCertified && <CheckCircle size={12} className="ml-1 text-brand-500" title="Profissional Certificada" />}
                     </span>
-                </div>
+                </button>
                 <div className="text-right">
                     <span className="text-sm font-bold text-gray-900">
                         {ad.price === 0 ? 'A combinar' : `R$ ${ad.price}`}
