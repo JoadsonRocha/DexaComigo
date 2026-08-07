@@ -5,6 +5,7 @@ import { ServiceAd, User, UserRole, ChatSession, Message, Review } from '../type
 export interface GetAdsParams {
   category?: string;
   searchTerm?: string;
+  location?: string;
   providerId?: string;
   isPremium?: boolean;
   page?: number;
@@ -72,6 +73,9 @@ class Store {
     }
     if (params?.providerId) {
       query = query.eq('provider_id', params.providerId);
+    }
+    if (params?.location) {
+      query = query.ilike('location', `%${params.location}%`);
     }
     if (params?.isPremium !== undefined) {
       query = query.eq('is_premium', params.isPremium);

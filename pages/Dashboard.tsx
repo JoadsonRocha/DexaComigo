@@ -25,8 +25,8 @@ const Dashboard: React.FC = () => {
     }
     if (user.role === UserRole.PROVIDER) {
         const loadData = async () => {
-        const ads = await store.getAds();
-        setMyAds(ads.filter(a => a.providerId === user.id));
+        const ads = await store.getAds({ providerId: user.id });
+        setMyAds(ads);
         const unread = await store.getGlobalUnreadCount(user.id);
         setUnreadCount(unread);
     };
