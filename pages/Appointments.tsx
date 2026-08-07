@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Check, X, Clock, CheckCircle2, MapPin, Star, Loader2, Send, List, LayoutGrid } from 'lucide-react';
+import { Calendar, Check, X, Clock, CheckCircle2, MapPin, Star, Loader2, Send, List, LayoutGrid, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
 import { Appointment, AppointmentStatus, UserRole } from '../types';
@@ -169,13 +169,70 @@ const Appointments: React.FC = () => {
   const pending = appointments.filter(a => a.status === 'pending').length;
   const confirmed = appointments.filter(a => a.status === 'confirmed').length;
   const completed = appointments.filter(a => a.status === 'completed').length;
+  const cancelled = appointments.filter(a => a.status === 'cancelled').length;
+
+  const active = appointments.filter(a => a.status === 'pending' || a.status === 'confirmed');
+  const archived = appointments.filter(a => a.status === 'completed' || a.status === 'cancelled');
+  const [showHistory, setShowHistory] = useState(false);
 
   const stats = [
     { label: 'Total de Agendamentos', value: total, icon: Calendar, color: 'bg-brand-50 text-brand-600' },
     { label: 'Pendentes', value: pending, icon: Clock, color: 'bg-yellow-50 text-yellow-600' },
     { label: 'Confirmados', value: confirmed, icon: CheckCircle2, color: 'bg-green-50 text-green-600' },
     { label: 'Concluídos', value: completed, icon: CheckCircle2, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Cancelados', value: cancelled, icon: X, color: 'bg-red-50 text-red-600' },
   ];
+
+  const renderAppointments = (items: Appointment[]) => (
+    view === 'list' ? (
+      <ul className="divide-y divide-gray-100">
+        {items.map(app => (
+          <li key={app.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={statusBadge(app.status)}>{statusLabel(app.status)}</span>
+                <span className="text-sm text-gray-500 flex items-center"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString('pt-BR')} às {app.time}</span>
+              </div>
+              <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
+              <p className="text-sm text-gray-600 mt-1">
+                {isClient
+                  ? <>Profissional: <span className="font-medium text-brand-600">{app.providerName}</span></>
+                  : <>Cliente: <span className="font-medium text-brand-600">{app.clientName}</span></>}
+              </p>
+              {app.clientLocation && (
+                <p className="text-sm text-gray-600 flex items-center mt-1"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
+              )}
+              {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
+            </div>
+
+            {renderActions(app)}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-5">
+        {items.map(app => (
+          <div key={app.id} className="border border-gray-100 rounded-xl p-4 flex flex-col gap-3 shadow-sm">
+            <div className="flex items-start justify-between gap-2">
+              <span className={statusBadge(app.status)}>{statusLabel(app.status)}</span>
+              <span className="text-xs text-gray-500 flex items-center whitespace-nowrap"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString('pt-BR')} às {app.time}</span>
+            </div>
+            <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
+            <p className="text-sm text-gray-600">
+              {isClient
+                ? <>Profissional: <span className="font-medium text-brand-600">{app.providerName}</span></>
+                : <>Cliente: <span className="font-medium text-brand-600">{app.clientName}</span></>}
+            </p>
+            {app.clientLocation && (
+              <p className="text-sm text-gray-600 flex items-center"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
+            )}
+            {app.notes && <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
+            <div className="mt-auto flex flex-col gap-2">{renderActions(app)}</div>
+          </div>
+        ))}
+      </div>
+    )
+  );
 
   return (
     <>
