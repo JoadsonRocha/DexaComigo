@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { store } from '../services/store';
 import { ServiceCard } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
-import { Settings, Plus, Trash2, Search, MessageSquare, LogOut } from 'lucide-react';
+import { Settings, Plus, Trash2, Search, MessageSquare, LogOut, Calendar, Check, X, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { ServiceAd, UserRole } from '../types';
+import { ServiceAd, UserRole, Appointment, AppointmentStatus } from '../types';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -17,6 +17,12 @@ const Dashboard: React.FC = () => {
       await logout();
   };
   const [myAds, setMyAds] = useState<ServiceAd[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+  const loadAppointments = async (userId: string, role: UserRole) => {
+      const data = await store.getMyAppointments(userId, role);
+      setAppointments(data);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -29,10 +35,23 @@ const Dashboard: React.FC = () => {
         setMyAds(ads);
         const unread = await store.getGlobalUnreadCount(user.id);
         setUnreadCount(unread);
+        await loadAppointments(user.id, user.role);
     };
     loadData();
+    } else {
+        const loadClientData = async () => {
+            const unread = await store.getGlobalUnreadCount(user.id);
+            setUnreadCount(unread);
+            await loadAppointments(user.id, user.role);
+        };
+        loadClientData();
     }
   }, [user, navigate]);
+
+  const handleUpdateAppointmentStatus = async (id: string, status: AppointmentStatus) => {
+      await store.updateAppointmentStatus(id, status);
+      setAppointments(prev => prev.map(app => app.id === id ? { ...app, status } : app));
+  };
 
   const handleDelete = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir este anúncio?')) {
@@ -122,6 +141,41 @@ const Dashboard: React.FC = () => {
                                 <p className="text-gray-500 text-sm">Acompanhe suas conversas e agendamentos com as profissionais.</p>
                             </Link>
                         </div>
+                        
+                        {/* Agendamentos Cliente */}
+                        <div className="mt-8">
+                            <h2 className="text-xl font-bold text-gray-800 mb-6">Meus Agendamentos</h2>
+                            {appointments.length === 0 ? (
+                                <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+                                    Você ainda não tem serviços agendados.
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {appointments.map(app => (
+                                        <div key={app.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
+                                                        app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                                        app.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                                                        app.status === 'completed' ? 'bg-blue-100 text-blue-700' :
+                                                        'bg-red-100 text-red-700'
+                                                    }`}>
+                                                        {app.status === 'pending' ? 'Aguardando Confirmação' :
+                                                         app.status === 'confirmed' ? 'Confirmado' :
+                                                         app.status === 'completed' ? 'Concluído' : 'Cancelado'}
+                                                    </span>
+                                                    <span className="text-sm text-gray-500 flex items-center"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString()} às {app.time}</span>
+                                                </div>
+                                                <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
+                                                <p className="text-sm text-gray-600 mt-1">Profissional: <span className="font-medium text-brand-600">{app.providerName}</span></p>
+                                                {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 ) : (
                     // PROVIDER DASHBOARD
@@ -154,6 +208,75 @@ const Dashboard: React.FC = () => {
                                     <p className="text-gray-500 text-xs mt-1">Responder clientes e agendamentos</p>
                                 </div>
                             </Link>
+                        </div>
+
+                        {/* Agendamentos Profissional */}
+                        <div className="mb-8">
+                            <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                Agendamentos Solicitados
+                                {appointments.filter(a => a.status === 'pending').length > 0 && (
+                                    <span className="ml-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                        {appointments.filter(a => a.status === 'pending').length} novos
+                                    </span>
+                                )}
+                            </h2>
+                            
+                            {appointments.length === 0 ? (
+                                <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500 border border-dashed border-gray-200">
+                                    Nenhum agendamento no momento.
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {appointments.map(app => (
+                                        <div key={app.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
+                                                        app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                                        app.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                                                        app.status === 'completed' ? 'bg-blue-100 text-blue-700' :
+                                                        'bg-red-100 text-red-700'
+                                                    }`}>
+                                                        {app.status === 'pending' ? 'Pendente' :
+                                                         app.status === 'confirmed' ? 'Confirmado' :
+                                                         app.status === 'completed' ? 'Concluído' : 'Cancelado'}
+                                                    </span>
+                                                    <span className="text-sm text-gray-500 flex items-center"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString()} às {app.time}</span>
+                                                </div>
+                                                <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
+                                                <div className="flex items-center gap-2 mt-2">
+                                                    {app.clientAvatar ? (
+                                                        <img src={app.clientAvatar} alt={app.clientName} className="w-6 h-6 rounded-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-6 h-6 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xs font-bold">
+                                                            {app.clientName?.charAt(0) || 'U'}
+                                                        </div>
+                                                    )}
+                                                    <p className="text-sm text-gray-600">Cliente: <span className="font-medium text-brand-600">{app.clientName}</span></p>
+                                                </div>
+                                                {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
+                                            </div>
+                                            
+                                            {app.status === 'pending' && (
+                                                <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
+                                                    <button 
+                                                        onClick={() => handleUpdateAppointmentStatus(app.id, 'confirmed')}
+                                                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+                                                    >
+                                                        <Check size={16} className="mr-1" /> Confirmar
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleUpdateAppointmentStatus(app.id, 'cancelled')}
+                                                        className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+                                                    >
+                                                        <X size={16} className="mr-1" /> Recusar
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <h2 className="text-xl font-bold text-gray-800 mb-6">Meus Anúncios ({myAds.length})</h2>

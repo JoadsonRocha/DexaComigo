@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, User as UserIcon, MapPin, Phone, FileText, Save, ArrowLeft, Loader2 } from 'lucide-react';
+import { Camera, User as UserIcon, MapPin, Phone, FileText, Save, ArrowLeft, Loader2, LocateFixed } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { store } from '../services/store';
 
@@ -9,6 +9,7 @@ const EditProfile: React.FC = () => {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [loadingLocation, setLoadingLocation] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     bio: '',
@@ -48,6 +49,54 @@ const EditProfile: React.FC = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Seu navegador não suporta geolocalização.");
+      return;
+    }
+
+    setLoadingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          // Nominatim API para Reverse Geocoding
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+          const data = await response.json();
+          
+          if (data && data.address) {
+            const addr = data.address;
+            // Nominatim costuma retornar bairro como suburb, neighbourhood ou district
+            const neighborhood = addr.suburb || addr.neighbourhood || addr.district || '';
+            const city = addr.city || addr.town || addr.village || '';
+            const state = addr.state || '';
+            
+            let locationStr = '';
+            if (neighborhood && city && state) {
+              locationStr = `${neighborhood}, ${city} - ${state}`;
+            } else if (city && state) {
+              locationStr = `${city} - ${state}`;
+            } else {
+              locationStr = data.display_name.split(',').slice(0, 3).join(',');
+            }
+            
+            setFormData(prev => ({ ...prev, location: locationStr }));
+          }
+        } catch (error) {
+          console.error("Erro ao buscar endereço:", error);
+          alert("Não foi possível buscar seu endereço automaticamente.");
+        } finally {
+          setLoadingLocation(false);
+        }
+      },
+      (error) => {
+        console.error("Erro de geolocalização:", error);
+        alert("Permissão de localização negada ou indisponível.");
+        setLoadingLocation(false);
+      }
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -137,17 +186,28 @@ const EditProfile: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="flex items-center text-sm font-semibold text-gray-700 mb-1">
-                      <MapPin size={16} className="mr-2 text-brand-500" /> Localização
-                    </label>
+                  <div className="flex flex-col">
+                    <div className="flex justify-between items-center mb-1">
+                        <label className="flex items-center text-sm font-semibold text-gray-700">
+                        <MapPin size={16} className="mr-2 text-brand-500" /> Localização
+                        </label>
+                        <button 
+                            type="button"
+                            onClick={handleGetLocation}
+                            disabled={loadingLocation}
+                            className="text-xs text-brand-600 hover:text-brand-700 font-semibold flex items-center disabled:opacity-50"
+                        >
+                            {loadingLocation ? <Loader2 size={12} className="animate-spin mr-1" /> : <LocateFixed size={12} className="mr-1" />}
+                            Usar GPS
+                        </button>
+                    </div>
                     <input
                       type="text"
                       name="location"
                       value={formData.location}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                      placeholder="Ex: São Paulo, SP"
+                      placeholder="Ex: Pinheiros, São Paulo - SP"
                     />
                   </div>
                   <div>
