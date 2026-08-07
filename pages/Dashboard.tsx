@@ -53,68 +53,6 @@ const Dashboard: React.FC = () => {
     }
   }, [user, navigate]);
 
-  const handleUpdateAppointmentStatus = async (id: string, status: AppointmentStatus) => {
-      await store.updateAppointmentStatus(id, status);
-      if (user) {
-          const appointment = appointments.find(a => a.id === id);
-          if (appointment) {
-              try {
-                  if (status === 'cancelled') {
-                      await store.notifyAppointmentCancelled(appointment, user.name);
-                  } else if (status === 'confirmed') {
-                      await store.notifyAppointmentConfirmed(appointment, user.name);
-                  }
-              } catch (e) {
-                  console.error("Erro ao notificar mudança de status:", e);
-              }
-          }
-      }
-      setAppointments(prev => prev.map(app => app.id === id ? { ...app, status } : app));
-  };
-
-  const handleConfirmService = async (app: Appointment) => {
-      await store.updateAppointmentStatus(app.id, 'completed');
-      setAppointments(prev => prev.map(a => a.id === app.id ? { ...a, status: 'completed' } : a));
-      setReviewingApp(app);
-      setReviewRating(5);
-      setReviewComment('');
-      setReviewError('');
-  };
-
-  const handleSubmitReview = async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!reviewingApp) return;
-
-      setSubmittingReview(true);
-      setReviewError('');
-      try {
-          await store.addReview(reviewingApp.adId, {
-              authorId: user!.id,
-              authorName: user!.name,
-              rating: reviewRating,
-              comment: reviewComment,
-          });
-          await store.markAppointmentReviewed(reviewingApp.id);
-          setAppointments(prev => prev.map(a => a.id === reviewingApp.id ? { ...a, reviewed: true } : a));
-          setReviewingApp(null);
-          alert("Avaliação publicada com sucesso! Ela já aparece no anúncio do profissional.");
-      } catch (err: any) {
-          console.error("Erro ao enviar avaliação:", err);
-          setReviewError(err.code === '42501'
-              ? "Erro de permissão no Supabase (RLS): verifique as políticas da tabela 'reviews'."
-              : "Houve um erro ao publicar sua avaliação. Tente novamente.");
-      } finally {
-          setSubmittingReview(false);
-      }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este anúncio?')) {
-        await store.deleteAd(id);
-        setMyAds(prev => prev.filter(ad => ad.id !== id));
-    }
-  };
-
   if (!user) return null;
 
   const isClient = user.role === UserRole.CLIENT;
