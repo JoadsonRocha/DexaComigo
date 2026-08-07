@@ -113,7 +113,7 @@ const SearchPage: React.FC = () => {
                         setQuery(e.target.value);
                         updateSearchParam('q', e.target.value);
                     }}
-                    placeholder="Ex: Encanador"
+                    placeholder="Ex: Maquiagem, Cabelo, Depilação"
                     className="w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-500 focus:border-brand-500 sm:text-sm p-2 border"
                  />
                </div>

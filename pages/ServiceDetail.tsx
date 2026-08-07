@@ -2,7 +2,7 @@
 // Add React import to resolve namespace errors for FC and FormEvent
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, MessageCircle, Star, Shield, Clock, Calendar, MessageSquare, CalendarCheck, X, Send, AlertTriangle, Loader2 } from 'lucide-react';
+import { MapPin, MessageCircle, Star, Shield, Clock, Calendar, MessageSquare, CalendarCheck, X, Send, AlertTriangle, Loader2, CheckCircle } from 'lucide-react';
 import { store } from '../services/store';
 import { ServiceAd, Review } from '../types';
 import { RatingStars, Badge } from '../components/UI';
@@ -333,12 +333,18 @@ const ServiceDetail: React.FC = () => {
                             </div>
                             <div>
                                 <p className="font-bold text-gray-900 text-lg leading-tight">{ad.providerName}</p>
-                                <p className="text-xs text-gray-500">Membro verificado Dexacomigo</p>
+                                <p className="text-xs text-gray-500 flex items-center mt-1">
+                                    {ad.isCertified ? (
+                                        <><CheckCircle size={12} className="mr-1 text-brand-500"/> Profissional Certificada Mais Beleza</>
+                                    ) : (
+                                        'Profissional Mais Beleza'
+                                    )}
+                                </p>
                             </div>
                         </div>
                         
                         <div className="space-y-3 text-sm text-gray-600 bg-gray-50 p-4 rounded-xl">
-                             <div className="flex items-center"><Shield size={16} className="mr-3 text-green-500"/> Profissional verificado</div>
+                             {ad.isCertified && <div className="flex items-center"><Shield size={16} className="mr-3 text-green-500"/> Identidade Verificada</div>}
                              <div className="flex items-center"><Clock size={16} className="mr-3 text-indigo-500"/> Responde em poucos minutos</div>
                              <div className="flex items-center"><Calendar size={16} className="mr-3 text-orange-500"/> {ad.availability || 'Consultar disponibilidade'}</div>
                         </div>

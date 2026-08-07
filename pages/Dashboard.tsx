@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
                 
                 {myAds.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-10 text-center">
-                        <p className="text-gray-500 mb-4">Você ainda não tem nenhum anúncio publicado.</p>
+                        <p className="text-gray-500 mb-4">Comece a gerar renda e autonomia. Crie seu primeiro anúncio de beleza em domicílio agora!</p>
                         <Link to="/create-ad" className="text-brand-600 font-medium hover:underline">Começar agora</Link>
                     </div>
                 ) : (

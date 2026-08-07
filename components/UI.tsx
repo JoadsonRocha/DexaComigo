@@ -1,7 +1,7 @@
 import React from 'react';
 import { Star, MapPin, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ServiceAd } from '../types';
+import { CATEGORIES } from '../constants';
 
 export const Badge: React.FC<{ children: React.ReactNode; variant?: 'primary' | 'secondary' | 'outline' }> = ({ children, variant = 'primary' }) => {
   const styles = {
@@ -48,7 +48,7 @@ export const ServiceCard: React.FC<{ ad: ServiceAd }> = ({ ad }) => {
           </div>
         )}
         <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded">
-            {ad.category === 'home' ? 'Casa' : ad.category === 'tech' ? 'Tecnologia' : ad.category}
+            {CATEGORIES.find(c => c.id === ad.category)?.label || ad.category}
         </div>
       </div>
       
@@ -74,7 +74,10 @@ export const ServiceCard: React.FC<{ ad: ServiceAd }> = ({ ad }) => {
                     <div className="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-xs font-bold">
                         {ad.providerName.charAt(0)}
                     </div>
-                    <span className="text-xs text-gray-600 truncate max-w-[100px]">{ad.providerName}</span>
+                    <span className="text-xs text-gray-600 truncate max-w-[100px] flex items-center">
+                        {ad.providerName}
+                        {ad.isCertified && <CheckCircle size={12} className="ml-1 text-brand-500" title="Profissional Certificada" />}
+                    </span>
                 </div>
                 <div className="text-right">
                     <span className="text-sm font-bold text-gray-900">
