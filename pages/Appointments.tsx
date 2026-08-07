@@ -12,6 +12,7 @@ const Appointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState<'list' | 'grid'>('list');
+  const [showHistory, setShowHistory] = useState(false);
 
   const [reviewingApp, setReviewingApp] = useState<Appointment | null>(null);
   const [reviewRating, setReviewRating] = useState(5);
@@ -173,7 +174,7 @@ const Appointments: React.FC = () => {
 
   const active = appointments.filter(a => a.status === 'pending' || a.status === 'confirmed');
   const archived = appointments.filter(a => a.status === 'completed' || a.status === 'cancelled');
-  const [showHistory, setShowHistory] = useState(false);
+  const historyOpen = showHistory || active.length === 0;
 
   const stats = [
     { label: 'Total de Agendamentos', value: total, icon: Calendar, color: 'bg-brand-50 text-brand-600' },
@@ -258,7 +259,7 @@ const Appointments: React.FC = () => {
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
           {stats.map(stat => (
             <div key={stat.label} className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3 flex items-center">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${stat.color}`}>
@@ -286,53 +287,31 @@ const Appointments: React.FC = () => {
               <p className="text-gray-500">Nenhum agendamento ainda.</p>
               <p className="text-gray-400 text-sm mt-1">Quando você tiver serviços agendados, eles aparecerão aqui.</p>
             </div>
-          ) : view === 'list' ? (
-            <ul className="divide-y divide-gray-100">
-              {appointments.map(app => (
-                <li key={app.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={statusBadge(app.status)}>{statusLabel(app.status)}</span>
-                      <span className="text-sm text-gray-500 flex items-center"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString('pt-BR')} às {app.time}</span>
-                    </div>
-                    <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {isClient
-                        ? <>Profissional: <span className="font-medium text-brand-600">{app.providerName}</span></>
-                        : <>Cliente: <span className="font-medium text-brand-600">{app.clientName}</span></>}
-                    </p>
-                    {app.clientLocation && (
-                      <p className="text-sm text-gray-600 flex items-center mt-1"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
-                    )}
-                    {app.notes && <p className="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
-                  </div>
-
-                  {renderActions(app)}
-                </li>
-              ))}
-            </ul>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-5">
-              {appointments.map(app => (
-                <div key={app.id} className="border border-gray-100 rounded-xl p-4 flex flex-col gap-3 shadow-sm">
-                  <div className="flex items-start justify-between gap-2">
-                    <span className={statusBadge(app.status)}>{statusLabel(app.status)}</span>
-                    <span className="text-xs text-gray-500 flex items-center whitespace-nowrap"><Calendar size={14} className="mr-1"/> {new Date(app.date).toLocaleDateString('pt-BR')} às {app.time}</span>
-                  </div>
-                  <h4 className="font-bold text-gray-900">{app.adTitle}</h4>
-                  <p className="text-sm text-gray-600">
-                    {isClient
-                      ? <>Profissional: <span className="font-medium text-brand-600">{app.providerName}</span></>
-                      : <>Cliente: <span className="font-medium text-brand-600">{app.clientName}</span></>}
-                  </p>
-                  {app.clientLocation && (
-                    <p className="text-sm text-gray-600 flex items-center"><MapPin size={14} className="mr-1 text-gray-400"/> {app.clientLocation}</p>
-                  )}
-                  {app.notes && <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded">Obs: {app.notes}</p>}
-                  <div className="mt-auto flex flex-col gap-2">{renderActions(app)}</div>
+            <>
+              {active.length > 0 && (
+                <div className="px-5 py-3 bg-brand-50/60 border-b border-gray-100 flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Em aberto</h3>
+                  <span className="text-xs text-gray-500">{active.length} agendamento(s)</span>
                 </div>
-              ))}
-            </div>
+              )}
+              {active.length > 0 && renderAppointments(active)}
+
+              {archived.length > 0 && (
+                <>
+                  <button
+                    onClick={() => setShowHistory(!showHistory)}
+                    className="w-full px-5 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between hover:bg-gray-100 transition-colors"
+                  >
+                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Concluídos e Cancelados</h3>
+                    <span className="flex items-center gap-2 text-xs text-gray-500">
+                      {archived.length} <ChevronDown size={16} className={`transition-transform ${historyOpen ? 'rotate-180' : ''}`} />
+                    </span>
+                  </button>
+                  {historyOpen && renderAppointments(archived)}
+                </>
+              )}
+            </>
           )}
         </div>
     </div>
