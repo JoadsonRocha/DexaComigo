@@ -78,6 +78,8 @@ export interface ChatSession {
   adId: string;
   adTitle: string;
   otherUserName?: string;
+  providerName?: string;
+  clientName?: string;
   lastMessage?: string;
   unreadCount?: number;
   updatedAt: string;
