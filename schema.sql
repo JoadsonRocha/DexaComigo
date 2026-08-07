@@ -106,3 +106,17 @@ CREATE POLICY "Profissionais deletam seus próprios anúncios" ON service_ads FO
 -- Políticas para Reviews
 CREATE POLICY "Reviews são públicos para leitura" ON reviews FOR SELECT USING (true);
 CREATE POLICY "Usuários autenticados podem criar reviews" ON reviews FOR INSERT WITH CHECK (auth.uid() = author_id);
+
+-- Políticas para Chat Sessions
+CREATE POLICY "Usuários autenticados podem ler sessões" ON chat_sessions FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Usuários autenticados podem criar sessões" ON chat_sessions FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Usuários autenticados podem atualizar sessões" ON chat_sessions FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- Políticas para Chat Participants
+ALTER TABLE chat_participants ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Usuários autenticados podem ler participantes" ON chat_participants FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Usuários autenticados podem inserir participantes" ON chat_participants FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+-- Políticas para Messages
+CREATE POLICY "Usuários autenticados podem ler mensagens" ON messages FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Usuários enviam mensagens com seu próprio ID" ON messages FOR INSERT WITH CHECK (auth.uid() = sender_id);

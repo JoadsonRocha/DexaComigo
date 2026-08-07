@@ -73,7 +73,7 @@ const Chat: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-gray-100">
+    <div className="flex flex-1 h-full overflow-hidden bg-gray-100">
       
       {/* Sidebar List */}
       <div className={`w-full md:w-80 bg-white border-r border-gray-200 flex flex-col ${activeChat && 'hidden md:flex'}`}>
