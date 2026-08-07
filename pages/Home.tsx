@@ -122,15 +122,35 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Services (Destaques) */}
-      <section className="py-20 bg-gray-50">
+      {/* Categories OLX Style */}
+      <section className="py-8 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+            <div className="flex overflow-x-auto pb-4 pt-2 gap-4 md:gap-8 scrollbar-hide snap-x md:justify-center">
+                {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+                    <Link 
+                        key={cat.id} 
+                        to={`/search?c=${cat.id}`}
+                        className="group flex flex-col items-center min-w-[84px] md:min-w-[100px] snap-start"
+                    >
+                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center mb-3 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300 shadow-sm border border-brand-100 group-hover:shadow-md group-hover:scale-105">
+                            {iconMap[cat.id] || <ArrowRight size={28} className="md:w-8 md:h-8" />}
+                        </div>
+                        <h3 className="font-medium text-gray-700 text-[11px] md:text-sm text-center whitespace-normal leading-tight w-20 md:w-24 group-hover:text-brand-600">{cat.label}</h3>
+                    </Link>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      {/* Featured Services (Destaques) */}
+      <section className="py-16 md:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-10 md:mb-12 gap-4">
                 <div className="text-left">
-                    <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Destaques da Comunidade</h2>
-                    <p className="text-gray-500 mt-2 text-base font-light">Conheça as profissionais que são referência.</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Destaques da Comunidade</h2>
+                    <p className="text-gray-500 mt-2 text-sm md:text-base font-light">Conheça as profissionais que são referência.</p>
                 </div>
-                <Link to="/search" className="group text-brand-600 font-bold flex items-center hover:text-brand-700 bg-white px-6 py-3 rounded-xl shadow-sm border border-gray-100 transition-all active:scale-95">
+                <Link to="/search" className="group text-brand-600 font-bold flex items-center hover:text-brand-700 bg-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl shadow-sm border border-gray-100 transition-all active:scale-95 text-sm md:text-base">
                     Ver todos <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
@@ -155,30 +175,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Categories Explanation */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-                <h2 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">Categorias</h2>
-                <p className="text-gray-500 text-base max-w-2xl mx-auto font-light">Encontre exatamente o que você precisa.</p>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {CATEGORIES.filter(c => c.id !== 'all').slice(0, 6).map(cat => (
-                    <Link 
-                        key={cat.id} 
-                        to={`/search?c=${cat.id}`}
-                        className="group flex flex-col items-center p-4 bg-white rounded-2xl border border-gray-100 hover:shadow-md hover:border-brand-200 transition-all duration-300"
-                    >
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-3 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300">
-                            {iconMap[cat.id] || <ArrowRight size={20} />}
-                        </div>
-                        <h3 className="font-bold text-gray-800 text-xs md:text-sm text-center mb-1">{cat.label}</h3>
-                    </Link>
-                ))}
-            </div>
-        </div>
-      </section>
+
 
       {/* How it Works Section (Explanation) */}
       <section className="py-28 bg-gray-900 text-white overflow-hidden relative">
