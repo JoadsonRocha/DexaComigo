@@ -4,29 +4,14 @@ import {
   Search, 
   ArrowRight, 
   Sparkles, 
-  Scissors,
-  Brush,
-  Droplet,
-  Flower2,
-  Eye,
   CheckCircle2,
   Users
 } from 'lucide-react';
 import { store } from '../services/store';
 import { ServiceCard } from '../components/UI';
+import { categoryIcon } from '../components/CategoryIcon';
 import { CATEGORIES } from '../constants';
 import { ServiceAd } from '../types';
-
-// Mapeamento de ícones para as categorias
-const iconMap: Record<string, React.ReactNode> = {
-  hair: <Scissors size={20} />,
-  makeup: <Brush size={20} />,
-  nails: <Sparkles size={20} />,
-  'hair-removal': <Droplet size={20} />,
-  eyebrows: <Eye size={20} />,
-  facial: <Sparkles size={20} />,
-  body: <Flower2 size={20} />,
-};
 
 const Home: React.FC = () => {
   const [featuredAds, setFeaturedAds] = useState<ServiceAd[]>([]);
@@ -69,6 +54,10 @@ const Home: React.FC = () => {
                     <div className="absolute inset-0 bg-brand-900 mix-blend-multiply opacity-85"></div>
                     <img 
                                                 src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                                                srcSet="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=70 800w,
+                                                         https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1280&q=75 1280w,
+                                                         https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80 1920w"
+                                                sizes="100vw"
                                                 className="w-full h-full object-cover" 
                                                 alt="Profissional de beleza em atendimento"
                                                 fetchpriority="high"
@@ -131,7 +120,7 @@ const Home: React.FC = () => {
                         className="group flex flex-col items-center min-w-[84px] md:min-w-[100px] snap-start"
                     >
                         <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center mb-3 group-hover:bg-brand-600 group-hover:text-white transition-all duration-300 shadow-sm border border-brand-100 group-hover:shadow-md group-hover:scale-105">
-                            {iconMap[cat.id] || <ArrowRight size={28} className="md:w-8 md:h-8" />}
+                            {categoryIcon(cat.id)}
                         </div>
                         <h3 className="font-medium text-gray-700 text-[11px] md:text-sm text-center whitespace-normal leading-tight w-20 md:w-24 group-hover:text-brand-600">{cat.label}</h3>
                     </Link>
@@ -183,7 +172,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-20">
                 <h2 className="text-4xl font-bold mb-4 tracking-tight">Transparência do início ao fim</h2>
-                <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">Entenda como o Mais Beleza facilita a conexão entre você e a profissional de beleza.</p>
+                <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">Entenda como o DexaComigo facilita a conexão entre você e a profissional de beleza.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-16">

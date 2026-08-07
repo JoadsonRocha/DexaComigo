@@ -14,27 +14,31 @@ export interface GetAdsParams {
 }
 
 /**
- * GUIA DE CONFIGURAÇÃO SQL PARA O SUPABASE (Execute no SQL Editor):
- * 
- * -- Permitir inserção de perfis (RLS para a tabela profiles)
- * CREATE POLICY "Profiles são públicos" ON profiles FOR SELECT USING (true);
- * CREATE POLICY "Qualquer um pode criar profiles" ON profiles FOR INSERT WITH CHECK (true);
- * CREATE POLICY "Usuários atualizam seus próprios profiles" ON profiles FOR UPDATE USING (true);
- * 
- * -- Permitir inserção de avaliações (RLS para a tabela reviews)
- * CREATE POLICY "Reviews são públicas" ON reviews FOR SELECT USING (true);
- * CREATE POLICY "Qualquer um pode criar reviews" ON reviews FOR INSERT WITH CHECK (true);
- * 
- * -- Permitir interação com anúncios
- * CREATE POLICY "Anúncios são públicos" ON service_ads FOR SELECT USING (true);
- * CREATE POLICY "Qualquer um pode criar anúncios" ON service_ads FOR INSERT WITH CHECK (true);
- * CREATE POLICY "Atualização de anúncios" ON service_ads FOR UPDATE USING (true);
+ * GUIA DE CONFIGURAÇÃO SQL PARA O SUPABASE:
+ * Execute o arquivo `supabase/policies.sql` no SQL Editor do Supabase.
+ * Ele cria as políticas RLS corretas (cada usuário só altera o que é dele)
+ * e habilita o Realtime para mensagens e agendamentos.
  */
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tdbtkmtjtkidfesgalgk.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'COLE_A_ANON_KEY_DO_PROJETO_AQUI';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+const AD_IMAGES_BUCKET = import.meta.env.VITE_AD_IMAGES_BUCKET || 'ad-images';
+const AVATARS_BUCKET = import.meta.env.VITE_AVATARS_BUCKET || 'avatars';
+
+/** Envia um arquivo para o Supabase Storage e retorna a URL pública. */
+export async function uploadImage(file: File, bucket: string = AD_IMAGES_BUCKET): Promise<string> {
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { data, error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false });
+  if (error) throw error;
+  const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
+  return urlData.publicUrl;
+}
+
+export { AD_IMAGES_BUCKET, AVATARS_BUCKET };
 
 class Store {
   private mapAd(data: any): ServiceAd {
@@ -311,6 +315,11 @@ class Store {
 
   async logout(): Promise<void> {
     await supabase.auth.signOut();
+  }
+
+  async requestPasswordReset(email: string): Promise<void> {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) { console.error("Store Error [requestPasswordReset]:", error); throw error; }
   }
 
   async getChats(userId: string): Promise<ChatSession[]> {
