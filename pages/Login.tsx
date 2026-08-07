@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { store } from '../services/store';
+import { useToast } from '../context/ToastContext';
 import { UserRole } from '../types';
 
 const Login: React.FC = () => {
@@ -11,7 +13,9 @@ const Login: React.FC = () => {
   const [role, setRole] = useState<UserRole>(UserRole.CLIENT);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [sendingReset, setSendingReset] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { user, login, register, loading: authLoading } = useAuth();
 
   if (authLoading) {
@@ -32,7 +36,7 @@ const Login: React.FC = () => {
     try {
       if (isRegistering) {
         await register(email, password, name, role);
-        alert('Cadastro realizado com sucesso! Verifique seu e-mail se necessário.');
+        toast('Cadastro realizado com sucesso! Verifique seu e-mail se necessário.', 'success');
         navigate('/dashboard');
       } else {
         await login(email, password);
@@ -59,6 +63,24 @@ const Login: React.FC = () => {
       setErrorMsg(friendlyError);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast('Informe seu e-mail para recuperar a senha.', 'error');
+      return;
+    }
+    setSendingReset(true);
+    setErrorMsg('');
+    try {
+      await store.resetPassword(email);
+      toast('Enviamos um link de recuperação para o seu e-mail.', 'success');
+    } catch (err) {
+      console.error(err);
+      toast('Não foi possível enviar o link de recuperação.', 'error');
+    } finally {
+      setSendingReset(false);
     }
   };
 
@@ -147,6 +169,19 @@ const Login: React.FC = () => {
                 />
               </div>
             </div>
+
+            {!isRegistering && (
+              <div className="flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={sendingReset}
+                  className="text-sm text-brand-600 font-medium hover:underline disabled:opacity-50"
+                >
+                  {sendingReset ? 'Enviando...' : 'Esqueci minha senha'}
+                </button>
+              </div>
+            )}
 
             <div>
               <button

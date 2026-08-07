@@ -56,7 +56,7 @@ const Privacy: React.FC = () => {
           <section>
             <h2 className="text-xl font-bold text-gray-900 mb-2">6. Contato</h2>
             <p>
-              Dúvidas sobre esta política: <a href="mailto:suporte@dexacomigo.com.br" className="text-brand-600 font-medium hover:underline">suporte@dexacomigo.com.br</a>
+              Dúvidas sobre esta política: <a href="mailto:suporte@maisbeleza.com.br" className="text-brand-600 font-medium hover:underline">suporte@maisbeleza.com.br</a>
             </p>
           </section>
         </div>

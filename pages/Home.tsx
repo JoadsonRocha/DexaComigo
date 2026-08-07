@@ -172,7 +172,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-20">
                 <h2 className="text-4xl font-bold mb-4 tracking-tight">Transparência do início ao fim</h2>
-                <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">Entenda como o DexaComigo facilita a conexão entre você e a profissional de beleza.</p>
+                <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">Entenda como o Mais Beleza facilita a conexão entre você e a profissional de beleza.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-16">

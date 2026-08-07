@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Sparkles, Wand2, Upload, X, Clock, Calendar, Loader2, MapPin, LocateFixed } from 'lucide-react';
-import { store } from '../services/store';
+import { store, uploadImage } from '../services/store';
 import { generateServiceDescription, suggestCategory } from '../services/geminiService';
 import { CATEGORIES } from '../constants';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const DAYS_OF_WEEK = [
   { id: 'seg', label: 'Seg' },
@@ -20,6 +21,7 @@ const DAYS_OF_WEEK = [
 const CreateAd: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -39,6 +41,8 @@ const CreateAd: React.FC = () => {
 
   // Images State
   const [images, setImages] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>([]);
+  const [submitting, setSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState('');
   const [loadingAd, setLoadingAd] = useState(false);
@@ -118,7 +122,7 @@ const CreateAd: React.FC = () => {
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-      alert("Seu navegador não suporta geolocalização.");
+      toast("Seu navegador não suporta geolocalização.", 'error');
       return;
     }
 
@@ -149,14 +153,14 @@ const CreateAd: React.FC = () => {
           }
         } catch (error) {
           console.error("Erro ao buscar endereço:", error);
-          alert("Não foi possível buscar seu endereço automaticamente.");
+          toast("Não foi possível buscar seu endereço automaticamente.", 'error');
         } finally {
           setLoadingLocation(false);
         }
       },
       (error) => {
         console.error("Erro de geolocalização:", error);
-        alert("Permissão de localização negada ou indisponível.");
+        toast("Permissão de localização negada ou indisponível.", 'error');
         setLoadingLocation(false);
       }
     );
@@ -175,12 +179,12 @@ const CreateAd: React.FC = () => {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      // Cast to File explicitly to avoid unknown type error
       Array.from(e.target.files).forEach((file: File) => {
         const reader = new FileReader();
         reader.onloadend = () => {
           if (reader.result) {
             setImages(prev => [...prev, reader.result as string]);
+            setImageFiles(prev => [...prev, file]);
           }
         };
         reader.readAsDataURL(file);
@@ -190,6 +194,7 @@ const CreateAd: React.FC = () => {
 
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -231,43 +236,63 @@ const CreateAd: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Format availability string
-    const selectedDayLabels = selectedDays.map(id => DAYS_OF_WEEK.find(d => d.id === id)?.label).join(', ');
-    const availabilityString = selectedDays.length > 0 ? `${selectedDayLabels}, ${hoursStart} - ${hoursEnd}` : '';
 
-    if (isEditing && id) {
-        await store.updateAd(id, {
-            title: formData.title,
-            description: formData.description,
-            category: formData.category,
-            price: Number(formData.price) || 0,
-            priceUnit: formData.priceUnit as 'job' | 'hour' | 'estimate',
-            location: formData.location,
-            whatsapp: formData.whatsapp,
-            images: images.length > 0 ? images : undefined,
-            availability: availabilityString,
-            tags: tags
-        });
-        alert('Anúncio atualizado com sucesso!');
-        navigate('/dashboard');
-    } else {
-        const newAd = await store.addAd({
-            providerId: user.id,
-            title: formData.title,
-            description: formData.description,
-            category: formData.category,
-            price: Number(formData.price) || 0,
-            priceUnit: formData.priceUnit as 'job' | 'hour' | 'estimate',
-            location: formData.location,
-            whatsapp: formData.whatsapp,
-            images: images.length > 0 ? images : ['https://picsum.photos/400/300?random=' + Math.floor(Math.random() * 100)],
-            isPremium: false,
-            availability: availabilityString,
-            tags: tags
-        });
-        alert('Anúncio criado com sucesso!');
-        navigate('/dashboard');
+    setSubmitting(true);
+    try {
+      // Upload new images to Supabase Storage (keep existing URLs in edit mode)
+      const finalImages: string[] = [];
+      for (let i = 0; i < images.length; i++) {
+        const file = imageFiles[i];
+        if (file) {
+          const url = await uploadImage(file);
+          finalImages.push(url);
+        } else {
+          finalImages.push(images[i]);
+        }
+      }
+
+      // Format availability string
+      const selectedDayLabels = selectedDays.map(id => DAYS_OF_WEEK.find(d => d.id === id)?.label).join(', ');
+      const availabilityString = selectedDays.length > 0 ? `${selectedDayLabels}, ${hoursStart} - ${hoursEnd}` : '';
+
+      if (isEditing && id) {
+          await store.updateAd(id, {
+              title: formData.title,
+              description: formData.description,
+              category: formData.category,
+              price: Number(formData.price) || 0,
+              priceUnit: formData.priceUnit as 'job' | 'hour' | 'estimate',
+              location: formData.location,
+              whatsapp: formData.whatsapp,
+              images: finalImages.length > 0 ? finalImages : undefined,
+              availability: availabilityString,
+              tags: tags
+          });
+          toast('Anúncio atualizado com sucesso!', 'success');
+          navigate('/dashboard');
+      } else {
+          const newAd = await store.addAd({
+              providerId: user.id,
+              title: formData.title,
+              description: formData.description,
+              category: formData.category,
+              price: Number(formData.price) || 0,
+              priceUnit: formData.priceUnit as 'job' | 'hour' | 'estimate',
+              location: formData.location,
+              whatsapp: formData.whatsapp,
+              images: finalImages.length > 0 ? finalImages : ['https://picsum.photos/400/300?random=' + Math.floor(Math.random() * 100)],
+              isPremium: false,
+              availability: availabilityString,
+              tags: tags
+          });
+          toast('Anúncio criado com sucesso!', 'success');
+          navigate('/dashboard');
+      }
+    } catch (err: any) {
+      console.error("Erro ao salvar anúncio:", err);
+      toast('Não foi possível salvar o anúncio. Tente novamente.', 'error');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -555,9 +580,10 @@ const CreateAd: React.FC = () => {
                     </button>
                     <button 
                         type="submit" 
-                        className="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-md font-bold shadow-sm"
+                        disabled={submitting}
+                        className="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-md font-bold shadow-sm disabled:opacity-50"
                     >
-                        {isEditing ? 'Salvar Alterações' : 'Publicar Anúncio'}
+                        {submitting ? 'Salvando...' : (isEditing ? 'Salvar Alterações' : 'Publicar Anúncio')}
                     </button>
                 </div>
 

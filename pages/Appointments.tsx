@@ -68,17 +68,28 @@ const Appointments: React.FC = () => {
   const isClient = user?.role === UserRole.CLIENT;
 
   const handleUpdateStatus = async (id: string, status: AppointmentStatus) => {
-    await store.updateAppointmentStatus(id, status);
-    setAppointments(prev => prev.map(app => app.id === id ? { ...app, status } : app));
+    try {
+      await store.updateAppointmentStatus(id, status);
+      setAppointments(prev => prev.map(app => app.id === id ? { ...app, status } : app));
+      toast(status === 'cancelled' ? 'Agendamento cancelado.' : 'Agendamento confirmado.', 'success');
+    } catch (e) {
+      console.error("Erro ao atualizar agendamento:", e);
+      toast('Não foi possível atualizar o agendamento.', 'error');
+    }
   };
 
   const handleConfirmService = async (app: Appointment) => {
-    await store.updateAppointmentStatus(app.id, 'completed');
-    setAppointments(prev => prev.map(a => a.id === app.id ? { ...a, status: 'completed' } : a));
-    setReviewingApp(app);
-    setReviewRating(5);
-    setReviewComment('');
-    setReviewError('');
+    try {
+      await store.updateAppointmentStatus(app.id, 'completed');
+      setAppointments(prev => prev.map(a => a.id === app.id ? { ...a, status: 'completed' } : a));
+      setReviewingApp(app);
+      setReviewRating(5);
+      setReviewComment('');
+      setReviewError('');
+    } catch (e) {
+      console.error("Erro ao concluir serviço:", e);
+      toast('Não foi possível concluir o serviço.', 'error');
+    }
   };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
@@ -97,12 +108,13 @@ const Appointments: React.FC = () => {
       await store.markAppointmentReviewed(reviewingApp.id);
       setAppointments(prev => prev.map(a => a.id === reviewingApp.id ? { ...a, reviewed: true } : a));
       setReviewingApp(null);
-      alert("Avaliação publicada com sucesso! Ela já aparece no anúncio do profissional.");
+      toast('Avaliação publicada com sucesso! Ela já aparece no anúncio do profissional.', 'success');
     } catch (err: any) {
       console.error("Erro ao enviar avaliação:", err);
       setReviewError(err.code === '42501'
         ? "Erro de permissão no Supabase (RLS): verifique as políticas da tabela 'reviews'."
         : "Houve um erro ao publicar sua avaliação. Tente novamente.");
+      toast('Não foi possível publicar a avaliação.', 'error');
     } finally {
       setSubmittingReview(false);
     }

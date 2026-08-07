@@ -3,13 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, User as UserIcon, MapPin, Phone, FileText, Save, ArrowLeft, Loader2, LocateFixed } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { store } from '../services/store';
+import { store, uploadImage, AVATARS_BUCKET } from '../services/store';
+import { useToast } from '../context/ToastContext';
 
 const EditProfile: React.FC = () => {
   const { user, refreshUser, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     bio: '',
@@ -42,6 +45,7 @@ const EditProfile: React.FC = () => {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         if (reader.result) {
@@ -54,7 +58,7 @@ const EditProfile: React.FC = () => {
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-      alert("Seu navegador não suporta geolocalização.");
+      toast("Seu navegador não suporta geolocalização.", 'error');
       return;
     }
 
@@ -87,14 +91,14 @@ const EditProfile: React.FC = () => {
           }
         } catch (error) {
           console.error("Erro ao buscar endereço:", error);
-          alert("Não foi possível buscar seu endereço automaticamente.");
+          toast("Não foi possível buscar seu endereço automaticamente.", 'error');
         } finally {
           setLoadingLocation(false);
         }
       },
       (error) => {
         console.error("Erro de geolocalização:", error);
-        alert("Permissão de localização negada ou indisponível.");
+        toast("Permissão de localização negada ou indisponível.", 'error');
         setLoadingLocation(false);
       }
     );
@@ -106,13 +110,17 @@ const EditProfile: React.FC = () => {
 
     setLoading(true);
     try {
-      await store.updateProfile(user.id, formData);
-      // Recarregar os dados do usuário no contexto
-      await refreshUser(); 
+      let avatarUrl = formData.avatar;
+      if (avatarFile) {
+        avatarUrl = await uploadImage(avatarFile, AVATARS_BUCKET);
+      }
+      await store.updateProfile(user.id, { ...formData, avatar: avatarUrl });
+      await refreshUser();
+      toast('Perfil atualizado com sucesso!', 'success');
       navigate('/dashboard');
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
-      alert("Houve um erro ao salvar as alterações.");
+      toast("Houve um erro ao salvar as alterações.", 'error');
     } finally {
       setLoading(false);
     }

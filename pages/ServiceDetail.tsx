@@ -7,9 +7,11 @@ import { store } from '../services/store';
 import { ServiceAd, Review } from '../types';
 import { RatingStars, Badge } from '../components/UI';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const ServiceDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { toast } = useToast();
   const [ad, setAd] = useState<ServiceAd | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [submittingReview, setSubmittingReview] = useState(false);
@@ -140,7 +142,7 @@ const ServiceDetail: React.FC = () => {
           navigate('/login');
           return;
       }
-      const message = `Olá, vi seu anúncio "${ad.title}" no Dexacomigo e gostaria de mais informações.`;
+      const message = `Olá, vi seu anúncio "${ad.title}" no Mais Beleza e gostaria de mais informações.`;
       const url = `https://wa.me/${ad.whatsapp}?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
   };
@@ -151,7 +153,7 @@ const ServiceDetail: React.FC = () => {
           return;
       }
       if (user.id === ad.providerId) {
-          alert("Você não pode iniciar um chat com seu próprio anúncio.");
+          toast("Você não pode iniciar um chat com seu próprio anúncio.", 'error');
           return;
       }
 
@@ -159,7 +161,8 @@ const ServiceDetail: React.FC = () => {
         const chatId = await store.startChat(user.id, ad.providerId, ad.id, ad.title);
         navigate(`/dashboard/chat/${chatId}`);
       } catch (e: any) {
-        alert("Erro ao iniciar chat. Verifique as permissões de banco de dados (RLS).");
+        console.error(e);
+        toast("Erro ao iniciar chat. Verifique as permissões de banco de dados (RLS).", 'error');
       }
   };
 
@@ -192,7 +195,7 @@ const ServiceDetail: React.FC = () => {
         if (updatedAd) setAd(updatedAd);
         
         setNewReview({ rating: 5, comment: '' });
-        alert("Avaliação publicada com sucesso!");
+        toast("Avaliação publicada com sucesso!", 'success');
       } catch (err: any) {
         console.error("Erro ao enviar avaliação:", err);
         if (err.code === '42501') {
@@ -207,7 +210,7 @@ const ServiceDetail: React.FC = () => {
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-        alert("Seu navegador não suporta geolocalização.");
+        toast("Seu navegador não suporta geolocalização.", 'error');
         return;
     }
     setIsLocating(true);
@@ -228,12 +231,13 @@ const ServiceDetail: React.FC = () => {
             const loc = parts.join(', ');
             setScheduleData(prev => ({ ...prev, location: loc }));
         } catch (e) {
-            alert('Erro ao buscar localização.');
+            console.error(e);
+            toast('Erro ao buscar localização.', 'error');
         } finally {
             setIsLocating(false);
         }
     }, () => {
-        alert('Permissão de localização negada.');
+        toast('Permissão de localização negada.', 'error');
         setIsLocating(false);
     });
   };
@@ -285,7 +289,8 @@ const ServiceDetail: React.FC = () => {
         setShowScheduleModal(false);
         navigate(`/dashboard/chat/${chatId}`);
       } catch (e: any) {
-        alert("Não foi possível solicitar o agendamento. Tente novamente mais tarde.");
+        console.error(e);
+        toast("Não foi possível solicitar o agendamento. Tente novamente mais tarde.", 'error');
       } finally {
         setIsScheduling(false);
       }

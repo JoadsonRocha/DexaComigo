@@ -21,8 +21,6 @@ const DashboardHome: React.FC = () => {
     }
 
     const loadAll = async () => {
-      const unread = await store.getGlobalUnreadCount(user.id);
-      void unread;
       const userAppointments = await store.getMyAppointments(user.id, user.role);
       setAppointments(userAppointments);
       const userChats = await store.getChats(user.id);
