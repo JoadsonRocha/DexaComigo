@@ -240,7 +240,7 @@ const SearchPage: React.FC = () => {
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {ads.map(ad => (
-                            <ServiceCard key={ad.id} ad={ad} />
+                          <ServiceCard key={ad.id} ad={ad} compact />
                         ))}
                     </div>
                     {hasMore && (

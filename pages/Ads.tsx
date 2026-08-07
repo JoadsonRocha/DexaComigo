@@ -109,7 +109,7 @@ const Ads: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-5">
               {ads.map(ad => (
                 <div key={ad.id} className="relative group">
-                  <ServiceCard ad={ad} />
+                  <ServiceCard ad={ad} compact />
                   <div className="absolute top-2 left-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Link to={`/edit-ad/${ad.id}`} className="bg-white/90 text-gray-800 text-xs px-2 py-1 rounded shadow hover:bg-white font-medium">Editar</Link>
                     <button
