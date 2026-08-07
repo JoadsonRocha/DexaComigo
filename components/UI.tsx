@@ -34,9 +34,8 @@ export const RatingStars: React.FC<{ rating: number; count?: number; size?: numb
 };
 
 export const ServiceCard: React.FC<{ ad: ServiceAd }> = ({ ad }) => {
-  return (
-    <Link to={`/service/${ad.id}`} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 flex flex-col h-full">
-      <div className="relative aspect-video overflow-hidden bg-gray-100">
+  const navigate = import('react-router-dom').then(m => m.useNavigate).catch(() => null); 
+  // Wait, I should just import useNavigate at the top. Let's do it properly.
         <img 
           src={ad.images[0]} 
           alt={ad.title} 
