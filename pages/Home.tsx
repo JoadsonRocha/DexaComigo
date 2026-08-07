@@ -41,8 +41,9 @@ const Home: React.FC = () => {
     const loadAds = async () => {
         try {
             const ads = await store.getAds();
-            // Featured: Highest rated with most feedback
+            // Featured: Only premium ads, then sort by highest rated
             const featured = ads
+              .filter(a => a.isPremium)
               .sort((a, b) => {
                 // Primary sort: Rating (descending)
                 if (b.rating !== a.rating) return b.rating - a.rating;
