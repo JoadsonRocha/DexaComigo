@@ -45,7 +45,7 @@ const CreateAd: React.FC = () => {
   // Redirect if not logged in
   if (!user) {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="flex-1 flex items-center justify-center bg-gray-50 px-4">
             <div className="text-center">
                 <h2 className="text-2xl font-bold mb-4">Você precisa estar logado</h2>
                 <p className="mb-6 text-gray-600">Para anunciar seus serviços, faça login ou crie uma conta.</p>
@@ -136,7 +136,7 @@ const CreateAd: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="flex-1 bg-gray-50 py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-brand-700 py-6 px-8">

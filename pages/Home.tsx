@@ -60,7 +60,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="flex-1 bg-white flex flex-col">
       {/* Hero Section */}
       <section className="relative bg-brand-900 pt-24 pb-36 overflow-hidden">
         <div className="absolute inset-0 z-0">
